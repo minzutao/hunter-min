@@ -1,0 +1,61 @@
+<!---title:Eclipse C++环境搭建-->
+<!---keywords:Eclipse,c,c++,安装,配置-->
+<!---date:2013.05.23-->
+
+#安装配置 
+
+##安装GNU工具链 
+
+最重要的东西，C++必要工具，安装的是GCC工具链，Make等一系列开发工具：
+
+* sudo apt-get install build-essential
+
+##安装Eclipse 
+
+* sudo apt-get install eclipse
+* sudo apt-get install eclipse-pde
+* sudo apt-get install eclipse-jdt
+
+##安装Eclipse的C/C++插件(CDT) 
+
+打开Eclipse, 点击菜单栏的Help->Install New Software, 在"Work with"中输入插件地
+地址:
+
+    http://download.eclipse.org/tools/cdt/releases/galileo
+
+并回车.
+
+注: 该地址对于不同的版本的eclipse可能不同. 因为每个版本的eclipse都有个名称,
+如3.5是galileo, 所以上面的地址后缀为galileo. 一般这个地址应该在旁边的
+"Available Software Sites"点进去应该能找到.版本号与名称的对应可以在网上查到.
+
+
+##安装Eclipse的VIM风格插件 
+
+该插件可以使得eclipse像vim一样使用, 主要指的是操作方法. 用类似上面安装CDT的方法,
+安装VIM插件. 只是将其中的地址换成如下地址即可: 
+
+    http://vrapper.sourceforge.net/update-site/stable 
+
+vim的默认快捷键和eclipse有些是冲突的, 如果迫切需要vim操作风格, 则将eclipse
+中的快捷键绑定去掉即可. 在windows->preferences里面.
+
+#使用 
+
+##创建工程 
+
+*创建一个空工程*
+
+* file -> new -> c/c++ project 
+
+*导入源代码*
+
+* file -> import -> general -> file system 选择源码路径. 
+
+##Eclipse快捷键 
+
+`ctrl+shift+r`：打开资源
+`ctrl+o`：快速outline. 与VIM风格冲突, 替换掉.
+
+
+

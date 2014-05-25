@@ -1,0 +1,42 @@
+<!---title:linux切换java的jdk版本-->
+<!---keywords:javac,update-alternatives,javadoc,ubuntu,android-->
+<!---date:2013.07.10; modification:2014.05.13-->
+
+安装在ubuntu10.10 系统下，开发环境需要，有时会需要安装JDK5和JDK6，怎么实现这两者之间的切换呢？使用update-alternatives 命令可以完成此任务
+
+具体如下：
+
+#查看版本
+
+查看当前jdk版本:
+
+    java -version
+    javac -version
+
+
+#查看相应的jdk是否在ubuntu的jdk菜单里
+
+命令：
+
+    update-alternatives --config java
+    update-alternatives --config javac 
+    update-alternatives --config javadoc
+
+#添加jdk
+
+如果没有在菜单里可以如下方式添加：
+update-alternatives --install /usr/bin/java java /usr/lib/jvm/java/jdk1.6.0_12/bin/java 300
+update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java/jdk1.6.0_12/bin/javac 300
+
+注意：jdk1.6.0_12 版本不同会有变动
+
+#选择jdk版本
+ 
+    sudo update-alternatives --config java
+    sudo update-alternatives --config javac
+    sudo update-alternatives --config javadoc
+
+选择序号，回车即可；
+
+
+<!-- vim:set tw=0:-->

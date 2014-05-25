@@ -1,0 +1,48 @@
+<!---title:Nexus7二代解锁+刷recovery+root教程-->
+<!---keywords:neuxs7 2013,lte,4g,ubuntu,linux-->
+<!---date:2014.04.27; modification:2014.04.27-->
+
+本文分享的是中文版Nexus 7二代(2013 LTE)解锁教程, 以及ROOT教程, 本文将详细指导该机器的用户如何进行解锁和ROOT的具体操作方法. 说到Nexus 7二代ROOT, 它的原理其实并不难, 即解锁之后, 通过fastboot刷入TWRP Recovery, 再通过TWRP Recovery刷入SuperSU.zip, 然后通过SuperSU来ROOT 二代Nexus7 (安卓4.3), 大致的步骤就是这样子的了, 下面将为大家列出详细的操作步骤: 
+
+在此之前, 确认已经安装好了fastboot驱动, 如果没有安装好的话, 也没关系, 看下面的教程步骤. 
+
+**_注意, 解锁是会清空数据的, 所以在解锁前, 请做好备份工作._**
+
+#Nexus 7二代解锁教程
+
+1. 安装Android SDK (http://developer.android.com/sdk/index.html), 其实你只需要 fastboot.exe 和 adb.exe (点击这里下载), 将其放到特定目录, 这里将以放到了C:/adb为例 (在C盘根目录下创建adb目录) ;
+2. 安装 Google USB 驱动 (http://developer.android.com/sdk/win-usb.html) ;
+3. 在n7二代上开启USB调试;
+4. 用命令提示符进入C:/adb(记住这里放有你的fastboot.exe 和 adb.exe) ;
+5. 然后输入命令: adb reboot bootloader ; (我的nexus7二代买来后没找到USB调试选项所以3,4,5这几步不适用, 我用的方式是: 关机后按住音量减和电源键开机进入fastboot)
+6. 当n7二代进入bootloader后,  在电脑的同一命令提示符里输入 fastboot oem unlock ; 我的是ubuntu, 需要sudo, 否则会无相应的永远卡死.
+7. 在n7二代上用音量“+”键来选择Yes, 并按电源键确认;
+8. 当n7二代上状态显示 Unlocked 后, 再用音量键选择到"Start" , 然后用电源键确认. 
+
+然后, 二代Nexus 7设备就成功解锁了, 接下来可以继续ROOT工作了. 
+
+(PS: 后来我找到了方法开启usb调试: 在设置--关于平板电脑--版本号上, 点击7次, 我只点击了3次就告诉我已经开启开发者模式了, 现在再返回到设置里面, 就有开发者选项了)
+
+#Nexus 7二代ROOT教程——刷TWRP Recovery并ROOT二代n7
+
+1. 下载SuperSU: 目前最新的版本是v1.94, 后续可以通过play store更新. 下载地址为: [http://download.chainfire.eu/396/SuperSU/UPDATE-SuperSU-v1.94.zip](http://download.chainfire.eu/396/SuperSU/UPDATE-SuperSU-v1.94.zip). 注: 如果这里给出的版本不能root成功, 去网上找找新版本.
+2. 将SuperSU放入到二代n7的系统根目录下;
+3. 下载TWRP的img文件, 然后放到C: /adb目录(很关键的一步, 因为这个目录下有 fastboot.exe 和 adb.exe, 而你所需要的命令都要靠它们来完成) ; TWRP下载地址: 
+    * [http://techerrata.com/browse/twrp2/deb](http://techerrata.com/browse/twrp2/deb) (这是LTE版本)
+    * [http://techerrata.com/browse/twrp2/flo](http://techerrata.com/browse/twrp2/flo) (这是WIFI版本)
+4. 确保你的二代n7和电脑相连接并处于bootloader模式, 没有的话, 请重复上面解锁教程的步骤4和5;
+5. 在命令提示符里输入fastboot flash recovery "你TWRP的文件名".img (双引号里请用你实际的TWRP的.img的文件名) ; (如果是ubuntu同样需要sudo)
+6. 刷入TWRP后, 你的界面仍然在Bootloader下面, 按多几次音量下键, 找到Recovery Mode, 按电源键确认;
+7. 然后进行如下的操作: 
+    * Install
+    * 进入Select Zip to install(我的版本没有这一步, 直接就可以到下一步选zip文件, 并且支持触控)
+    * 找到你存放的SuperSU的zip包, 选中它. (我的版本在这里是弹出一个警告, 然后在swipe to unlock的滑条向右滑动即可)
+    * 选择yes, 刷入SuperSU
+    * 之后这里弹出一个清数据的选项(可清可不清, 但是最好是清一下, 反正上面的步骤已经把所有数据都破坏了).
+8. 然后重启你的平板设备即可, 到这里, Nexus 7二代就成功解锁和ROOT了, 购置了二代设备的用户们可以自己试试. 
+
+#参考文献
+
+http://guide.hiapk.com/shuaji/LG/130821/1445122.html
+
+<!-- vim:set tw=0:-->

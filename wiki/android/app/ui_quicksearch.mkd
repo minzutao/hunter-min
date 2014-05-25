@@ -1,0 +1,298 @@
+<!---title:Android UI编程速查-->
+<!---keywords:Layout,View,Button,Textview,笔记-->
+<!---date:2013.06.17; modification:2014.05.04-->
+
+#Layout
+
+##线性布局(LinearLayout)
+
+XML:
+
+<pre class = "brush: xml; toolbar: false">
+    &lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical"
+        tools:context=".MainActivity" >
+
+        ...some views...
+
+    &lt;/LinearLayout>
+</pre>
+
+#控件
+
+##文本框(TextView)
+
+XML:
+
+<pre class = "brush: xml; toolbar: false">
+    &lt;TextView
+        android:layout_width="480dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:background="#888888"
+        android:text="@string/hello_world" />
+</pre>
+
+JAVA:
+
+<pre class = "brush: java; toolbar: false">
+	private TextView textView;
+
+    textView = (TextView)findViewById(R.id.textView);
+    textView.setText("^_^");
+</pre>
+
+
+##输入框(EditText)
+
+XML:
+
+<pre class = "brush: xml; toolbar: false">
+    &lt;EditText android:id="@+id/edit_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/edit_message" />
+</pre>
+
+JAVA:
+
+<pre class = "brush: java; toolbar: false">
+    略
+</pre>
+
+
+
+
+##按钮(Button)
+
+XML:
+
+<pre class = "brush: xml; toolbar: false">
+    &lt;Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select All" />
+</pre>
+
+说明:
+
+* '@'符号: 表示要引用的是xml中的资源对象(resource object而非资源本身). '@'之后跟的是resource type/resource name.
+* '+'符号: 表示要引用的资源在此第一次出现(即定义).
+
+JAVA:
+
+<pre class = "brush: java; toolbar: false">
+    import android.view.View.OnClickListener;
+
+    Button button = (Button)findViewById(R.id.button1);
+    button.setOnClickListener(buttonSelectAllListener);
+
+	OnClickListener buttonSelectAllListener = new OnClickListener() {
+
+		@Override
+		public void onClick(View v) {
+			Button button = (Button)v;
+			if(button.getId() == R.id.button1) {
+				Log.d(TAG, "onClick button1\n");
+			}
+		}
+	};
+</pre>
+
+
+##复选框(CheckBox)
+
+XML:
+
+<pre class = "brush: xml; toolbar: false">
+    &lt;CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CheckBox1" />
+</pre>
+
+JAVA方法1(使用通用Listener):
+
+<pre class = "brush: java; toolbar: false">
+    import android.view.View.OnClickListener;
+
+    private CheckBox checkBox1;
+    checkBox1 = (CheckBox)findViewById(R.id.checkBox1);
+    checkBox1.setOnClickListener(listener);
+
+    // 点击相应Listener
+    OnClickListener listener = new OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            // TODO Auto-generated method stub
+            CheckBox box = (CheckBox)v;
+            if(box.getId() == R.id.checkBox1) {  // 用于当listener绑定到多个checkbox时候以做区分.
+                Log.d(TAG, "onClick checkBox1\n");
+            }
+            else {
+                Log.d(TAG, "onClick checkBox2\n");
+            }
+            Log.d(TAG, box.isChecked() ? "Checked" : "UnChecked");
+        }
+        
+    };
+</pre>
+
+
+JAVA方法2(使用通用OnCheckedChangeListener):
+
+<pre class = "brush: java; toolbar: false">
+    import android.widget.CompoundButton.OnCheckedChangeListener;
+
+    private CheckBox checkBox1;
+    checkBox1 = (CheckBox)findViewById(R.id.checkBox1);
+    checkBox1.setOnCheckedChangeListener(listener);
+
+    OnCheckedChangeListener listener = new OnCheckedChangeListener() {
+
+        @Override
+        public void onCheckedChanged(CompoundButton box, boolean isChecked) {
+            if(box.getId() == R.id.checkBox1) {
+                Log.d(TAG, "onClick checkBox1\n");
+            }
+            else {
+                Log.d(TAG, "onClick checkBox2\n");
+            }
+            Log.d(TAG, box.isChecked() ? "Checked" : "UnChecked");
+        }
+    };
+</pre>
+
+##单选按钮(RadioButton)
+
+XML:
+
+<pre class = "brush: xml; toolbar: false">
+    &lt;RadioGroup
+        android1:id="@+id/radioGroup1"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content" >
+
+        &lt;RadioButton
+            android1:id="@+id/radio0"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:checked="true"
+            android1:text="RadioButton0" />
+
+        &lt;RadioButton
+            android1:id="@+id/radio1"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="RadioButton1" />
+    &lt;/RadioGroup>
+</pre>
+
+JAVA:
+
+<pre class = "brush: java; toolbar: false">
+    import android.widget.RadioGroup.OnCheckedChangeListener;
+
+	private RadioGroup radioGroup;
+	private RadioButton radio0;
+	private RadioButton radio1;
+
+    radio0 = (RadioButton)findViewById(R.id.radio0);
+    radio1 = (RadioButton)findViewById(R.id.radio1);
+    radioGroup = (RadioGroup)findViewById(R.id.radioGroup1);
+    radioGroup.setOnCheckedChangeListener(radioCheckedChangeListener);
+
+	OnCheckedChangeListener radioCheckedChangeListener = new OnCheckedChangeListener() {
+		@Override
+		public void onCheckedChanged(RadioGroup group, int checkedId) {
+			if(checkedId == radio0.getId()) {
+				Log.d(TAG, "radio0 Checked.");
+			}
+			else if(checkedId == radio1.getId()) {
+				Log.d(TAG, "radio1 Checked.");
+			}
+			else {
+				Log.d(TAG, "unKnown Checked.");
+			}
+		}
+	};
+</pre>
+
+
+##图片(ImageView)
+
+
+XML:
+
+<pre class = "brush: xml; toolbar: false">
+    &lt;ImageView
+        android1:id="@+id/imageView1"
+        android1:layout_width="wrap_content"
+        android1:layout_height="match_parent"
+        android1:scaleType="fitXY"
+        android1:src="@drawable/iron3" />
+</pre>
+
+JAVA:
+
+    和其他类似.
+
+
+缩放参数:
+
+    fitCenter:    等比例缩放至完全容纳并居中.
+    fitStart:     等比例缩放至完全容纳并居首.
+    fitEnd:       等比例缩放至完全容纳并居尾.
+    fitXY:        不等比例拉伸至刚好完全充满View.
+    center:       不缩放(可能会截取)并居中.
+    centerInside: 等比例缩小(但不放大)至完全容纳并居中.
+    centerCrop:   等比例缩放至短边完全容纳(长边可能被截取).
+
+
+#其他
+
+##删除Eclipse创建的Activity
+
+需要删除的便是Eclipse自动创建出来的代码. 以创建名称为TestActivity为例, Eclipse会添加:
+
+* 新建的文件:
+    * `res/layout/activity_test.xml`
+    * `res/menu/test.xml`
+    * `src/com/mikewootc/androidlearn/TestActivity.java`
+* 添加的代码行:
+    * AndroidManifest.xml中:
+<pre class = "brush: xml; toolbar: false">
+        &lt;activity
+            android:name="com.mikewootc.androidlearn.TestActivity"
+            android:label="@string/title_activity_test" >
+        &lt;/activity>
+</pre>
+    * res/values/strings.xml中:
+<pre class = "brush: xml; toolbar: false">
+        <string name="title_activity_test">TestActivity</string>
+</pre>
+    * gen/com/mikewootc/androidlearn/R.java中:
+<pre class = "brush: java; toolbar: false">
+        public static final int activity_test=0x7f030001;
+        public static final int test=0x7f070001;
+        public static final int title_activity_test=0x7f050003;
+</pre>
+
+删除以上代码即可.
+
+如果是用Eclipse来build的话, bin/AndroidManifest.xml中相应的标签也要删除.
+
+
+<!-- vim:set tw=0:-->

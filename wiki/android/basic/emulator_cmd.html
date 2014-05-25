@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Android emulator命令详解</title>
+<meta name="keywords" content="模拟器,终端">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Android emulator命令详解</h1>
+<p>date: 2013.09.29; modification:2013.10.22</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#命令使用"><span class="toc-section-number">1</span> 命令使用</a></li>
+<li><a href="#运行需求"><span class="toc-section-number">2</span> 运行需求</a></li>
+<li><a href="#其他使用"><span class="toc-section-number">3</span> 其他使用</a><ul>
+<li><a href="#telnet"><span class="toc-section-number">3.1</span> telnet</a></li>
+</ul></li>
+<li><a href="#参考资料"><span class="toc-section-number">4</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Android emulator命令详解-->
+<!---keywords:模拟器,终端-->
+<!---date:2013.09.29; modification:2013.10.22-->
+
+<h1 id="命令使用"><span class="header-section-number">1</span> 命令使用</h1>
+<p>Android Emulator usage:</p>
+<pre><code>emulator [options] [-qemu args]</code></pre>
+<p>options:</p>
+<pre><code>-sysdir &lt;dir&gt;                       在目录&lt;dir&gt;中搜索system.img
+-system &lt;file&gt;                      读取system.img文件&lt;file&gt;   
+-datadir &lt;dir&gt;                      写入用户数据到目录 &lt;dir&gt;
+-kernel &lt;file&gt;                      使用指定内核kernel-qemu文件
+-ramdisk &lt;file&gt;                     指定ram 镜像文件ramdisk.img
+-image &lt;file&gt;                       obsolete, use -system &lt;file&gt; instead
+-init-data &lt;file&gt;                   initial data image (default &lt;system&gt;/userdata.img
+-initdata &lt;file&gt;                    same as &#39;-init-data &lt;file&gt;&#39;
+-data &lt;file&gt;                        data image (default &lt;datadir&gt;/userdata-qemu.i mg
+-partition-size &lt;size&gt;              分区大小MBs(即机身自带存储大小)
+-cache &lt;file&gt;                       cache.img
+-no-cache                           禁止缓存
+-nocache                            禁止缓存
+-sdcard &lt;file&gt;                      sdcard.img
+-wipe-data                          reset the use data image (copy it from initda ta)
+-avd &lt;name&gt;                         使用指定AVD设备
+-skindir &lt;dir&gt;                      search skins in &lt;dir&gt; (default &lt;system&gt;/skins)
+-skin &lt;name&gt;                        select a given skin
+-no-skin                            don&#39;t use any emulator skin
+-noskin                             same as -no-skin
+-memory &lt;size&gt;                      物理内存(RAM)大小MBs
+-netspeed &lt;speed&gt;                   最大网速
+-netdelay &lt;delay&gt;                   网络延迟
+-netfast                            disable network shaping
+-trace &lt;name&gt;                       enable code profiling (F9 to start)
+-show-kernel                        显示内核消息
+-shell                              终端启用root shell
+-no-jni                             disable JNI checks in the Dalvik runtime
+-nojni                              same as -no-jni
+-logcat &lt;tags&gt;                      查看日志
+-no-audio                           disable audio support
+-noaudio                            same as -no-audio
+-audio &lt;backend&gt;                    use specific audio backend
+-audio-in &lt;backend&gt;                 use specific audio input backend
+-audio-out &lt;backend&gt;                use specific audio output backend
+-raw-keys                           disable Unicode keyboard reverse-mapping
+-radio &lt;device&gt;                     无线猫
+-port &lt;port&gt;                        连接控制台的TCP端口.
+-ports &lt;consoleport&gt;,&lt;adbport&gt;      TCP ports used for the console and adb bridge
+-onion &lt;image&gt;                      use overlay PNG image over screen
+-onion-alpha &lt;%age&gt;                 specify onion-skin translucency
+-onion-rotation 0|1|2|3             specify onion-skin rotation
+-scale &lt;scale&gt;                      窗口缩放
+-dpi-device &lt;dpi&gt;                   specify device&#39;s resolution in dpi (default 165)
+-http-proxy &lt;proxy&gt;                 HTTP/HTTPS 代理
+-timezone &lt;timezone&gt;                时区
+-dns-server &lt;servers&gt;               DNS服务器
+-cpu-delay &lt;cpudelay&gt;               throttle CPU emulation
+-no-boot-anim                       disable animation for faster boot
+-no-window                          disable graphical window display
+-version                            版本
+-report-console &lt;socket&gt;            report console port to remote socket
+-gps &lt;device&gt;                       redirect NMEA GPS to character device
+-keyset &lt;name&gt;                      specify keyset file name
+-shell-serial &lt;device&gt;              specific character device for root shell
+-old-system                         support old (pre 1.4) system images
+-tcpdump &lt;file&gt;                     记录网络数据包
+-bootchart &lt;timeout&gt;                enable bootcharting
+-prop &lt;name&gt;=&lt;value&gt;                设置系统属性
+-qemu args...                       pass arguments to qemu
+-qemu -h                            显示qemu帮助
+-verbose                            same as &#39;-debug-init&#39;
+-debug &lt;tags&gt;                       enable/disable debug messages
+-debug-&lt;tag&gt;                        enable specific debug messages
+-debug-no-&lt;tag&gt;                     disable specific debug messages
+-help                               帮助
+-help-&lt;option&gt;                      print option-specific help
+-help-disk-images                   about disk images
+-help-keys                          supported key bindings
+-help-debug-tags                    debug tags for -debug &lt;tags&gt;
+-help-char-devices                  character &lt;device&gt; specification
+-help-environment                   environment variables
+-help-keyset-file                   key bindings configuration file
+-help-virtual-device                virtual device management
+-help-sdk-images                    about disk images when using the SDK
+-help-build-images                  about disk images when building Android
+-help-all                           帮助(所有)</code></pre>
+<hr />
+<h1 id="运行需求"><span class="header-section-number">2</span> 运行需求</h1>
+<p>模拟器至少需要:</p>
+<ul>
+<li>kernel-qemu</li>
+<li>ramdisk.img</li>
+<li>system.img</li>
+<li>userdata.img</li>
+</ul>
+<p>还可以包括:</p>
+<ul>
+<li>sdcard.img</li>
+<li>userdata-qemu.img</li>
+<li>cache.img</li>
+<li>system-qemu.img</li>
+</ul>
+<h1 id="其他使用"><span class="header-section-number">3</span> 其他使用</h1>
+<h2 id="telnet"><span class="header-section-number">3.1</span> telnet</h2>
+<p>使用命令:</p>
+<pre><code>telnet localhost 5554</code></pre>
+<p>可以连接到模拟器(5554是adb devices命令显示的数字), 然后再键入help, 可以执行一些执行, 比如模拟来电, 短信等等.</p>
+<p>键入exit可以退出telnet.</p>
+<h1 id="参考资料"><span class="header-section-number">4</span> 参考资料</h1>
+<p>http://zhongcong386.blog.163.com/blog/static/134727804201110345129676/</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

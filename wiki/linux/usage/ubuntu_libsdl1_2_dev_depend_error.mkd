@@ -1,0 +1,36 @@
+<!---title:解决Ubuntu安装libsdl1.2-dev依赖错误-->
+<!---keywords:ubuntu,debian,libsdl1.2-dev,依赖,apt-get-->
+<!---date:2013.05.23-->
+
+#问题描述
+
+安装:
+
+    sudo apt-get install libsdl1.2-dev
+
+提示如下错误:
+
+    libsdl1.2-dev : 依赖: libsdl1.2debian (= 1.2.14-6.4ubuntu3) 但是 1.2.14-6ubuntu3 正要被安装
+                     依赖: libx11-dev 但是它将不会被安装
+                     依赖: libglu1-mesa-dev 但是它将不会被安装
+                     依赖: libasound2-dev
+                     依赖: libpulse-dev 但是它将不会被安装
+                     依赖: libcaca-dev 但是它将不会被安装
+                     依赖: libxt-dev 但是它将不会被安装
+                     依赖: libxext-dev 但是它将不会被安装
+
+    E: 有未能满足的依赖关系。请尝试不指明软件包的名字来运行“apt-get -f install”(也可以指定一个解决办法)。
+
+#解决方法
+
+我尝试了网上的很多方法, 也没能解决, 最后我把apt的软件源由中国换成了主服务器. 然后:
+
+    sudo apt-get update
+
+竟然解决.
+
+注: 我的中年过服务器也不是自己找来的163或者cn99什么的源, 而是装完系统它自带设置里面选的中国服务器. 看来ubuntu这种看似官方的配置也不是同步很及时, 以后还是用主服务器的源吧. 慢点就慢点吧, 至少稳定.
+
+
+
+<!-- vim:set tw=0:-->

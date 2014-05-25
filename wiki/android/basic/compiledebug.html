@@ -1,0 +1,202 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>android编译与调试</title>
+<meta name="keywords" content="源代码,debug,sdcard">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>android编译与调试</h1>
+<p>date: 2013.05.30; modification:2014.02.18</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#安装环境"><span class="toc-section-number">1</span> 安装环境</a></li>
+<li><a href="#下载源代码"><span class="toc-section-number">2</span> 下载源代码</a></li>
+<li><a href="#编译"><span class="toc-section-number">3</span> 编译</a><ul>
+<li><a href="#完全编译"><span class="toc-section-number">3.1</span> 完全编译</a></li>
+<li><a href="#编译问题处理"><span class="toc-section-number">3.2</span> 编译问题处理</a></li>
+<li><a href="#扩展内容"><span class="toc-section-number">3.3</span> 扩展内容</a><ul>
+<li><a href="#android文件系统的结构"><span class="toc-section-number">3.3.1</span> android文件系统的结构</a></li>
+<li><a href="#分离android文件系统出来"><span class="toc-section-number">3.3.2</span> 分离android文件系统出来</a></li>
+<li><a href="#system.img-和-userdata.img"><span class="toc-section-number">3.3.3</span> system.img 和 userdata.img</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#调试"><span class="toc-section-number">4</span> 调试</a><ul>
+<li><a href="#启动默认配置模拟器"><span class="toc-section-number">4.1</span> 启动默认配置模拟器</a></li>
+<li><a href="#启动自定义配置的模拟器"><span class="toc-section-number">4.2</span> 启动自定义配置的模拟器</a><ul>
+<li><a href="#使用sd卡"><span class="toc-section-number">4.2.1</span> 使用sd卡</a></li>
+<li><a href="#指定存储大小"><span class="toc-section-number">4.2.2</span> 指定存储大小</a></li>
+</ul></li>
+<li><a href="#logcat"><span class="toc-section-number">4.3</span> logcat</a></li>
+</ul></li>
+<li><a href="#参考资料"><span class="toc-section-number">5</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:android编译与调试-->
+<!---keywords:源代码,debug,sdcard-->
+<!---date:2013.05.30; modification:2014.02.18-->
+
+<p>本文介绍的内容是给予repo下载到的<code>https://android.googlesource.com/platform/manifest -b android-4.0.1_r1</code>的.</p>
+<h1 id="安装环境"><span class="header-section-number">1</span> 安装环境</h1>
+<pre><code>sudo apt-get install --force-yes -y git-core gnupg flex bison gperf build-essential \
+        zip curl libc6-dev libncurses5-dev:i386 x11proto-core-dev \
+        libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-glx:i386 \
+        libgl1-mesa-dev g++-multilib mingw32 openjdk-6-jdk tofrodos \
+        python-markdown libxml2-utils xsltproc zlib1g-dev:i386  
+sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so.1 /usr/lib/i386-linux-gnu/libGL.so</code></pre>
+<h1 id="下载源代码"><span class="header-section-number">2</span> 下载源代码</h1>
+<p>下载repo:</p>
+<pre><code>$ mkdir ~/bin
+$ PATH=~/bin:$PATH
+$ curl https://dl-ssl.google.com/dl/googlesource/git-repo/repo &gt; ~/bin/repo
+$ chmod a+x ~/bin/repo</code></pre>
+<p>初始化repo:</p>
+<pre><code>如果是默认:
+repo init -u https://android.googlesource.com/platform/manifest
+如果指定某个分支:
+repo init -u https://android.googlesource.com/platform/manifest -b android-4.0.1_r1</code></pre>
+<p>利用repo下载源代码:</p>
+<pre><code>repo sync</code></pre>
+<h1 id="编译"><span class="header-section-number">3</span> 编译</h1>
+<h2 id="完全编译"><span class="header-section-number">3.1</span> 完全编译</h2>
+<pre><code>. build/envsetup.sh
+lunch full-eng
+make</code></pre>
+<p>编译完之后生成的内容在:</p>
+<pre><code>out/target/product/generic</code></pre>
+<h2 id="编译问题处理"><span class="header-section-number">3.2</span> 编译问题处理</h2>
+<p>见: <a href="compile_faq.html">Android编译问题汇总</a></p>
+<h2 id="扩展内容"><span class="header-section-number">3.3</span> 扩展内容</h2>
+<p>本节与编译本身并无关系, 只是对编译出来的内容做一些扩展说明, 如果只是想了解编译调试过程, 可以跳过本节.</p>
+<h3 id="android文件系统的结构"><span class="header-section-number">3.3.1</span> android文件系统的结构</h3>
+<p>android源码编译后在out/target/product/generic下得到system.img,ramdisk.img,userdata.img映像文件. 其中:</p>
+<ul>
+<li>ramdisk.img是emulator的文件系统</li>
+<li>system.img包括了主要的包, 库等文件</li>
+<li>userdata.img包括了一些用户数据</li>
+</ul>
+<p>emulator加载这3个映像文件后, 会把 system和 userdata分别加载到 ramdisk文件系统中的system和 userdata目录下. 因此, 我们可以把ramdisk.img里的所有文件复制出来, system.img和userdata.img分别解压到 ramdisk文件系统中的system和 userdata目录下.</p>
+<h3 id="分离android文件系统出来"><span class="header-section-number">3.3.2</span> 分离android文件系统出来</h3>
+<p>system.img,ramdisk.img,userdata.img映像文件是采用cpio打包, gzip压缩的, 可以通过file命令验证:</p>
+<pre><code>file ramdisk.img</code></pre>
+<p>Android源码编译后除了生成system.img, userdata.img之外还生成system和 userdata文件夹, 因此不需要解压它们. Android源码编译后还生成root文件夹, 其实root下的文件与 ramdisk.img 里的文件是一样的, 不过这里还是介绍怎样把 ramdisk.img解压出来: 将ramdisk.img复制一份到任何其他目录下, 将其名称改为ramdisk.img.gz, 并使用命令</p>
+<pre><code>gunzip ramdisk.img.gz</code></pre>
+<p>然后新建一个文件夹, 叫ramdisk吧, 进入, 输入命令</p>
+<pre><code>cpio -i -F ../ramdisk.img</code></pre>
+<p>这下, 你就能看见并操作ramdisk里面的内容了.</p>
+<p>然后把Android源码编译后生成的system和 userdata里的文件复制到 ramdisk/system和 ramdisk/userdata下. 这样就得到一个文件系统了.</p>
+<h3 id="system.img-和-userdata.img"><span class="header-section-number">3.3.3</span> system.img 和 userdata.img</h3>
+<p>这两个镜像都属于yaffs2文件格式, 生成方式是一样的. 我们就以 system.img为例来说明.</p>
+<p><strong><code>System.img --&gt; system目录树</code></strong></p>
+<p>所需工具unyaffs, 下载地址 http://code.google.com/p/unyaffs/downloads/list</p>
+<pre><code>mkdir system
+cd system
+unyaffs ../system.img</code></pre>
+<p><strong><code>system目录树 &gt;&gt; system.img</code></strong></p>
+<p>所需工具 mkyaffs2image, Android源码编译后会生成该工具, 在 out/host/linux-x86/bin 目录下. 命令格式:</p>
+<pre><code>mkyaffs2image system/ system_new.img</code></pre>
+<h1 id="调试"><span class="header-section-number">4</span> 调试</h1>
+<h2 id="启动默认配置模拟器"><span class="header-section-number">4.1</span> 启动默认配置模拟器</h2>
+<p>在上述源码编译的环境下, 运行:</p>
+<pre><code>emulator</code></pre>
+<p>即可以按照默认配置启动模拟器.</p>
+<p>注意: 由于上述的编译并没有把emulator等可执行文件安装到linux的默认查找路径, 所以必须在上述make的终端环境下键入emulator命令才能找到, 因为make之前配置了环境变量. 如果需要在其他环境下运行该命令, 可以手动键入路径或者将其加入linux的PATH环境变量. 其路径在:</p>
+<pre><code>out/host/linux-x86/bin/</code></pre>
+<p>如果该路径下找不到, 可以在编译环境下用echo $PATH来自行查找.</p>
+<h2 id="启动自定义配置的模拟器"><span class="header-section-number">4.2</span> 启动自定义配置的模拟器</h2>
+<h3 id="使用sd卡"><span class="header-section-number">4.2.1</span> 使用sd卡</h3>
+<p><strong>创建sdcard镜像</strong></p>
+<pre><code>out/host/linux-x86/bin/mksdcard -l sdcard 512M myemulator/sdcard.img</code></pre>
+<p>说明:</p>
+<ul>
+<li>512M: 是随意指定的大小(最小9M), 这里指定多大, 最后创建出来的镜像就占多少磁盘空间, 所以要斟酌自己的磁盘空间.</li>
+<li>myemulator/sdcard.img: 是自己随便指定的路径.</li>
+</ul>
+<p><strong>启动带sdcard的模拟器</strong></p>
+<pre><code>emulator -sdcard myemulator/sdcard.img</code></pre>
+<p>关于emulator命令的详细使用请见: <a href="emulator_cmd.html">Android emulator命令详解</a></p>
+<h3 id="指定存储大小"><span class="header-section-number">4.2.2</span> 指定存储大小</h3>
+<pre><code>out/host/linux-x86/bin/emulator-x86 -memory 512 -partition-size 512 \
+x86_4.0.3_api15 -sdcard out/target/product/generic_x86/sdcard.img</code></pre>
+<p>说明: * -memory 是RAM大小 * -partition-size 是本机ROM大小</p>
+<h2 id="logcat"><span class="header-section-number">4.3</span> logcat</h2>
+<ul>
+<li>logcat -c 清除已有log信息</li>
+<li>logcat -b
+<ul>
+<li>logcat -b main 显示主缓冲区的log</li>
+<li>logcat -b radio 显示无线缓冲区的log</li>
+<li>logcat -b events 显示事件缓冲区的log</li>
+</ul></li>
+<li>logcat -f [filename] 将log保存到指定的文件中, 例如 logcat -b radio -f /data/radio.log</li>
+<li>logcat -v 设置logcat输出的格式. 主要有7种输出格式:
+<ul>
+<li>brief — Display priority/tag and PID of originating process (the default format).</li>
+<li>process — Display PID only.</li>
+<li>tag — Display the priority/tag only.</li>
+<li>thread — Display process:thread and priority/tag only.</li>
+<li>raw — Display the raw log message, with no other metadata fields.</li>
+<li>time — Display the date, invocation time, priority/tag, and PID of the originating process.</li>
+<li>long — Display all metadata fields and separate messages with a blank lines.</li>
+</ul>
+<p>比较常用的是显示时间:logcat -v time &amp;</p></li>
+<li>logcat -g 查看缓冲区的大小</li>
+<li>logcat -g main</li>
+<li>logcat -g radio</li>
+<li><p>logcat -g events</p></li>
+</ul>
+<h1 id="参考资料"><span class="header-section-number">5</span> 参考资料</h1>
+<p><a href="http://www.61ic.com/Mobile/Android/201104/32906.html">http://www.61ic.com/Mobile/Android/201104/32906.html</a></p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

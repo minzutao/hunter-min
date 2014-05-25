@@ -1,0 +1,86 @@
+<!---title:Android framework之JNI-->
+<!---keywords:Android,Jni-->
+<!---date:2014.01.16; modification:2014.01.16-->
+
+
+以MediaScanner为例
+
+#Android中JNI的层次关系
+
+    Java层(MediaScanner.java)
+       ^
+       |
+       v
+    JNI层(android_media_MediaScanner.cpp)<libmedia_jni.so>
+       ^
+       |
+       v
+    Native层(MediaScanner.cpp)<libmedia.so>
+
+
+
+#JNI使用概述
+
+对于JAVA程序来说, 如果不加特殊说明, 则认为都是JAVA代码. 所以如果想要在JAVA中调用C/C++的子程序, 需要说明是哪个库中的native程序. 另外, 还需要声明一下, 哪些被调用的代码是native的.
+
+所以要想使用JNI, 2件事必须要做:
+
+* 加载JNI库.
+* 声明JNI层的native函数.
+
+
+
+#加载JNI
+
+MediaScanner.java中, 加载JNI是在类的static部分进行, 这样保证在任何native方法被调用前进行加载. 在MediaPlayer.java等模块中也是同样的道理:
+
+<pre class="brush: java; toolbar: false">
+
+    public class MediaScanner
+    {
+        static {
+            System.loadLibrary("media_jni");
+            native_init();
+        }
+        ...
+    }
+
+</pre>
+
+
+
+#声明JNI中的native接口
+
+通过native关键字, 可以在java程序中声明native接口. 例如:
+
+<pre class="brush: java; toolbar: false">
+    private static native final void native_init();
+
+    private native void processDirectory(String path, MediaScannerClient client);
+    private native void processFile(String path, String mimeType, MediaScannerClient client);
+</pre>
+
+
+
+#JAVA与JNI接口名称的对应
+
+例如, 在MediaScanner.java中, 声明和使用的native接口叫
+
+<pre class="brush: java; toolbar: false">
+    private static native final void native_init();
+</pre>
+
+
+而在android_media_MediaScanner.cpp中, 其对应的接口为
+
+<pre class="brush: c; toolbar: false">
+    android_media_MediaScanner_native_init(JNIEnv *env)
+</pre>
+
+那么这两者名字是怎么对应起来的呢?
+
+
+
+
+
+

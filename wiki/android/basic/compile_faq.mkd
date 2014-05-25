@@ -1,0 +1,255 @@
+<!---title:Android编译问题汇总-->
+<!---keywords:android,编译,linux,源码-->
+<!---date:2014.01.17; modification:2014.05.21-->
+
+由于Android源码编译的问题较多, 特从编译说明中把问题独立出来.
+
+
+#问题: ‘indexOfKey’ was not declared in this scope, 情况1
+
+**问题描述**:
+
+    frameworks/base/include/utils/KeyedVector.h:193:31: error: ‘indexOfKey’ was
+    not declared in this scope, and no declarations were found by
+    argument-dependent lookup at the point of instantiation [-fpermissive]
+
+    frameworks/base/include/utils/KeyedVector.h:193:31: note: declarations in
+    dependent base ‘android::KeyedVector<android::String8,
+    android::sp<AaptSymbols> >’ are not found by unqualified lookup
+
+    frameworks/base/include/utils/KeyedVector.h:193:31: note: use ‘this->indexOfKey’ instead
+
+**解决方法**:
+
+    vi frameworks/base/libs/utils/Android.mk
+
+第64行增加: '-fpermissive', 使之成为:
+
+    LOCAL_CFLAGS += -DLIBUTILS_NATIVE=1 $(TOOL_CFLAGS) -fpermissive
+
+如果有其他的cpp文件中的头文件出类似的错误, 将其所在的目录下的Android.mk做类似处理.
+
+有些特殊的用这种方法不管用的话, 继续参考下列问题:
+
+#问题: ‘indexOfKey’ was not declared in this scope, 情况2
+
+**问题描述**:
+
+    development/tools/emulator/opengl/shared/OpenglCodecCommon/GLSharedGroup.cpp:145:39:
+    required from here
+
+    frameworks/base/include/utils/KeyedVector.h:193:31: error: ‘indexOfKey’ was
+    not declared in this scope, and no declarations were found by
+    argument-dependent lookup at the point of instantiation [-fpermissive]
+
+    frameworks/base/include/utils/KeyedVector.h:193:31: note: declarations in
+    dependent base ‘android::KeyedVector<unsigned int, BufferData*>’ are not
+    found by unqualified lookup
+
+    frameworks/base/include/utils/KeyedVector.h:193:31: note: use ‘
+    this->indexOfKey’ instead
+
+**解决方法**:
+
+    vi development/tools/emulator/opengl/Android.mk
+
+第25行增加: '-fpermissive', 使之成为:
+
+    EMUGL_COMMON_CFLAGS := -DWITH_GLES2 -fpermissive
+
+#问题: ‘indexOfKey’ was not declared in this scope, 情况3
+
+**问题描述**:
+
+    development/tools/emulator/opengl/host/tools/emugen/main.cpp:49:47: error: ‘getopt’ was not declared in this scope
+
+    development/tools/emulator/opengl/host/tools/emugen/main.cpp:52:38: error: ‘optarg’ was not declared in this scope
+
+    development/tools/emulator/opengl/host/tools/emugen/main.cpp:79:9: error: ‘optind’ was not declared in this scope
+
+    development/tools/emulator/opengl/host/tools/emugen/main.cpp:92:45: error: ‘optind’ was not declared in this scope
+
+    make: *** [out/host/linux-x86/obj/EXECUTABLES/emugen_intermediates/main.o] Error 1
+
+**解决方法**:
+
+    vi development/tools/emulator/opengl/host/tools/emugen/main.cpp
+
+在其中加入头文件:
+
+    #include <getopt.h>
+
+#问题: error: "_FORTIFY_SOURCE" redefined
+
+
+**问题描述**:
+
+    <command-line>:0:0: error: "_FORTIFY_SOURCE" redefined [-Werror]
+     <built-in>:0:0: note: this is the location of the previous definition
+     cc1plus: all warnings being treated as errors
+    make: *** [out/host/linux-x86/obj/EXECUTABLES/obbtool_intermediates/Main.o] Error 1
+
+**解决方法**:
+
+修改源码目录下/build/core/combo/HOST_linux-x86.mk文件: 
+
+将以下语句
+
+    HOST_GLOBAL_CFLAGS += -D_FORTIFY_SOURCE=0
+
+修改为
+
+    HOST_GLOBAL_CFLAGS += -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0
+
+#问题: variable ‘ParamName’ set but not used
+
+**问题描述**:
+
+    host C++: llvm-rs-cc <= frameworks/compile/slang/slang_rs_export_foreach.cpp
+    frameworks/compile/slang/slang_rs_export_foreach.cpp: 在静态成员函数‘static
+    slang::RSExportForEach* slang::RSExportForEach::Create(slang::RSContext*,
+            const clang::FunctionDecl*)’中:
+    frameworks/compile/slang/slang_rs_export_foreach.cpp:249:23: 错误: 
+            variable ‘ParamName’ set but not used [-Werror=unused-but-set-variable]
+    cc1plus: all warnings being treated as errors
+    make: *** [out/host/linux-x86/obj/EXECUTABLES/llvm-rs-cc_intermediates/slang_rs_export_foreach.o] 错误 1
+
+**解决方法**:
+
+注释掉frameworks/compile/slang/slang_rs_export_foreach.cpp 中的249行的 定义ParamName的语句; 
+
+
+#问题: linker.cpp中符号未说明
+
+**问题描述**:
+
+    external/mesa3d/src/glsl/linker.cpp: 在函数‘void assign_varying_locations(gl_shader_program*, gl_shader*, gl_shader*)’中:
+    external/mesa3d/src/glsl/linker.cpp:1394:49: 错误:  expected primary-expression before ‘,’ token
+    external/mesa3d/src/glsl/linker.cpp:1394:50: 错误:  ‘varyings’在此作用域中尚未声明
+    external/mesa3d/src/glsl/linker.cpp:1394:58: 错误:  ‘offsetof’在此作用域中尚未声明
+
+**解决方法**:
+
+    vim external/mesa3d/src/glsl/linker.cpp
+
+添加: 
+
+    #include <cstddef> 
+
+#问题: reference ‘counts’ cannot be declared ‘mutable’
+
+**问题描述**:
+
+    In file included from external/oprofile/libpp/arrange_profiles.cpp:24:0:
+    external/oprofile/libpp/format_output.h:94:22: 错误:  reference ‘counts’ cannot be declared ‘mutable’ [-fpermissive]
+    make: *** [out/host/linux-x86/obj/STATIC_LIBRARIES/liboprofile_pp_intermediates/arrange_profiles.o] 错误 1
+
+**解决方法**:
+
+把: 
+
+    mutable counts_t & counts;
+
+改为: 
+
+    counts_t & counts; 
+
+#问题: PassFailButtons.java
+
+
+**问题描述**:
+
+    cts/apps/CtsVerifier/src/com/android/cts/verifier/PassFailButtons.java:191:
+        android.app.Activity 中的 onCreateDialog(int,android.os.Bundle) 无法实
+        现 com.android.cts.verifier.PassFailButtons.PassFailActivity 中的
+        onCreateDialog(int,android.os.Bundle); 正在尝试指定更低的访问权限; 为
+        public
+        private static <T extends android.app.Activity & PassFailActivity>
+                        ^
+    1 错误
+    make: *** [out/target/common/obj/APPS/CtsVerifier_intermediates/classes-full-debug.jar] 错误 41
+    make: *** 正在等待未完成的任务....
+    DroidDoc took 2702 sec. to write docs to out/target/common/docs/doc-comment-check
+
+
+**解决方法**:
+
+修改cts/Android.mk文件, 去掉两行include代码. 
+
+    #include cts/CtsTestCoverage.mk
+    #include $(call all-subdir-makefiles)
+
+#问题: Checking API: checkapi-last报错(android 4.1~4.4都有可能会碰到)
+
+**问题描述**:
+
+    Checking API: checkapi-last
+    out/target/common/obj/PACKAGING/public_api.txt:23512: error 12: Class android.telephony.gsm.SmsManager changed static qualifier
+    out/target/common/obj/PACKAGING/public_api.txt:23556: error 12: Class android.telephony.gsm.SmsMessage changed static qualifier
+    prebuilts/sdk/api/19.txt:23496: error 9: Removed public method android.telephony.gsm.SmsManager.divideMessage
+    prebuilts/sdk/api/19.txt:23497: error 9: Removed public method android.telephony.gsm.SmsManager.getDefault
+    prebuilts/sdk/api/19.txt:23498: error 9: Removed public method android.telephony.gsm.SmsManager.sendDataMessage
+    prebuilts/sdk/api/19.txt:23499: error 9: Removed public method android.telephony.gsm.SmsManager.sendMultipartTextMessage
+    prebuilts/sdk/api/19.txt:23500: error 9: Removed public method android.telephony.gsm.SmsManager.sendTextMessage
+    prebuilts/sdk/api/19.txt:23501: error 10: Removed field android.telephony.gsm.SmsManager.RESULT_ERROR_GENERIC_FAILURE
+    prebuilts/sdk/api/19.txt:23502: error 10: Removed field android.telephony.gsm.SmsManager.RESULT_ERROR_NO_SERVICE
+    prebuilts/sdk/api/19.txt:23503: error 10: Removed field android.telephony.gsm.SmsManager.RESULT_ERROR_NULL_PDU
+    prebuilts/sdk/api/19.txt:23504: error 10: Removed field android.telephony.gsm.SmsManager.RESULT_ERROR_RADIO_OFF
+    ...
+
+**解决方法**:
+
+将java环境都切换到sun java 6. _注意_: 切换之后需要重新source build/envsetup.sh 和 lunch.
+
+切换方法参照: [linux切换java的jdk版本](../../sw_develop/language/alternative_jdk.html)
+
+说明: java, javac, javadoc都要切换. 我一开始没有切换javadoc, 而上面的就是我的javadoc 1.7引起的.
+
+
+#问题: Ubuntu编译Android KitKat 4.4出现Chromium gyp HashSet_jni.h报错的解决方法 
+
+**问题描述**:
+
+    out/target/product/mx3/obj/GYP/shared_intermediates/content/jni/HashSet_jni.h:10:26: error: extra tokens at end of #ifndef directive [-Werror]  
+    out/target/product/mx3/obj/GYP/shared_intermediates/content/jni/HashSet_jni.h:11:26: error: missing whitespace after the macro name [-Werror]  
+    target thumb C++: content_content_common_gyp <= external/chromium_org/content/common/android/surface_texture_peer.cc
+    In file included from external/chromium_org/content/common/android/hash_set.cc:5:0:
+    out/target/product/mx3/obj/GYP/shared_intermediates/content
+
+**解决方法**:
+
+修改文件：external/chromium_org/base/android/jni_generator/jni_generator.py，diff如下
+
+    --- a/base/android/jni_generator/jni_generator.py  
+    +++ b/base/android/jni_generator/jni_generator.py  
+    @@ -555,18 +555,24 @@ class JNIFromJavaSource(object):  
+                                                                    contents)  
+         return JNIFromJavaSource(contents, fully_qualified_class)  
+       
+    +def MultipleReplace(string, rep_dict):  
+    +    pattern = re.compile("|".join([re.escape(k) for k in rep_dict.keys()]), re.M)  
+    +    return pattern.sub(lambda x: rep_dict[x.group(0)], string)  
+       
+     class InlHeaderFileGenerator(object):  
+       """Generates an inline header file for JNI integration."""  
+       
+       def __init__(self, namespace, fully_qualified_class, natives,  
+                    called_by_natives):  
+    -    self.namespace = namespace  
+    -    self.fully_qualified_class = fully_qualified_class  
+    +#    self.namespace = namespace  
+    +#    self.fully_qualified_class = fully_qualified_class  
+    +    self.namespace = MultipleReplace(namespace, {'<E>':''})  
+    +    self.fully_qualified_class = MultipleReplace(fully_qualified_class, {'<E>':''})  
+         self.class_name = self.fully_qualified_class.split('/')[-1]  
+         self.natives = natives  
+         self.called_by_natives = called_by_natives  
+    -    self.header_guard = fully_qualified_class.replace('/', '_') + '_JNI'  
+    +#    self.header_guard = fully_qualified_class.replace('/', '_') + '_JNI'  
+    +    self.header_guard = MultipleReplace(fully_qualified_class, {'/':'_', '<E>':''}) + '_JNI'  
+       
+       def GetContent(self):  
+         """Returns the content of the JNI binding file."""  
+
+
+<!-- vim:set tw=0:-->

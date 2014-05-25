@@ -1,0 +1,22 @@
+<!---title:vim配置与使用-->
+<!---keywords:gvim,常见问题,warning-->
+<!---date:2013.05.23-->
+
+
+#常见问题
+
+1. **gvim启动图形界面时报告warning,能启动图形界面但无法正常显示中文菜单**
+
+    错误信息:
+    (gvim:3868): Gtk-WARNING **: Invalid input string
+
+    原因: Ubuntu 10.04 Lucid Lynx默认安装将会把中文区域设置为zh_CN.utf8, 而GVim能识别的中文区域设置为zh_CN.utf-8. 因此GVim会在启动时报错, 且无法正常加载中文菜单.
+
+    解决方案：
+
+        cd /usr/share/vim/vim72/lang
+        sudo ln -s menu_zh_cn.utf-8.vim menu_zh_cn.utf8.vim
+
+
+
+<!-- vim:set tw=0:-->

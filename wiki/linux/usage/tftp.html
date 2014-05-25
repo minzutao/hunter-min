@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Linux网络安装, 配置与使用</title>
+<meta name="keywords" content="Linux,网络,Tftp">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Linux网络安装, 配置与使用</h1>
+<p>date: 2013.05.23; modification:2013.09.26</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#tftp"><span class="toc-section-number">1</span> Tftp</a><ul>
+<li><a href="#tftp服务配置"><span class="toc-section-number">1.1</span> tftp服务配置</a></li>
+</ul></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Linux网络安装, 配置与使用-->
+<!---keywords:Linux,网络,Tftp-->
+<!---date:2013.05.23; modification:2013.09.26-->
+
+<h1 id="tftp"><span class="header-section-number">1</span> Tftp</h1>
+<h2 id="tftp服务配置"><span class="header-section-number">1.1</span> tftp服务配置</h2>
+<ul>
+<li>Ubuntu10.04 下安装TFTP软件, tftp-hpa是客户端,tftpd-hpa是服务器端</li>
+</ul>
+<pre >
+sudo aptitude install tftp-hpa tftpd-hpa
+</pre>
+
+<ul>
+<li>配置TFTP服务器</li>
+</ul>
+<pre>
+    sudo vi /etc/default/tftpd-hpa
+
+    TFTP_USERNAME="tftp"
+    #TFTP_DIRECTORY="/var/lib/tftpboot"
+    TFTP_ADDRESS="0.0.0.0:69"
+    #TFTP_OPTIONS="--secure"
+
+    #服务器目录,需要设置权限为777,chomd 777
+    #这个目录要改为你自己的TFTP根目录～～～
+    TFTP_DIRECTORY="/home/stone/tmp"
+    TFTP_OPTIONS="-l -c -s"
+</pre>
+
+<ul>
+<li>重新启动TFTP服务</li>
+</ul>
+<pre >
+sudo service tftpd-hpa restart
+</pre>
+
+<ul>
+<li><p>测试下</p>
+<p>测试向tftp服务器上传:</p></li>
+</ul>
+<pre >
+cd ~/temp               # 随便进入一个目录
+echo "hello">>hello.txt # 创建一个文件
+tftp 127.0.0.1          # tftp登录到本机
+put hello.txt           # 将hello.txt上传到服务器
+</pre>
+
+<p>如果没有提示错误, 应该在上面配置的&quot;TFTP_DIRECTORY&quot;路径下会有刚刚上传的合理hello.txt</p>
+测试从tftp服务器下载:
+<pre >
+cd ~/temp               # 进入刚刚创建hello.txt的路径
+rm hello.txt            # 删除, 准备再从服务器上下载.
+tftp 127.0.0.1
+get hello.txt
+</pre>
+<p>如果没有提示错误, 应该在本文件夹下又出现了刚刚删除的hello.txt</p>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

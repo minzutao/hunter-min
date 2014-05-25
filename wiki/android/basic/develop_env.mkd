@@ -1,0 +1,65 @@
+<!---title:Android源码开发环境搭建-->
+<!---keywords:repo,git,编译,安装,源代码-->
+<!---date:2013.05.31; modification:2014.04.22-->
+
+#Android源代码编译环境安装
+
+以ubuntu为例. 我用的是mint 14, 也就相当于ubuntu 12.10. 这里只列出我的安装过程. ubuntu10.04和12.04的, 具体可以参照: [android源码官网](http://source.android.com/source/initializing.html).
+
+##安装sun jdk
+
+ubuntu自带的是openjdk, 据说开发android时候这个不好使. 对于android 2.3之前的需要jdk5, 之后的需要jdk6. 这里列出了我的安装(这种貌似比较简单):
+
+    sudo add-apt-repository ppa:webupd8team/java
+    sudo apt-get update
+    sudo apt-get install  oracle-java6-installer
+
+这里的java6, 可以根据需要换成7或8, 目前(2013.05.28)android需要的是6. 然后会弹出一个字符界面的对话框, 选择同意协议就好了.
+
+切换版本:
+
+如果安装了多个版本的java jdk, 可以用如下命令切换:
+
+    sudo update-alternatives --config java
+    sudo update-alternatives --config javac
+
+
+##安装其他linux工具
+
+对于ubuntu12.04以及12.10:
+
+    sudo apt-get install git gnupg flex bison gperf build-essential \
+        zip curl libc6-dev libncurses5-dev:i386 x11proto-core-dev \
+        libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-glx:i386 \
+        libgl1-mesa-dev g++-multilib mingw32 tofrodos \
+        python-markdown libxml2-utils xsltproc zlib1g-dev:i386
+    sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so.1 /usr/lib/i386-linux-gnu/libGL.so
+
+#设置ccache(非必须)
+
+ccache是一个用于加速重编译速度的缓存, 在make clean后也有效. 再.bashrc中加入:
+
+    export USE_CCACHE=1
+
+如果需要手动配置ccache的缓存路径(同样是.bashrc中):
+
+    export CCACHE_DIR=<path-to-your-cache-directory>
+
+android建议的ccache是50GB~100GB空间. (看来开发android没台好电脑是不行呀, NND). 下载完代码后, 运行如下命令:
+
+    prebuilts/misc/linux-x86/ccache/ccache -M 50G
+
+对于Ice Cream Sandwich (4.0.x)及其之前的版本:
+
+    prebuilt/linux-x86/ccache/ccache -M 50G
+
+这个配置会配置在`CCACHE_DIR`中, 并且永久生效.
+
+
+
+
+
+
+
+
+<!-- vim:set tw=0:-->

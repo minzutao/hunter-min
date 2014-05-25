@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Eclipse C++环境搭建</title>
+<meta name="keywords" content="Eclipse,c,c++,安装,配置">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Eclipse C++环境搭建</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#安装配置"><span class="toc-section-number">1</span> 安装配置</a><ul>
+<li><a href="#安装gnu工具链"><span class="toc-section-number">1.1</span> 安装GNU工具链</a></li>
+<li><a href="#安装eclipse"><span class="toc-section-number">1.2</span> 安装Eclipse</a></li>
+<li><a href="#安装eclipse的cc插件cdt"><span class="toc-section-number">1.3</span> 安装Eclipse的C/C++插件(CDT)</a></li>
+<li><a href="#安装eclipse的vim风格插件"><span class="toc-section-number">1.4</span> 安装Eclipse的VIM风格插件</a></li>
+</ul></li>
+<li><a href="#使用"><span class="toc-section-number">2</span> 使用</a><ul>
+<li><a href="#创建工程"><span class="toc-section-number">2.1</span> 创建工程</a></li>
+<li><a href="#eclipse快捷键"><span class="toc-section-number">2.2</span> Eclipse快捷键</a></li>
+</ul></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Eclipse C++环境搭建-->
+<!---keywords:Eclipse,c,c++,安装,配置-->
+<!---date:2013.05.23-->
+
+<h1 id="安装配置"><span class="header-section-number">1</span> 安装配置</h1>
+<h2 id="安装gnu工具链"><span class="header-section-number">1.1</span> 安装GNU工具链</h2>
+<p>最重要的东西，C++必要工具，安装的是GCC工具链，Make等一系列开发工具：</p>
+<ul>
+<li>sudo apt-get install build-essential</li>
+</ul>
+<h2 id="安装eclipse"><span class="header-section-number">1.2</span> 安装Eclipse</h2>
+<ul>
+<li>sudo apt-get install eclipse</li>
+<li>sudo apt-get install eclipse-pde</li>
+<li>sudo apt-get install eclipse-jdt</li>
+</ul>
+<h2 id="安装eclipse的cc插件cdt"><span class="header-section-number">1.3</span> 安装Eclipse的C/C++插件(CDT)</h2>
+<p>打开Eclipse, 点击菜单栏的Help-&gt;Install New Software, 在&quot;Work with&quot;中输入插件地 地址:</p>
+<pre><code>http://download.eclipse.org/tools/cdt/releases/galileo</code></pre>
+<p>并回车.</p>
+<p>注: 该地址对于不同的版本的eclipse可能不同. 因为每个版本的eclipse都有个名称, 如3.5是galileo, 所以上面的地址后缀为galileo. 一般这个地址应该在旁边的 &quot;Available Software Sites&quot;点进去应该能找到.版本号与名称的对应可以在网上查到.</p>
+<h2 id="安装eclipse的vim风格插件"><span class="header-section-number">1.4</span> 安装Eclipse的VIM风格插件</h2>
+<p>该插件可以使得eclipse像vim一样使用, 主要指的是操作方法. 用类似上面安装CDT的方法, 安装VIM插件. 只是将其中的地址换成如下地址即可:</p>
+<pre><code>http://vrapper.sourceforge.net/update-site/stable </code></pre>
+<p>vim的默认快捷键和eclipse有些是冲突的, 如果迫切需要vim操作风格, 则将eclipse 中的快捷键绑定去掉即可. 在windows-&gt;preferences里面.</p>
+<h1 id="使用"><span class="header-section-number">2</span> 使用</h1>
+<h2 id="创建工程"><span class="header-section-number">2.1</span> 创建工程</h2>
+<p><em>创建一个空工程</em></p>
+<ul>
+<li>file -&gt; new -&gt; c/c++ project</li>
+</ul>
+<p><em>导入源代码</em></p>
+<ul>
+<li>file -&gt; import -&gt; general -&gt; file system 选择源码路径.</li>
+</ul>
+<h2 id="eclipse快捷键"><span class="header-section-number">2.2</span> Eclipse快捷键</h2>
+<p><code>ctrl+shift+r</code>：打开资源 <code>ctrl+o</code>：快速outline. 与VIM风格冲突, 替换掉.</p>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

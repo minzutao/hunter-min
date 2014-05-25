@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<p>date: 2014.03.05; modification:2014.03.05</p>
+
+ <!--if(title)-->
+
+ <!--if(toc)-->
+
+<!---title:-->
+<!---keywords:-->
+<!---date:2014.03.05; modification:2014.03.05-->
+
+<p>调用层次关系:</p>
+<pre><code>ThumbnailUtils.java:
+ThumbnailUtils::createVideoThumbnail()
+    |
+    v
+MediaMetadataRetriever.java:
+MediaMetadataRetriever::getFrameAtTime()
+    |
+    v
+native _getFrameAtTime()
+    |
+    v
+android_media_MediaMetadataRetriever.cpp:
+android_media_MediaMetadataRetriever_getFrameAtTime()
+    |
+    v
+mediametadataretriever.cpp:
+MediaMetadataRetriever::getFrameAtTime()
+    |
+    v
+mRetriever-&gt;getFrameAtTime()
+// 此处是mRetriever通过service-&gt;createMetadataRetriever()获得, 
+// 而service是通过MediaMetadataRetriever::getService()获得到的到的
+// mediaplayerservice. 所以此处的mRetriever实际是MediaPlayerService.cpp
+// 中的createMetadataRetriever() new出来的MetadataRetrieverClient.
+    |
+    v
+MetadataRetrieverClient.cpp:
+MetadataRetrieverClient::getFrameAtTime()
+    |
+    v
+mRetriever-&gt;getFrameAtTime()
+// 此处又出现一个mRetriever, 这个是通过MetadataRetrieverClient::setDataSource()
+// 中调用createRetriever()得来, 在这个函数中, 创建相应类型的真正的
+// retriever, 如: StagefrightMetadataRetriever</code></pre>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

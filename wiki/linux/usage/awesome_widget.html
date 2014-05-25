@@ -1,0 +1,130 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Linux平铺式窗口管理器awesome widget使用</title>
+<meta name="keywords" content="Linux,瓦片式,平铺式,窗口管理器,awesome,widget">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Linux平铺式窗口管理器awesome widget使用</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#awesome-widget控件简介"><span class="toc-section-number">1</span> awesome widget(控件)简介</a></li>
+<li><a href="#创建widget"><span class="toc-section-number">2</span> 创建widget</a></li>
+<li><a href="#widget类型"><span class="toc-section-number">3</span> Widget类型</a></li>
+<li><a href="#awful-widget"><span class="toc-section-number">4</span> awful widget</a><ul>
+<li><a href="#awful-widget-graph"><span class="toc-section-number">4.1</span> awful widget: Graph</a></li>
+<li><a href="#awful-widget-progressbar"><span class="toc-section-number">4.2</span> awful widget: Progressbar</a></li>
+</ul></li>
+<li><a href="#widget-button"><span class="toc-section-number">5</span> Widget button</a></li>
+<li><a href="#参考资料"><span class="toc-section-number">6</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Linux平铺式窗口管理器awesome widget使用-->
+<!---keywords:Linux,瓦片式,平铺式,窗口管理器,awesome,widget-->
+<!---date:2013.05.23-->
+
+<h1 id="awesome-widget控件简介"><span class="header-section-number">1</span> awesome widget(控件)简介</h1>
+<p>awesome widget是什么? widget是awesome提供的一些基本的控件(文字显示, 绘图之类的), 可以用来实现比如系统托盘的时间显示, 音量控制等.</p>
+<p>awesome本身自带的只有少数几种: 除了系统托盘外, 就是文本与图像. 有图有文嘛, 再加上lua脚本的编程控制, 理论上说就可以实现任何插件了, 但是貌似这么底层的支持用来开发插件有点麻烦, 由于在此基础上还封装了awful控件. 详情见下文.</p>
+<h1 id="创建widget"><span class="header-section-number">2</span> 创建widget</h1>
+<pre><code>mysystray = widget({ type = &quot;systray&quot; })</code></pre>
+<h1 id="widget类型"><span class="header-section-number">3</span> Widget类型</h1>
+<p>widget类型有:</p>
+<ul>
+<li><p><strong>systray(系统托盘)</strong>: 遵守freedesktop协议.</p></li>
+<li><p><strong>imagebox(图片框)</strong>: 可使用png, jpg等格式. 可以与textbox一起使用, 创建启动器, 图标, 分隔符等.</p>
+<pre><code>myicon = widget({ type = &quot;imagebox&quot; })
+myicon.image = image(awful.util.getdir(&quot;config&quot;) .. &quot;/myicon.png&quot;)</code></pre></li>
+<li><p><strong>textbox(文本框)</strong>:</p>
+<pre><code>mytextbox = widget({ type = &quot;textbox&quot; })
+mytextbox.text = &quot;Hello, world!&quot;
+mytextbox.text = &#39;&lt;span color=&quot;white&quot;&gt;Sacrebleu, I have seen a ghost!&lt;/span&gt; &#39;</code></pre></li>
+</ul>
+<h1 id="awful-widget"><span class="header-section-number">4</span> awful widget</h1>
+<p>awful是基于上述的基本部件封装的部件. 从而提供一些必备功能. 例如awesome默认配置提供的tag, 菜单, 按钮, 启动器, 提示框, layoutbox, 等等.</p>
+<h2 id="awful-widget-graph"><span class="header-section-number">4.1</span> awful widget: Graph</h2>
+<p>Graph用于创建和显示随时间而变化的图表. 如显示cpu利用率图标等.</p>
+<pre><code>mygraph = awful.widget.graph()
+mygraph:set_width(50)
+mygraph:set_background_color(&#39;#494B4F&#39;)
+mygraph:set_color(&#39;#FF5656&#39;)
+mygraph:set_gradient_colors({ &#39;#FF5656&#39;, &#39;#88A175&#39;, &#39;#AECF96&#39; })
+mygraph:add_value(0.5)</code></pre>
+<h2 id="awful-widget-progressbar"><span class="header-section-number">4.2</span> awful widget: Progressbar</h2>
+<p>Progressbar用于显示进度条.</p>
+<pre><code>myprogressbar = awful.widget.progressbar()
+myprogressbar:set_width(8)
+myprogressbar:set_height(10)
+myprogressbar:set_vertical(true)
+myprogressbar:set_background_color(&#39;#494B4F&#39;)
+myprogressbar:set_color(&#39;#AECF96&#39;)
+myprogressbar:set_gradient_colors({ &#39;#AECF96&#39;, &#39;#88A175&#39;, &#39;#FF5656&#39; })
+myprogressbar:set_value(0.5)</code></pre>
+<h1 id="widget-button"><span class="header-section-number">5</span> Widget button</h1>
+<p>Widget button就是向控件上绑定某些操作, 使之可以像按钮一样点按, 点一下它就去做点什么.</p>
+<p>文本框的按钮绑定:</p>
+<pre><code>mytextbox:buttons(awful.util.table.join(
+    awful.button({ }, 1, function () awful.util.spawn(&quot;echo Left mouse button pressed.&quot;) end)
+))</code></pre>
+<p>图标的按钮绑定:</p>
+<pre><code>mygraph.widget:buttons(awful.util.table.join(
+awful.button({ }, 1, function () awful.util.spawn(&quot;echo Left mouse button pressed again.&quot;) end)
+))</code></pre>
+<h1 id="参考资料"><span class="header-section-number">6</span> 参考资料</h1>
+<p><a href="http://awesome.naquadah.org/wiki/Widgets_in_awesome">awesome wiki</a></p>
+<!-- vim:set tw=0:-->
+
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

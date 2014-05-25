@@ -1,0 +1,198 @@
+<!---title:google repo使用说明-->
+<!---keywords:repo,使用,教程,笔记-->
+<!---date:2013.05.29; modification:2014.04.10-->
+
+#概述
+
+Git 是 Linux Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的分布式版本控制软件.
+
+Android也是由git管理的代码仓库, 但是Android是由kernel, Dalvik, Bionic, prebuilt, build等多个Git项目组成, 单独使用git来一个个的手动管理比较麻烦, 所以Android项目编写了一个名为Repo的Python的脚本来统一管理这些项目的仓库, 使得Git的使用更加简单. 
+
+#名词
+
+* repo
+* .repo
+* manifest
+* branch
+* topic
+* project
+
+
+
+#安装
+
+    $ mkdir ~/bin
+    $ PATH=~/bin:$PATH
+    $ curl https://dl-ssl.google.com/dl/googlesource/git-repo/repo > ~/bin/repo
+    $ chmod a+x ~/bin/repo
+
+网上有说下载repo的地址为:
+
+    curl http://android.git.kernel.org/repo >~/bin/repo
+
+但是我试着不好用, 目前(2013.05.29)用我上面写的可以用. 如果还是不行的话, 请参考: [官网链接](http://source.android.com/source/downloading.html#using-authentication)
+
+#使用流程
+
+1. 上面所说的下载repo, 只是下载了一个简单的叫repo的shell脚本. 这其实只是个皮. 真正的repo也就是python的脚本, 要用repo init来下载.
+2. 用repo init来获取真正的repo(python写成的)的git仓库, 以及Android源码的列表信息(manifest)的git仓库. 这些会放在当前路径下一个.repo文件夹里.
+3. 用repo sync来获取真正的Android代码.
+
+
+#命令使用
+
+总体的命令格式为:
+
+    repo COMMAND OPTIONS
+
+获取帮助:
+
+    repo help COMMAND
+
+##init
+
+格式:
+
+    repo init -u URL [OPTIONS]
+
+选项:
+
+* -u: 指定获取manifest的URL. 参考: [android.googlesource.com](https://android.googlesource.com/platform/manifest)
+* -m: 在本仓库内选择manifest. 如果没有指定, 则默认选择default.xml.
+* -b: 指定一个分支(revision).
+
+注: 对于下文提到的其他的命令, 需要在刚刚repo init所在的路径(即.repo的父级), 或者其子目录下执行.
+
+
+**使用**:
+
+如果使用默认:
+
+    repo init -u https://android.googlesource.com/platform/manifest
+
+**如果指定某个分支**:
+
+    repo init -u https://android.googlesource.com/platform/manifest -b android-4.0.1_r1
+
+**授权**:
+
+    repo init -u https://android.googlesource.com/a/platform/manifest
+
+**本地镜像**:
+
+    mkdir <somepath>/android_mirror
+    cd <somepath>/android_mirror
+    repo init -u https://android.googlesource.com/mirror/manifest --mirror
+    repo sync
+
+    将本地镜像作为仓库服务器使用:
+    mkdir <somepath2>/myandroid
+    cd <somepath2>/myandroid
+    repo init -u /usr/local/aosp/mirror/platform/manifest.git
+    repo sync
+
+##sync
+
+格式:
+
+    repo sync [PROJECT_LIST]
+
+作用:
+
+* 如果本路径下从来没执行过repo sync(失败了不算执行过, 必须得是成功执行过), 则相当于git clone, 即把所有的分支都下载到本地.
+* 如果之前已经成功的sync过, 则相当于更新:
+<pre>
+    git remote update
+    git rebase origin/BRANCH
+</pre>
+BRANCH为当前checkout出来的分支, 如果当前分支不是远程仓库的跟踪分支(tracking branch), 则本工程(project)不会发生任何同步.
+
+说明:
+* 如果rebase造成了merge冲突, 则需要手动执行git命令(如git rebase --continue)来解决冲突.
+
+选项:
+
+还不太理解, 暂时原文拷贝:
+
+* -d: switch specified projects back to the manifest revision. Helpful if the project is currently on a topic branch, but the manifest revision is temporarily needed.
+
+* -s: sync to a known good build as specified by the manifest-server element in the current manifest.
+
+* -f: proceed with syncing other projects even if a project fails to sync.
+
+##查看android各版本分支
+
+    git --git-dir .repo/manifests/.git/ branch -a
+
+##status
+
+格式:
+
+    repo status [PROJECT_LIST]
+
+作用:
+
+    类似于git status. 只是输出格式如下:
+
+说明:
+
+输出为两列字母:
+
+第一列大写字母, 表示index(staged)与上次commit的区别:
+
+----------------------------------------------------------------------------
+letter  meaning         description
+------  -------------   ----------------------------------------------------
+-       no change       same in HEAD and index
+
+A       added           not in HEAD, in index
+
+M       modified        in HEAD, modified in index
+
+D       deleted         in HEAD, not in index
+
+R       renamed         not in HEAD, path changed in index
+
+C       copied          not in HEAD, copied from another in index
+
+T       mode changed    same content in HEAD and index, mode changed
+
+U       unmerged        conflict between HEAD and index; resolution required
+
+----------------------------------------------------------------------------
+
+第二列小写字母, 表示当前工作路径与index(staged)的区别:
+
+--------------------------------------------------------
+letter  meaning         description
+------  -----------     --------------------------------
+-       new/unknown     not in index, in work tree
+
+m       modified        in index, in work tree, modified
+
+d       deleted         in index, not in work tree
+
+--------------------------------------------------------
+
+
+##start
+
+格式:
+
+    repo start BRANCH_NAME [PROJECT_LIST]
+
+作用:
+
+创建新分支. 可以用"."表示当前路径下的工程(project).
+
+
+
+#参考文献
+
+[source.android.com:Downloading the Source](http://source.android.com/source/downloading.html)
+[source.android.com:Repo command reference](http://source.android.com/source/using-repo.html)
+
+
+
+
+<!-- vim:set tw=0:-->

@@ -1,0 +1,31 @@
+<!---title:Eclipse中开发JAVA和C/C++混合代码-->
+<!---keywords:同时,java工程-->
+<!---date:2014.03.05; modification:2014.03.05-->
+
+Eclipse中如果单纯的建一个JAVA工程, 那么无法跟踪C/C++的符号跳转; 反之亦然. 如果建立一个general, shit全都跟踪不了跳转了.
+
+所以在此提供一个方法, 可以解决此问题.
+
+1. **创建JAVA工程**
+
+先建立一个JAVA工程:
+
+    File -> New -> Project -> Java -> Java Project
+
+这里的工程建立同一般的Java工程建立过程.
+
+
+2. **加入C/C++解析**
+
+在刚刚建立的JAVA工程上右击:
+
+    New -> Other -> C/C++ -> Convert to a C/C++ Project(Adds C/C++ Nature)
+
+注意是New - Other, 不是New - Project. 然后选择对应的选项, 点击Finish即可.
+
+PS: 吐槽一下, 这个添加方法真是有点反人类, 我找它找的都快吐血了.
+
+
+
+
+<!-- vim:set tw=0:-->

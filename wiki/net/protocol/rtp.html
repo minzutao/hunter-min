@@ -1,0 +1,187 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>rtp与rtcp协议详解</title>
+<meta name="keywords" content="rtp,rtcp,协议,详解,分析">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>rtp与rtcp协议详解</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#rtp概述"><span class="toc-section-number">1</span> RTP概述</a><ul>
+<li><a href="#是什么rtp"><span class="toc-section-number">1.1</span> 是什么RTP</a></li>
+<li><a href="#rtp的应用环境"><span class="toc-section-number">1.2</span> RTP的应用环境</a></li>
+</ul></li>
+<li><a href="#rtp详解"><span class="toc-section-number">2</span> RTP详解</a><ul>
+<li><a href="#rtp的协议层次"><span class="toc-section-number">2.1</span> RTP的协议层次</a><ul>
+<li><a href="#传输层的子层"><span class="toc-section-number">2.1.1</span> 传输层的子层</a></li>
+<li><a href="#应用层的一部分"><span class="toc-section-number">2.1.2</span> 应用层的一部分</a></li>
+</ul></li>
+<li><a href="#rtp的封装"><span class="toc-section-number">2.2</span> RTP的封装</a></li>
+<li><a href="#rtcp的封装"><span class="toc-section-number">2.3</span> RTCP的封装</a></li>
+<li><a href="#rtp的会话过程"><span class="toc-section-number">2.4</span> RTP的会话过程</a></li>
+</ul></li>
+<li><a href="#相关的协议"><span class="toc-section-number">3</span> 相关的协议</a><ul>
+<li><a href="#实时流协议rtsp"><span class="toc-section-number">3.1</span> 实时流协议RTSP</a></li>
+<li><a href="#资源预定协议rsvp"><span class="toc-section-number">3.2</span> 资源预定协议RSVP</a></li>
+</ul></li>
+<li><a href="#常见的疑问"><span class="toc-section-number">4</span> 常见的疑问</a></li>
+<li><a href="#实现方案"><span class="toc-section-number">5</span> 实现方案</a></li>
+<li><a href="#参考资料"><span class="toc-section-number">6</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:rtp与rtcp协议详解-->
+<!---keywords:rtp,rtcp,协议,详解,分析-->
+<!---date:2013.05.23-->
+
+
+<h1 id="rtp概述"><span class="header-section-number">1</span> RTP概述</h1>
+<h2 id="是什么rtp"><span class="header-section-number">1.1</span> 是什么RTP</h2>
+<p>RTP全名是Real-time Transport Protocol(实时传输协议). 它是IETF提出的一个标准, 对应的RFC文档为RFC3550(RFC1889为其过期版本). RFC3550不仅定义了RTP, 而且定义了配套的相关协议RTCP(Real-time Transport Control Protocol, 即实时传输控制协议). RTP用来为IP网上的语音, 图像, 传真等多种需要实时传输的多媒体数据提供端到端的实时传输服务. RTP为Internet上端到端的实时传输提供时间信息和流同步, 但并不保证服务质量, 服务质量由RTCP来提供.</p>
+<h2 id="rtp的应用环境"><span class="header-section-number">1.2</span> RTP的应用环境</h2>
+<p>RTP用于在单播或多播网络中传送实时数据. 们典型的应用场合有如下几个.</p>
+<ul>
+<li><em>简单的多播音频会议</em> 语音通信通过一个多播地址和一对端口来实现. 一个用于音频数据(RTP), 另一个用于控制包(RTCP).</li>
+<li><em>音频和视频会议</em> 如果在一次会议中同时使用了音频和视频会议, 这两种媒体将分别在不同的RTP会话中传送, 每一个会话使用不同的传输地址(IP地址＋端口). 如果一个用户同时使用了两个会话, 则每个会话对应的RTCP包都使用规范化名字CNAME(Canonical Name). 与会者可以根据RTCP包中的CNAME来获取相关联的音频和视频, 然后根据RTCP包中的计时信息(Network time protocol)来实现音频和视频的同步.</li>
+<li><em>翻译器和混合器</em> 翻译器和混合器都是RTP级的中继系统. 翻译器用在通过IP多播不能直接到达的用户区, 例如发送者和接收者之间存在防火墙. 当与会者能接收的音频编码格式不一样, 比如有一个与会者通过一条低速链路接入到高速会议, 这时就要使用混合器. 在进入音频数据格式需要变化的网络前, 混合器将来自一个源或多个源的音频包进行重构, 并把重构后的多个音频合并, 采用另一种音频编码进行编码后, 再转发这个新的RTP包. 从一个混合器出来的所有数据包要用混合器作为它们的同步源(SSRC, 见RTP的封装)来识别, 可以通过贡献源列表(CSRC表, 见RTP的封装)可以确认谈话者.</li>
+</ul>
+<h1 id="rtp详解"><span class="header-section-number">2</span> RTP详解</h1>
+<h2 id="rtp的协议层次"><span class="header-section-number">2.1</span> RTP的协议层次</h2>
+<h3 id="传输层的子层"><span class="header-section-number">2.1.1</span> 传输层的子层</h3>
+<p>RTP(实时传输协议), 顾名思义它是用来提供实时传输的, 因而可以看成是传输层的一个子层. 图 1给出了流媒体应用中的一个典型的协议体系结构.</p>
+<p><img src="Rtp_Arch.jpg" alt="流媒体体系结构" /> 图 1 流媒体体系结构</p>
+<p>从图中可以看出, RTP被划分在传输层, 它建立在UDP上. UDP协议一样, 为了实现其实时传输功能, RTP也有固定的封装形式. TP用来为端到端的实时传输提供时间信息和流同步, 但并不保证服务质量. 服务质量由RTCP来提供.</p>
+<h3 id="应用层的一部分"><span class="header-section-number">2.1.2</span> 应用层的一部分</h3>
+<p>不少人也把RTP归为应用层的一部分, 这是从应用开发者的角度来说的. 操作系统中的TCP/IP等协议栈所提供的是我们最常用的服务, 而RTP的实现还是要靠开发者自己. 因此从开发的角度来说, RTP的实现和应用层协议的实现没不同, 所以可将RTP看成应用层协议.</p>
+<p>RTP实现者在发送RTP数据时, 需先将数据封装成RTP包, 而在接收到RTP数据包, 需要将数据从RTP包中提取出来.</p>
+<h2 id="rtp的封装"><span class="header-section-number">2.2</span> RTP的封装</h2>
+<p>一个协议的封装是为了满足协议的功能需求的. 前面提出的功能需求, 可以推测出RTP封装中应该有<code>同步源</code>和<code>时戳等</code>字段, 但更为完整的封装是什么样子呢？请看图2.</p>
+<p><img src="Rtp_Header.jpg" alt="RTP的头部格式" /> 图 2 RTP的头部格式</p>
+<p><em>版本号(V)</em> : 2比特, 用来标志使用的RTP版本.</p>
+<p><em>填充位(P)</em> : 1比特, 如果该位置位, 则该RTP包的尾部就包含附加的填充字节.</p>
+<p><em>扩展位(X)</em> : 1比特, 如果该位置位的话, RTP固定头部后面就跟有一个扩展头部.</p>
+<p><em>CSRC计数器(CC)</em> : 4比特, 含有固定头部后面跟着的CSRC的数目.</p>
+<p><em>标记位(M)</em> : 1比特,该位的解释由配置文档(Profile)来承担.</p>
+<p><em>载荷类型(PT)</em> : 7比特, 标识了RTP载荷的类型.</p>
+<p><em>序列号(SN)</em> : 16比特, 发送方在每发送完一个RTP包后就将该域的值增加1, 接收方可以由该域检测包的丢失及恢复包序列. 列号的初始值是随机的.</p>
+<p><em>时间戳</em> : 32比特, 记录了该包中数据的第一个字节的采样时刻. 一次会话开始时, 时间戳初始化成一个初始值. 使在没有信号发送时, 时间戳的数值也要随时间而不断地增加(时间在流逝嘛). 间戳是去除抖动和实现同步不可缺少的.</p>
+<p><em>同步源标识符(SSRC)</em> : 32比特, 同步源就是指RTP包流的来源. 同一个RTP会话中不能有两个相同的SSRC值. 标识符是随机选取的 RFC1889推荐了MD5随机算法.</p>
+<p><em>贡献源列表(CSRC List)</em> : 0～15项, 每项32比特, 用来标志对一个RTP混合器产生的新包有贡献的所有RTP包的源. 混合器将这些有贡献的SSRC标识符插入表中. SRC标识符都被列出来, 以便接收端能正确指出交谈双方的身份.</p>
+<h2 id="rtcp的封装"><span class="header-section-number">2.3</span> RTCP的封装</h2>
+<p>RTP需要RTCP为其服务质量提供保证, 因此下面介绍一下RTCP的相关知识.</p>
+<p>RTCP的主要功能是: * 服务质量的监视与反馈 * 媒体间的同步 * 多播组中成员的标识. RTP会话期间, 各参与者周期性地传送RTCP包. TCP包中含有已发送的数据包的数量, 丢失的数据包的数量等统计资料, 因此, 各参与者可以利用这些信息动态地改变传输速率, 甚至改变有效载荷类型. RTP和RTCP配合使用, 它们能<code>以有效的反馈和最小的开销使传输效率最佳化, 因而特别适合传送网上的实时数据</code>.</p>
+<p>RTCP也是用UDP来传送的, 但RTCP封装的仅仅是一些控制信息, 因而分组很短, 所以可以将多个RTCP分组封装在一个UDP包中.</p>
+<p>TCP有如下五种分组类型.</p>
+<pre><code>| 类型| 缩写表示                       | 用途    |
+|-----|--------------------------------|-------|
+| 200 | SR(Sender Report)              | 发送端报告 |
+| 201 | RR(Receiver Report)            | 接收端报告 |
+| 202 | SDES(Source Description Items) | 源点描述  |
+| 203 | BYE                            | 结束传输  |
+| 204 | APP                            | 特定应用  |
+
+表1 RTCP的5钟分组类型</code></pre>
+<p>上述五种分组的封装大同小异, 下面只讲述SR类型, 而其它类型请参考RFC3550.</p>
+<p><em>发送端报告分组SR(Sender Report)</em> 用来使发送端以多播方式向<code>所有接收端</code>报告发送情况. SR分组的主要内容有: 相应的RTP流的SSRC, RTP流中最新产生的RTP分组的时间戳和NTP, RTP流包含的分组数, RTP流包含的字节数. SR包的封装如图3所示.</p>
+<p><img src="Rtp_RtcpHeader.jpg" alt="RTCP头部的格式" /> 图3 RTCP头部的格式</p>
+<p><em>版本(V)</em> : 同RTP包头域.</p>
+<p><em>填充(P)</em> : 同RTP包头域.</p>
+<p><em>接收报告计数器(RC)</em> : 5比特, 该SR包中的接收报告块的数目, 可以为零.</p>
+<p><em>包类型(PT)</em> : 8比特, SR包是200.</p>
+<p><em>长度域(Length)</em> : 16比特, 其中存放的是该SR包以32比特为单位的总长度减一.</p>
+<p><em>同步源(SSRC)</em> : SR包发送者的同步源标识符. 对应RTP包中的SSRC一样.</p>
+<p><em>NTP Timestamp(Network time protocol)</em> SR包发送时的绝对时间值. NTP的作用是同步不同的RTP媒体流.</p>
+<p><em>RTP Timestamp</em> : 与NTP时间戳对应, 与RTP数据包中的RTP时间戳具有相同的单位和随机初始值.</p>
+<p><em>Sender's packet count</em> : 从开始发送包到产生这个SR包这段时间里, 发送者发送的RTP数据包的总数. SRC改变时, 这个域清零.</p>
+<p><em>Sender's octet count</em> : 从开始发送包到产生这个SR包这段时间里, 发送者发送的净荷数据的总字节数(不包括头部和填充). 发送者改变其SSRC时, 这个域要清零.</p>
+<p><em>同步源n的SSRC标识符</em> : 该报告块中包含的是从该源接收到的包的统计信息.</p>
+<p><em>丢失率(Fraction Lost)</em> : 表明从上一个SR或RR包发出以来从同步源n(<code>SSRC_n</code>)来的RTP数据包的丢失率.</p>
+<p><em>累计的包丢失数目</em> : 从开始接收到<code>SSRC_n</code>的包到发送SR,从<code>SSRC_n</code>传过来的RTP数据包的丢失总数.</p>
+<p><em>收到的扩展最大序列号</em> : 从<code>SSRC_n</code>收到的RTP数据包中最大的序列号,</p>
+<p><em>接收抖动(Interarrival jitter)</em> : RTP数据包接受时间的统计方差估计</p>
+<p><em>上次SR时间戳(Last SR,LSR)</em> : 取最近从<code>SSRC_n</code>收到的SR包中的NTP时间戳的中间32比特. 如果目前还没收到SR包, 则该域清零.</p>
+<p><em>上次SR以来的延时(Delay since last SR,DLSR)</em> : 上次从<code>SSRC_n</code>收到SR包到发送本报告的延时.</p>
+<h2 id="rtp的会话过程"><span class="header-section-number">2.4</span> RTP的会话过程</h2>
+<p>当应用程序建立一个RTP会话时, 应用程序将确定一对目的传输地址. 目的传输地址由一个网络地址和一对端口组成, 有两个端口: 一个给RTP包, 一个给RTCP包, 使得RTP/RTCP数据能够正确发送. RTP数据发向偶数的UDP端口, 而对应的控制信号RTCP数据发向相邻的奇数UDP端口(偶数的UDP端口＋1), 这样就构成一个UDP端口对. RTP的发送过程如下, 接收过程则相反.</p>
+<ol start="0" style="list-style-type: decimal">
+<li>RTP协议从上层接收流媒体信息码流(如H.263), 封装成RTP数据包; RTCP从上层接收控制信息, 封装成RTCP控制包.</li>
+<li>RTP将RTP 数据包发往UDP端口对中偶数端口; RTCP将RTCP控制包发往UDP端口对中的接收端口.</li>
+</ol>
+<h1 id="相关的协议"><span class="header-section-number">3</span> 相关的协议</h1>
+<h2 id="实时流协议rtsp"><span class="header-section-number">3.1</span> 实时流协议RTSP</h2>
+<p>实时流协议RTSP(Real-Time Streaming Protocol)是IETF提出的协议, 对应的RFC文档为RFC2362.</p>
+<p>从图1可以看出, RTSP是一个应用层协议(TCP/IP网络体系中). 以C/S模式工作, 它是一个多媒体播放控制协议, 主要用来使用户在播放流媒体时可以像操作本地的播放器一样进行控制, 即可以对流媒体进行<code>播放</code>, <code>暂停/继续</code>, <code>后退</code>和<code>前进</code>等控制.</p>
+<h2 id="资源预定协议rsvp"><span class="header-section-number">3.2</span> 资源预定协议RSVP</h2>
+<p>资源预定协议RSVP(Resource Reservation Protocol)是IETF提出的协议, 对应的RFC文档为RFC2208.</p>
+<p>从图1可以看出, RSVP工作在IP层之上传输层之下, 是一个网络控制协议. RSVP通过在路由器上预留一定的带宽, 能在一定程度上为流媒体的传输提供服务质量. 某些试验性的系统如网络视频会议工具vic中就集成了RSVP.</p>
+<h1 id="常见的疑问"><span class="header-section-number">4</span> 常见的疑问</h1>
+<p><em>怎样重组乱序的数据包</em></p>
+<p>可以根据RTP包的序列号来排序.</p>
+<p><em>怎样获得数据包的时序</em></p>
+<p>可以根据RTP包的时间戳来获得数据包的时序.</p>
+<p><em>声音和图像怎么同步</em></p>
+<p>根据声音流和图像流的相对时间(即RTP包的时间戳), 以及它们的绝对时间(即对应的RTCP包中的RTCP), 可以实现声音和图像的同步.</p>
+<p><em>接收缓冲和播放缓冲的作用</em></p>
+<p>接收缓冲用来排序乱序了的数据包; 播放缓冲用来消除播放的抖动, 实现等时播放.</p>
+<h1 id="实现方案"><span class="header-section-number">5</span> 实现方案</h1>
+<p><img src="Rtp_Impement.png" alt="协议分析要求" /> 表2 协议分析要求</p>
+<p>表2给出了协议分析要求. 容易看出要获取RTP音频包中的音频信息很容易, 直接将RTP包的包头去掉即可. 当然, 要成功地播放解码获取到的音频流, 需要知道其编码, 这可从RTP包包头的有效载荷类型字段(PT)获得.</p>
+<h1 id="参考资料"><span class="header-section-number">6</span> 参考资料</h1>
+<ul>
+<li><p>RFC文档: RFC3550对应RTP/RTCP, RFC2362对应RTSP, RFC2208对应RSVP</p></li>
+<li><p>http://www.faqs.org/rfcs/, 上面有全面的英文RFC文档</p></li>
+<li><p>http://www.cnpaf.net/, 有不少协议分析文档, 也有中文RFC文档, 但质量不是特别高.</p></li>
+</ul>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

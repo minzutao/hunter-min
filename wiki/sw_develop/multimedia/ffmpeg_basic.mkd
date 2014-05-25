@@ -1,0 +1,420 @@
+<!---title:ffmpeg编程基础-->
+<!---keywords:开发,音视频,使用,播放器-->
+<!---date:2013.06.20-->
+
+#前言
+
+当作者写此文的时候(2013.06.22), 对于网上搜到的一些ffmpeg的不错的教程都已经有些过时了, 其中的有些函数已经被去掉了. 所以此文诞生. 本文将会讲解ffmpeg的一些基本概念. 并通过一个简单的例程来介绍从本地文件读出视频流, 然后解码, 并且转存为PPM格式(一种类似BMP但更加简单的图片格式)图片的流程.
+
+本文的重点是ffmpeg, 所以例程避免了复杂的图像显示编程.
+
+
+
+#ffmpeg简介
+
+FFmpeg是一套可以用来记录、转换数字音频、视频，并能将其转化为流的开源程序。它包括了目前领先的音/视频编码库libavcodec。 FFmpeg是在Linux下开发出来的，但它可以在包括Windows在内的大多数操作系统中编译。这个项目是由Fabrice Bellard发起的，现在由Michael Niedermayer主持。可以轻易地实现多种视频格式之间的相互转换，例如可以将摄录下的视频avi等转成现在视频网站所采用的flv格式。
+
+鉴于网上所说的ffmpeg版本更新较频繁而且兼容性不是很好, 所以建议找ffmpeg的资源还是从官网入手:
+
+[http://www.ffmpeg.org](http://www.ffmpeg.org)
+
+
+
+#基本概念解惑
+
+
+
+
+#简单的播放器例子
+
+有可能您看到本文的时候, 本文也已经过时, 所以若想将例子编译通过并且能运行, 最好将ffmpeg的版本git checkout到与本文相同的分支(release-1.2). 先通过这种方法使程序能编能跑, 然后再根据您所需版本中的ffplay.c作为参考来修改代码.
+
+如果您想了解更早的版本, 可以参考: [ffmpeg tutorial](http://dranger.com/ffmpeg/tutorial01.html). 但是这里面有些函数已经被删除了. 比如av_open_input_file()和img_convert().
+
+
+##ffmpeg基本解码流程
+
+见下图:
+
+![ffmpeg解码流程](ffmpeg_basic_local_decode_flow.png)
+
+
+##下载ffmpeg源码
+
+    git clone git://source.ffmpeg.org/ffmpeg.git
+
+##取出本例的ffmpeg版本
+
+    git checkout remotes/origin/release/1.2
+
+
+
+
+
+##解码例程
+
+本节分段描述各个流程的环节, 完整代码请见本文最后附录.
+
+
+**初始化:**
+
+初始化很简单, 就一句:
+
+<pre class = "brush: c; toolbar: false">
+av_register_all()  // 注册了各种解码器, 复用/解复用, 网络协议等.
+</pre>
+
+**打开被解码媒体文件:**
+
+<pre class = "brush: c; toolbar: false">
+    AVFormatContext *pFormatCtx = NULL;
+
+    pFormatCtx = avformat_alloc_context();
+    err = avformat_open_input(&pFormatCtx, filename, NULL, NULL);
+    if (err < 0) {
+        return -1;
+    }
+</pre>
+
+说明:
+
+* 其中的AVFormatContext相当于ffmpeg的一个总的管理结构体, 在其中管理着几个主要的信息(包括但不限于下列表):
+    * 输入/输出文件的封装格式信息.
+    * 音视频流信息.
+    * 编解码(codec)信息.
+  该结构体及其中记录的信息几乎贯穿始终.
+
+**解析媒体文件中的流信息:**
+
+<pre class = "brush: c; toolbar: false">
+    err = avformat_find_stream_info(pFormatCtx, NULL);
+    if (err < 0) {
+        av_log(NULL, AV_LOG_WARNING, "could not find codec\n");
+        return -1;
+    }
+</pre>
+
+**解析流信息**
+
+<pre class = "brush: c; toolbar: false">
+    err = avformat_find_stream_info(pFormatCtx, NULL);
+    if (err < 0) {
+        av_log(NULL, AV_LOG_WARNING, "could not find codec\n");
+        return -1;
+    }
+</pre>
+
+说明:
+
+* 该函数会把文件中的流信息解析出来, 它甚至会调用解码器去解码一些帧的数据, 从而获得全面的信息. 但是这个函数内部分配的解码器只是临时的, 对于外部不可用, 所以接下来还是需要自己来分配解码器的.
+
+**找到视频流并为其分配解码器**
+
+
+<pre class = "brush: c; toolbar: false">
+    int videoStream;
+    AVCodecContext *pCodecCtx;
+    AVCodec *pCodec = NULL;
+
+    av_log(NULL, AV_LOG_INFO, "nb_streams in %s = %d\n", filename, pFormatCtx->nb_streams);
+    videoStream = -1;
+    for (i = 0; i < pFormatCtx->nb_streams; i++) {
+        if(pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStream=i;
+            av_log(NULL, AV_LOG_DEBUG, "video stream index = %d\n", i,
+                    pFormatCtx->streams[i]->codec->codec_type);
+            break;
+        }
+    }
+    if(videoStream==-1) {
+        av_log(NULL, AV_LOG_ERROR, "Haven't find video stream.\n");
+        return -1; // Didn't find a video stream
+    }
+
+    // Find decoder
+    pCodecCtx=pFormatCtx->streams[i]->codec;
+    pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
+    if (!pCodec) {
+        av_log(NULL, AV_LOG_ERROR, "%s: avcodec_find_decoder fails\n", filename);
+        return -1;
+    }
+</pre>
+
+说明:
+
+* 本文只涉及到视频流的处理, 所以上面只分配了视频的解码器, 如果要编写播放器, 音频(以及字幕)解码器也是需要的, 原理类似.
+
+**打开解码器**
+
+<pre class = "brush: c; toolbar: false">
+    // Open pCodec
+    if(avcodec_open(pCodecCtx, pCodec)<0) {
+        av_log(NULL, AV_LOG_ERROR, "%s: avcodec_open fails\n", filename);
+        return -1; // Could not open codec
+    }
+</pre>
+
+**分配视频帧结构体与帧寸**
+
+<pre class = "brush: c; toolbar: false">
+    AVFrame *pFrame;
+    AVFrame *pFrameRGB;
+
+    // Allocate video frame
+    pFrame=avcodec_alloc_frame();
+        if(pFrame == NULL)
+            return -1;
+
+    // Allocate an AVFrame structure
+    pFrameRGB = avcodec_alloc_frame();
+    if(pFrameRGB == NULL)
+        return -1;
+
+    // Determine required buffer size and allocate buffer
+    numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
+    buffer = (uint8_t *)av_malloc(numBytes * sizeof(uint8_t));
+    avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24,
+            pCodecCtx->width, pCodecCtx->height);
+</pre>
+
+说明:
+
+* 这里分配了两个视频帧结构体:
+    * pFrame是用于解码器来解码用的帧结构体.
+    * pFrameRGB是用于将解码后的YUV数据转换为RGB用的, 其实该结构体只是因为本例要将解码侯的YUV数据转成位图而使用的, 如果编写的是播放器, 并且显示器件可以直接接受YUV数据的话, 这个转换就是不需要的.
+
+**解码前5帧并转存为位图**
+
+
+<pre class = "brush: c; toolbar: false">
+    struct SwsContext *pSwsCtx; 
+
+    pSwsCtx = sws_getContext (pCodecCtx->width,
+                              pCodecCtx->height,
+                              pCodecCtx->pix_fmt,
+                              pCodecCtx->width,
+                              pCodecCtx->height,
+                              PIX_FMT_RGB24,
+                              SWS_BICUBIC,
+                              NULL, NULL, NULL);
+    i=0;
+    while(av_read_frame(pFormatCtx, &packet) >= 0) {
+        if(packet.stream_index == videoStream) { // Is this a packet from the video stream?
+            avcodec_decode_video2(pCodecCtx,
+                                  pFrame,
+                                  &frameFinished,
+                                  &packet); // Decode video frame
+
+            if(frameFinished) { // Did we get a video frame?
+                av_log(NULL, AV_LOG_DEBUG, "Frame %d decoding finished.\n", i);
+                // Save the frame to disk
+                if(i++ < 5) {
+                    //转换图像格式，将解压出来的YUV的图像转换为BRG24的图像
+                    sws_scale(pSwsCtx,
+                              pFrame->data,
+                              pFrame->linesize,
+                              0,
+                              pCodecCtx->height,
+                              pFrameRGB->data,
+                              pFrameRGB->linesize);
+                    // 保存为PPM
+                    SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, i);
+                }
+                else {
+                    break;
+                }
+            }
+            else {
+                av_log(NULL, AV_LOG_DEBUG, "Frame not finished.\n");
+            }
+        }
+
+        av_free_packet(&packet); // Free the packet that was allocated by av_read_frame
+    }
+    sws_freeContext (pSwsCtx);
+</pre>
+
+说明:
+
+* sws是新增加的模块, 这里用于将YUV转为24位的RGB数据. 对于以前的版本, 使用的是img_convert(), 但是这个函数已经在新版本中被去掉了.
+* SaveFrame是为了保存为PPM文件的, 其定义详见附录(注意, 其中的文件路径可以需要根据你的环境修改).
+
+
+#参考资料
+
+[http://www.ffmpeg.org](http://www.ffmpeg.org)
+
+[ffmpeg tutorial](http://dranger.com/ffmpeg/tutorial01.html)
+
+
+#附: 例程完整代码
+
+编译本代码的最简单的方法, 就是把原本的ffplay.c中的main给替换为本文的main, 这样省去了修改makefile的麻烦.
+
+双击如下代码可以全选:
+
+<pre class = "brush: c; toolbar: false">
+static void SaveFrame(AVFrame *pFrame, int width, int height, int iFrame)
+{
+    FILE *pFile;
+    char szFilename[255];
+    int  y;
+
+    // Open file
+    memset(szFilename, 0, sizeof(szFilename));
+    snprintf(szFilename, 255, "./bmptest/%03d.ppm", iFrame);
+    system("mkdir -p ./bmptest");
+    pFile=fopen(szFilename, "wb");
+    if(pFile==NULL)
+        return;
+
+    // Write header
+    fprintf(pFile, "P6\n%d %d\n255\n", width, height);
+
+    // Write pixel data
+    for(y = 0; y < height; y++)
+        fwrite(pFrame->data[0]+y*pFrame->linesize[0], 1, width*3, pFile);
+
+    // Close file
+    fclose(pFile);
+}
+
+
+int main(int argc, char **argv)
+{
+    AVFormatContext *pFormatCtx = NULL;
+    int err, i;
+    char *filename = "alan.mp4"; // argv[1];
+    AVCodec *pCodec = NULL;
+    AVCodecContext *pCodecCtx;
+    AVFrame *pFrame;
+    AVFrame *pFrameRGB;
+    uint8_t *buffer;
+    int numBytes;
+    int frameFinished;
+    AVPacket packet;
+    int videoStream;
+    struct SwsContext *pSwsCtx; 
+
+    av_log_set_level(AV_LOG_DEBUG);
+
+    av_log(NULL, AV_LOG_INFO, "Playing: %s\n", filename);
+
+    av_register_all();
+
+    pFormatCtx = avformat_alloc_context();
+//    pFormatCtx->interrupt_callback.callback = decode_interrupt_cb;
+//    pFormatCtx->interrupt_callback.opaque = NULL;
+    err = avformat_open_input(&pFormatCtx, filename, NULL, NULL);
+    if (err < 0) {
+        av_log(NULL, AV_LOG_ERROR, "open_input fails, ret = %d\n", err);
+        return -1;
+    }
+
+    err = avformat_find_stream_info(pFormatCtx, NULL);
+    if (err < 0) {
+        av_log(NULL, AV_LOG_WARNING, "could not find codec\n");
+        return -1;
+    }
+
+    av_dump_format(pFormatCtx, 0, filename, 0);
+
+    av_log(NULL, AV_LOG_INFO, "nb_streams in %s = %d\n", filename, pFormatCtx->nb_streams);
+    videoStream = -1;
+    for (i = 0; i < pFormatCtx->nb_streams; i++) {
+        if(pFormatCtx->streams[i]->codec->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStream=i;
+            av_log(NULL, AV_LOG_DEBUG, "video stream index = %d\n", i,
+                    pFormatCtx->streams[i]->codec->codec_type);
+            break;
+        }
+    }
+    if(videoStream==-1) {
+        av_log(NULL, AV_LOG_ERROR, "Haven't find video stream.\n");
+        return -1; // Didn't find a video stream
+    }
+
+    // Find decoder
+    pCodecCtx=pFormatCtx->streams[i]->codec;
+    pCodec = avcodec_find_decoder(pCodecCtx->codec_id);
+    if (!pCodec) {
+        av_log(NULL, AV_LOG_ERROR, "%s: avcodec_find_decoder fails\n", filename);
+        return -1;
+    }
+
+    // Open pCodec
+    if(avcodec_open(pCodecCtx, pCodec)<0) {
+        av_log(NULL, AV_LOG_ERROR, "%s: avcodec_open fails\n", filename);
+        return -1; // Could not open codec
+    }
+
+    // Allocate video frame
+    pFrame=avcodec_alloc_frame();
+    if(pFrame == NULL)
+        return -1;
+
+    // Allocate an AVFrame structure
+    pFrameRGB = avcodec_alloc_frame();
+    if(pFrameRGB == NULL)
+        return -1;
+
+    // Determine required buffer size and allocate buffer
+    numBytes = avpicture_get_size(PIX_FMT_RGB24, pCodecCtx->width, pCodecCtx->height);
+    buffer = (uint8_t *)av_malloc(numBytes * sizeof(uint8_t));
+    avpicture_fill((AVPicture *)pFrameRGB, buffer, PIX_FMT_RGB24,
+            pCodecCtx->width, pCodecCtx->height);
+
+    pSwsCtx = sws_getContext (pCodecCtx->width,
+                              pCodecCtx->height,
+                              pCodecCtx->pix_fmt,
+                              pCodecCtx->width,
+                              pCodecCtx->height,
+                              PIX_FMT_RGB24,
+                              SWS_BICUBIC,
+                              NULL, NULL, NULL);
+    i=0;
+    while(av_read_frame(pFormatCtx, &packet) >= 0) {
+        if(packet.stream_index == videoStream) { // Is this a packet from the video stream?
+            avcodec_decode_video2(pCodecCtx,
+                                  pFrame,
+                                  &frameFinished,
+                                  &packet); // Decode video frame
+
+            if(frameFinished) { // Did we get a video frame?
+                av_log(NULL, AV_LOG_DEBUG, "Frame %d decoding finished.\n", i);
+                // Save the frame to disk
+                if(i++ < 5) {
+                    //转换图像格式，将解压出来的YUV的图像转换为BRG24的图像
+                    sws_scale(pSwsCtx,
+                              pFrame->data,
+                              pFrame->linesize,
+                              0,
+                              pCodecCtx->height,
+                              pFrameRGB->data,
+                              pFrameRGB->linesize);
+                    // 保存为PPM
+                    SaveFrame(pFrameRGB, pCodecCtx->width, pCodecCtx->height, i);
+                }
+                else {
+                    break;
+                }
+            }
+            else {
+                av_log(NULL, AV_LOG_DEBUG, "Frame not finished.\n");
+            }
+        }
+
+        av_free_packet(&packet); // Free the packet that was allocated by av_read_frame
+    }
+    sws_freeContext (pSwsCtx);
+
+    av_free (pFrame);
+    av_free (pFrameRGB);
+    av_free (buffer);
+    avcodec_close (pCodecCtx);
+    av_close_input_file (pFormatCtx);
+}
+</pre>
+
+
+<!-- vim:set tw=0:-->

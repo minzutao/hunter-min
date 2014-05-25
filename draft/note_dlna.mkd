@@ -1,0 +1,282 @@
+<!---title:-->
+<!---keywords:-->
+<!---date:2013.06.28; modification:2014.02.28-->
+
+#DLNA简介
+
+##简介
+
+* universal的含义: 独立于设备驱动, 独立于传输媒体.
+
+<!-- ------------------------------------------------------------ -->
+
+
+
+#Upnp简介
+
+##什么是UPnP?
+
+UPnP的设计目的是为了让诸如智能家居, PC, 无线设备等实现点对点互联. 它的特点是`零配置`, `对用户屏蔽底层网络`.
+
+说到`零配置`和`对用户屏蔽底层网络`, 那么言外之意就是说, 网络配置与网络信息的获取以及网络通讯, 还有设备的其他配置, 该协议都封装在内部做掉了. 这就意味着:
+* 一个设备可以动态的加入网络, 自动获取IP地址.
+* 公布该设备自己所具备的能力(如支持的传输协议和数据格式).
+* 获取其他设备的能力.
+* 当设备离开的时候, 它可以通知网络中的其他设备.
+
+##UPnP的协议栈框架
+
+UPnP涉及到的协议有IP, TCP/UDP, HTTP, XML. 它是通过XML来描述, 通过HTTP来传输的.
+
+UPnP的协议栈层次为:
+
+<table>
+<tr> <td colspan=4>UPnP Vendor</td> </tr>
+<tr> <td colspan=4>UPnP Forum</td> </tr>
+<tr> <td colspan=4>UPnP Device Architecture</td> </tr>
+<tr> <td colspan=2>SSDP</td>         <td>SOAP</td> <td>GENA</td> </tr>
+<tr> <td>HTTPMU</td>  <td>HTTPU</td> <td>HTTP</td> <td>HTTP</td> </tr>
+<tr> <td colspan=2>UDP</td>          <td colspan=2></td> </tr>
+<tr> <td colspan=4>IP</td> </tr>
+</table>
+
+##UPnP设备分类
+
+UPnP的通用分类为: ControlledDevices(被控设备, 简称devices) 和 ControlPoint(简称CP).
+
+devices作为server端, CP作为client端.
+
+##UPnP的通讯流程
+
+UPnP中的很多协议内容都是为了支持上文描述的那些特性的, 简介如下:
+
+0. **Step0: IP寻址(Addressing)**
+    UPnP的设备都需要具备DHCP客户端. 当设备加入网络的时候, 会查找DHCP server, 如果找到DHCP server, 则获取一个IP; 如果找不到DHCP server, 则用Auto IP来获取一个地址(TODO: Auto IP是?????), 如果在获取IP的过程中, 得到了一个域名, 则用域名来标的自己.
+
+1. **Step1: 发现(Discovery)**
+
+    Discovery用在如下场景:
+
+    * 当被控设备(device)加入到网络的时候, 它使用发现协议来广播自己的存在.
+    * 当CP加入到网络的时候, 它使用发现协议来查找其他device的存在.
+
+    Discovery信息中仅包括必要的设备或服务信息, 如: 类型, ID以及指向详细信息的指针(一般是一个URL).
+
+2. **Step2: 描述(Description)**
+
+    当step的发现之后, CP只了解了最基本的device信息, 如果想操作device, 它还需要进一步了解更多的device信息. 这些信息就叫做Description. Description是通过Discovery过程中的详细信息的URL来获取的, 它同样以XML形式来表达.
+
+    Description包括如下信息:
+
+    * 厂商特有的信息: 如型号, 串号, 厂商名等.
+    * 子设备或子服务列表.
+        * 对于子服务, 描述信息中包括: 操作命令(command/action)与其参数的列表, 以及描述状态的变量(variables).
+    * 用于控制(Control), 通知(Eventing)以及表现(Presentation)的URL.
+
+3. **Step3: 控制(Control)**
+
+    控制(Control)信息发往Description中描述的控制URL. 控制同样通过XML来表达, 按照SOAP协议来实现. Control操作有可能会改变server端的状态变量.
+
+4. **Step4: 事件(Eventing)**
+
+    当Service的运行状态变量改变了, 会通过Event message通知这些变化. CP可以订阅这些Event. Event同样以XML表达.
+
+    有一种特殊的Event, 即当CP第一次订阅Event时, 会收到包含了状态变量的名称和值.
+
+5. **Step5: 展现(Presentation)**
+
+    UPnP的Presentation让不同的产品可以以一种通用的接口进行控制. 它其实是device提供的网页, CP通过访问Presentation URL可以获取这个页面, 然后加载到浏览器中展现给用户, 所以叫Presentation. 用户通过像上网一样的在浏览器中戳戳点点, 就完成了对device的控制.
+
+
+
+
+* UPnp中的行为都由ControlPoint发起.
+* DMS和DMR之间没有相互的控制操作.
+* CP不参与具体媒体数据传输, 但是可以对其进行控制(Stop/Pause等). 也可以控制DMR的特性(亮度, 音量等).
+
+
+#Device Architecture
+
+##综述
+
+基于HTTP的, 用来定义发现, 描述, 控制, 事件通知和表现的一套协议.
+
+XML-based device schema
+
+定义了两种设备:
+* 被控设备(controlled device, 简称device): 作为server, 响应来自CP的请求.
+
+
+##具体协议
+
+###发现
+
+* 当device加入网络, 用广播(239.255.255.250:1900)来通知CP; 当device离开时, 应该(如果可能)用广播告知离开.
+* 当CP加入网络, 用搜索(广播)来发现device. device通过单播来回应.
+* 发现信息仅包括必要信息: 类型, ID, 指向详细信息的指针(URL)等.
+
+**发现消息:**
+
+<pre>
+Host         : 广播地址
+Location     : 指向详细描述信息的URL.
+NTS          : ssdp:alive 或 ssdp:byebye.
+Cache-Control: 该广告的有效期.
+USN          : Unique Service Name, 一个组合而成的ID.
+NT           : Notification Type, 例如: device type.
+</pre>
+
+例如:
+
+<pre>
+NOTIFY * HTTP/1.1\r\n
+Host: 239.255.255.250:1900\r\n
+Location: http://192.168.5.242:1900/DeviceDescription.xml\r\n
+NTS: ssdp:alive\r\n
+Cache-Control: max-age=1800\r\n
+Server: UPnP/1.0 DLNADOC/1.50 Platinum/1.0.4.11\r\n
+USN: uuid:5f184877-9ebc-a000-7b18-cce905c9ee03::upnp:rootdevice\r\n
+NT: upnp:rootdevice\r\n
+</pre>
+
+
+
+
+###描述
+
+* 由CP通过description query请求来获取.
+* 以XML形式表达.
+* 包含厂商信息, 内嵌的设备或服务列表, 以及控制, 事件和表现的URL.
+    * 对于服务: 描述包含命令及其参数的列表, 以及用于描述服务状态的变量.
+
+###控制
+
+* 控制信息由SOAP规定, 同样以XML表达.
+* 响应消息中只包含命令本身的结果信息, 对于命令的具体执行效果, 再另外的event中的状态变量中体现.
+
+###事件
+
+* 服务状态变量发生改变时, 用event来通知CP.
+* CP可以订阅event.
+* event同样以XML表达.
+
+###表现
+
+* 可以在浏览器中浏览.
+* 可以控制设备或者查看设备状态.
+
+
+#AV Architecture
+
+##支持的媒体格式
+
+
+**Home Devices:**
+
+----------------------------------------------------------------------------------------------------
+媒体类型    强制格式                            可选格式
+---------   --------                            ----------------------------------------------------
+图像        JPEG                                GIF, TIFF, PNG
+
+音频        LPCM(2ch)                           MP3, WMA9, AAC, AC-3, ATRAC3plus
+
+视频        MPEG2                               MPEG1, MPEG4, WMV9
+
+----------------------------------------------------------------------------------------------------
+
+
+**Mobile Devices:**
+
+----------------------------------------------------------------------------------------------------
+媒体类型    强制格式                            可选格式
+--------    --------                            ----------------------------------------------------
+图像        JPEG                                GIF, TIFF, PNG
+
+音频        MP3 and MPEG4 AAC LC                MPEG4 (HE AAC, AAC LTP, BSAC), AMR,
+                                                ATRAC3plus, G.726, WMA, LPCM
+
+视频        MPEG4 AVC (AAC LC Assoc Audio)      VC1, H.263, MPEG4 part 2, MPEG2, 
+                                                MPEG4 AVC (BSAC or other for Assoc. Audio)
+
+----------------------------------------------------------------------------------------------------
+
+##AV Architecture中各角色概述
+
+待添加
+
+##MediaServer
+
+###包括功能
+
+* **ContentDirectory服务**: 可以浏览服务器上的文件, 并获得其媒体元信息(包括传输协议与数据格式). 服务提供如下操作:
+    * Browse()
+        * 获取内容的信息, 如: 名称, 艺术家, 时间, size等.
+        * 获取MediaServer对某个媒体项目, 所支持的传输协议与数据格式.
+* **ConnectionManager服务**: 可以支持并发多路连接(即向网络上同时推多路音视频, with ConnectionID). 可以多实例.
+    * PrepareForConnection()
+        * 由CP调用, 为了让MediaServer有机会为即将发生的媒体传输做好准备.
+        * 对于某些传输协议与数据格式, 该操作还有可能返回一个AVTransport服务的InstanceID, CP可以用该ID来进行后续的流控(Play, Pause, Seek等).
+        * 每个AVTransport服务的InstanceID都会关联到一个 `"MediaServer <-> MediaRenderer"` 之间的连接(connection).
+        * 如果该操作未实现, 则只能同一时间只能向一路Renderer推流. 这时CP应该使用InstanceID=0
+    * ConnectionComplete()
+        * 用于关闭连接.
+* **AVTransport服务(可选)**: 用于使CP具备控制播放的能力(seek/pause等).
+    * 可以多实例, 由ConnectionManager的InstanceID区分.
+
+
+##MediaRenderer
+
+###包括功能
+
+* **Rendering Control服务**: 用于由CP来控制亮度, 对比度, 音量等.
+    * 可以多实例. 多实例之间通过InstanceID来区分, 该ID由ConnectionManager服务的PrepareForConnection()来创建.
+* **ConnectionManager服务**: 用于管理与device的连接. 服务提供如下操作:
+    * GetProtocolInfo()
+        * 用于让CP可以获取MediaRenderer所支持的数据格式与传输协议的列表.
+    * PrepareForConnection() (可选)
+        * 分配ConnectionID. CP可以用该ID来获取关于connection的信息.
+        * 可能会返回一个AVTransport的InstantID, 同MediaServer的该功能.
+        * 同时会返回一个Rendering Control InstanceID, 用于控制Rendering Control服务.
+    * ConnectionComplete()
+        * 用于关闭连接.
+* **AVTransport服务**: 用于使CP具备控制播放的能力(seek/pause等). 
+    * 可以多实例. 多实例之间通过InstanceID来区分.
+
+
+##ControlPoint
+
+ControlPoint简称CP, 负责协调控制MediaServer与MediaRenderer. CP的通用流程为:
+
+1.  **发现设备**: 使用UPnP的发现机制, 来发现MediaServers 和 MediaRenderers.
+
+2.  **定位期望的多媒体内容**: 使用MediaServer的ContentDirectory::Browse() 或者 Search() 操作来定位. 该操作返回的结果中包括`传输协议`与`数据格式`.
+
+3.  **获取MediaRenderer支持的传输协议与数据格式**: 使用ConnectionManager::GetProtocolInfo()获取.
+
+4.  **对比匹配传输协议**: CP通过对比2, 3两个步骤返回的传输协议, 选择一种MediaServer和MediaRenderer都支持的网络协议和数据格式.
+
+5.  **配置MediaServer/MediaRenderer**: 通过 `ConnectionManager::PrepareForConnection()` 操作(如果有实现)来通知通知MediaServer 和 MediaRenderer连接即将建立, 让二者做好准备.
+
+    * MediaServer 或 MediaRenderer可能会返回一个AVTransport InstanceID, 用来进行Seek, Pause等播控操作. 至于由谁来返回这个ID, 则依赖于所选的传输协议.
+    * MediaRenderer可能会返回一个Rendering Control InstanceID, 用于进行亮度, 对比度, 音量等显示属性控制.
+    * 如果 MediaServer 和 MediaRenderer 都未实现PrepareForConnection(), 则CP得不到AVTransport InstanceID, 那么CP使用InstanceID=0来进行传输流控.
+
+6.  **选择期望(播放)内容**: 调用AVTransport服务的SetAVTransportURI()操作来指定需要传输的内容.
+
+7.  **开始传输**: 调用AVTransport服务的流控接口Play来开启传输, Stop, Seek等来进行传输流控.
+
+8.  **进行显示(Rendering)属性控制**: 使用MediaRenderer的Rendering Control服务来控制亮度, 对比度, 音量等.
+
+9.  **重复或播放下一节目**: 使用AVTransport::SetAVTransportURI() 或 AVTransport::SetNextAVTRansportURI()来确定接下来需要播放的内容.
+
+10. **善后处理**: 当会话需要结束时, 如果 MediaServer 和 MediaRenderer 不再需要了, 调用MediaServer和MediaRenderer的ConnectionManager::ConnectionComplete()来关闭连接.
+
+
+
+
+##遗留问题
+
+**Q:** upnp device中的ridging指的是什么意思? 是否可以用于设计流共享? platinum是否支持?
+
+
+<!-- vim:set tw=0:-->

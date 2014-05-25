@@ -1,0 +1,92 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>解决Ubuntu安装libsdl1.2-dev依赖错误</title>
+<meta name="keywords" content="ubuntu,debian,libsdl1.2-dev,依赖,apt-get">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>解决Ubuntu安装libsdl1.2-dev依赖错误</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#问题描述"><span class="toc-section-number">1</span> 问题描述</a></li>
+<li><a href="#解决方法"><span class="toc-section-number">2</span> 解决方法</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:解决Ubuntu安装libsdl1.2-dev依赖错误-->
+<!---keywords:ubuntu,debian,libsdl1.2-dev,依赖,apt-get-->
+<!---date:2013.05.23-->
+
+<h1 id="问题描述"><span class="header-section-number">1</span> 问题描述</h1>
+<p>安装:</p>
+<pre><code>sudo apt-get install libsdl1.2-dev</code></pre>
+<p>提示如下错误:</p>
+<pre><code>libsdl1.2-dev : 依赖: libsdl1.2debian (= 1.2.14-6.4ubuntu3) 但是 1.2.14-6ubuntu3 正要被安装
+                 依赖: libx11-dev 但是它将不会被安装
+                 依赖: libglu1-mesa-dev 但是它将不会被安装
+                 依赖: libasound2-dev
+                 依赖: libpulse-dev 但是它将不会被安装
+                 依赖: libcaca-dev 但是它将不会被安装
+                 依赖: libxt-dev 但是它将不会被安装
+                 依赖: libxext-dev 但是它将不会被安装
+
+E: 有未能满足的依赖关系。请尝试不指明软件包的名字来运行“apt-get -f install”(也可以指定一个解决办法)。</code></pre>
+<h1 id="解决方法"><span class="header-section-number">2</span> 解决方法</h1>
+<p>我尝试了网上的很多方法, 也没能解决, 最后我把apt的软件源由中国换成了主服务器. 然后:</p>
+<pre><code>sudo apt-get update</code></pre>
+<p>竟然解决.</p>
+<p>注: 我的中年过服务器也不是自己找来的163或者cn99什么的源, 而是装完系统它自带设置里面选的中国服务器. 看来ubuntu这种看似官方的配置也不是同步很及时, 以后还是用主服务器的源吧. 慢点就慢点吧, 至少稳定.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

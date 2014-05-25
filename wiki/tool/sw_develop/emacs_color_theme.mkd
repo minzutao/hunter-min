@@ -1,0 +1,58 @@
+<!---title:emacs配色插件-->
+<!---keywords:颜色,配置,mode,color,theme-->
+<!---date:2013.08.23; modification:2013.08.25-->
+
+#前言
+
+"color-theme"这个mode能让你方便地修改Emacs的配色.
+
+#安装
+
+首先, 从color-theme项目的网站上找到它的下载地址, 现在最新的版本是6.6.0.
+
+然后在你的Home里建一个文件夹(例如"elisp"), 将刚刚下载的归档解压出来. 虽然这些工作在图形界面里都能很容易地完成, 但既然这篇日志有一个"Linux"的Tag, 那就来复习一下怎样在命令行里完成这个工作吧. 这里假设你把"color-theme-6.6.0.tar.gz"文件放在了"~/download"目录里.
+
+    cd ~
+    mkdir elisp
+    cd elisp
+    tar -zxvf ~/download/color-theme-6.6.0.tar.gz
+
+OK, 然后在".emacs"里加入这样几句话:
+
+    (add-to-list 'load-path "~/elisp")
+    (require 'color-theme)
+    (color-theme-initialize)
+
+第一句是将"~/elisp"这个目录加入到"load-path"变量中. "load-path"变量里记录了Emacs搜索装载文件的目录, 将"~/elisp"加入进去, Emacs才能找到我们刚刚添加的Elisp扩展文件.
+
+第二句是调用"color-theme"扩展. 至于调用的方式, 通常在Elisp扩展的README文件里都有介绍.
+
+#选择配色方案
+
+重启Emacs, 在"Tools"菜单里就多出来一项"Color Themes". 点击它, 会打开一个叫做"Color Theme Seletion"的Buffer. 在这里列出了很多不同风格的配色方案, 选择(用方向键或者C-p, C-n)一个配色方案, 按"Enter"键就可以预览配色效果(有些切换有点问题, 最好按两次Enter). 多找找吧, 九十个配色方案里应该有你喜欢的了. 找到合适的方案后, 将这句加入.emacs.
+
+    (color-theme-lawrence)
+    ; 这里的lawrence就是你选择的方案名, 将刚刚在列表中的名称中的大写开头改为小
+    ; 写, 将空格改为'-'即可.
+
+再次重启emacs即可生效. 如果提示错误, 很可能是名字没写对.
+
+#自定义
+
+在上面挑选配色方案的列表中, 将光标移动到你选中的那个项目上, 按"p", 会在一个新的Buffer里打印出一段代码. 把这些代码保存到"~/.emacs-color-theme". 还记得怎么保存文件么?
+
+    C-x C-s ~/.emacs-color-theme
+
+下一步是去修改".emacs"文件.
+
+首先在"(require 'color-theme)"前加上分号";"将这一行注释掉.
+
+然后在它的下面加上这样的两行
+
+    (load-file "~/.emacs-color-theme")
+    (my-color-theme)
+
+修改这个.emacs-color-theme就可以实现自定义颜色了. 建议挑选一个自己比较满意的, 然后稍作修改即可.
+
+
+<!-- vim:set tw=0:-->

@@ -1,0 +1,48 @@
+
+
+
+##git diff使用外部比较器
+
+    sudo apt-get install meld
+    vim ~/bin/ngit-meld.sh
+
+内容如下:
+
+    #!/bin/sh
+    meld $2 $5
+
+修改权限:
+
+    chmod +x ~/bin/git_meld.sh
+
+配置git命令:
+
+    git config --global diff.external ~/bin/git-meld.sh
+
+如果有时又想不用meld来比较, 可以再定义一个其他命令:
+
+    git config --global alias.diffn "diff --no-ext-diff"
+
+这样用git diffn即可调用原本的比较工具.
+
+
+##ffmpeg笔记
+
+AVCodecContext主要内容:
+
+<pre class = "brush: c; toolbar: false">
+    enum AVMediaType codec_type: 媒体类型: 音频/视频/字幕等.
+    const struct AVCodec  *codec: 具体编解码器指针.
+    char codec_name[32]: 编解码器名称.
+    enum AVCodecID codec_id: 编码器的ID枚举: h264, mpeg2, mpeg4等
+    int bit_rate: 码率?????
+    int frame_number: 帧数?????
+    视频:
+    int width, height: 宽高
+    enum AVPixelFormat pix_fmt: 像素格式: YUV420P/RGB24等.
+    音频:
+    int sample_rate: 采样率(samples per second)
+    int channels: 声道数
+    int frame_size: 每个通道的采样数?????
+</pre>
+

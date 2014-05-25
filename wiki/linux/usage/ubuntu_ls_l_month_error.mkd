@@ -1,0 +1,64 @@
+<!---title:Ubuntu 12.04“初始化月份字符串出错”的解决方法-->
+<!---keywords:ubuntu,linux,初始化月份字符串出错-->
+<!---date:2013.05.23-->
+
+
+在登录到系统后ls -l总是提示“初始化月份字符串出错”. 解决方法如下:
+
+#增加字符集配置
+
+    sudo vi /var/lib/locales/supported.d/local
+
+将文件内容修改如下:
+
+    en_US.UTF-8 UTF-8
+    zh_CN.UTF-8 UTF-8
+    zh_CN.GBK GBK
+    zh_CN GB2312
+
+
+
+#生成字符集
+
+    sudo local-gen
+
+此时可能问题已经解决, 重新登录试试. 如果不行, 继续进行以下步骤.
+
+
+
+#配置locale
+
+    sudo vi /etc/default/locale
+
+修改内容如下:
+
+    LANG=”zh_CN.UTF-8″
+    LANGUAGE=”zh_CN:zh”
+    LC_NUMERIC=”zh_CN.UTF-8″
+    LC_TIME=”zh_CN.UTF-8″
+    LC_MONETARY=”zh_CN.UTF-8″
+    LC_PAPER=”zh_CN.UTF-8″
+    LC_NAME=”zh_CN.UTF-8″
+    LC_ADDRESS=”zh_CN.UTF-8″
+    LC_TELEPHONE=”zh_CN.UTF-8″
+    LC_MEASUREMENT=”zh_CN.UTF-8″
+    LC_IDENTIFICATION=”zh_CN.UTF-8″
+
+如果问题仍然不能够解决, 继续向下:
+
+
+
+#完善语言支持
+
+1. 先在“语言支持”里面把“地区格式”设置成英文, 应用到整个系统.
+2. 注销退出, 然后重新登录系统. 在“语言支持”中会提示支持不完全.
+3. 修复后, 把“地区格式”在设置成中文, 应用到整个系统.
+4. 退出重新登录系统. 
+
+#参考资料
+
+[http://blog.jiqila.com/post/287/](http://blog.jiqila.com/post/287/)
+
+[http://forum.ubuntu.org.cn/viewtopic.php?f=80&t=371208](http://forum.ubuntu.org.cn/viewtopic.php?f=80&t=371208)
+
+<!-- vim:set tw=0:-->

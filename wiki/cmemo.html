@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#git-diff使用外部比较器"><span class="toc-section-number">0.1</span> git diff使用外部比较器</a></li>
+<li><a href="#ffmpeg笔记"><span class="toc-section-number">0.2</span> ffmpeg笔记</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<h2 id="git-diff使用外部比较器"><span class="header-section-number">0.1</span> git diff使用外部比较器</h2>
+<pre><code>sudo apt-get install meld
+vim ~/bin/ngit-meld.sh</code></pre>
+<p>内容如下:</p>
+<pre><code>#!/bin/sh
+meld $2 $5</code></pre>
+<p>修改权限:</p>
+<pre><code>chmod +x ~/bin/git_meld.sh</code></pre>
+<p>配置git命令:</p>
+<pre><code>git config --global diff.external ~/bin/git-meld.sh</code></pre>
+<p>如果有时又想不用meld来比较, 可以再定义一个其他命令:</p>
+<pre><code>git config --global alias.diffn &quot;diff --no-ext-diff&quot;</code></pre>
+<p>这样用git diffn即可调用原本的比较工具.</p>
+<h2 id="ffmpeg笔记"><span class="header-section-number">0.2</span> ffmpeg笔记</h2>
+<p>AVCodecContext主要内容:</p>
+<pre class = "brush: c; toolbar: false">
+    enum AVMediaType codec_type: 媒体类型: 音频/视频/字幕等.
+    const struct AVCodec  *codec: 具体编解码器指针.
+    char codec_name[32]: 编解码器名称.
+    enum AVCodecID codec_id: 编码器的ID枚举: h264, mpeg2, mpeg4等
+    int bit_rate: 码率?????
+    int frame_number: 帧数?????
+    视频:
+    int width, height: 宽高
+    enum AVPixelFormat pix_fmt: 像素格式: YUV420P/RGB24等.
+    音频:
+    int sample_rate: 采样率(samples per second)
+    int channels: 声道数
+    int frame_size: 每个通道的采样数?????
+</pre>
+
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

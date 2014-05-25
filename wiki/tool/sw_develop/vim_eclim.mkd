@@ -1,0 +1,119 @@
+<!---title:vim+eclim安装与配置-->
+<!---keywords:vim,eclipse,eclim,c++,java-->
+<!---date:2014.01.22; modification:2014.01.23-->
+
+
+#什么是vim+eclim
+
+##vim自身不足之处
+
+vim其实并不仅仅是一个编辑器, 更是一种操作方式, 一种操作习惯. 用惯了vim, 再用其他的编辑器(或IDE), 会觉得非常之不爽. 以前一直用vim+cscope来开发c程序, 所以一直也用着挺舒服, 但是当后来需要开发c++和java(Android)的时候, 就觉得符号跳转非常不够用了. 
+
+##eclipse的vim插件不足之处
+
+曾经尝试过eclipse, 它的c++/java符号跳转倒是挺好, 自动不全也挺好, 但是就是操作方式不好用, 也曾经用过vipper等模拟vim操作的插件, 但是这些插件有很多毛病:
+
+* bug多, 有时候用着用着就出问题了, 必须重启eclipse才行.
+* 只是实现了部分功能, vim的很多优秀支持都体现不出来.
+* 快捷键无法配置到和我的vim一样, 操作起来憋屈.
+
+##何为eclim?
+
+eclim的出现解决了如上两个方面的问题, 它相当于在vim(真正的vim而不是模拟)与eclipse之间打起了一座桥梁, 与让我既能使用完全的vim特性, 又能使用到eclipse强大的符号跳转能力.
+
+
+
+#eclim的三种工作方式
+
+eclim有3种使用方式, 大家可以根据自己的需求任意选择:
+
+##Headless eclipse server
+
+eclim作为一个后台的服务(deamon)程序运行, 没有eclipse的前台窗口, 然后vim该怎么用还怎么用, 只是在需要符号跳转/补全等vim本身不好用或者不具备的功能时候, 可以调用eclim的命令.
+
+* 优缺点: 见第二种的优缺点, 倒过来就是了.
+
+
+##Headed eclipse server
+
+独立的开一个eclipse, 再独立的开一个vim, 然后在eclipse中开启eclim服务, 这样vim就可以利用eclipse的跳转功能了.
+
+* 优点: 两程序相互独立运行, 如果需要eclipse中的某些eclim未实现的功能, 便一个直接到eclipse中操作.
+* 缺点: 会多一个eclipse的前台程序, 多出来一个窗口. 也会多一些内存, 不过这个内存的差量不太多.
+
+
+##Embedded gvim
+
+将vim作为一种eclipse的内嵌编辑器使用.
+
+* 优点: 只开一个eclipse.
+* 缺点: buffer(文件)管理等还是用的eclipse的, 可能有些vim用户会用着别扭.
+
+个人认为第三种没多大用, 这种应该是适合与习惯eclipse的用户的, 但是话说, 习惯用eclipse的人, 会用vim来编辑吗?
+
+
+#安装
+
+安装之前要确认, 你的系统有
+
+* JDK1.5或更高
+* Eclipse 3.5.x或更高
+* vim 7.1.x或更高, 并且vimrc里面要set nocompatible并打开filetype plugin on
+
+##eclim与eclipse的版本对应关系
+
+* Eclipse 4.3.x (Kepler) (eclim 2.2.x)
+* Eclipse 3.7.x (Indigo) (eclim 1.7.x)
+* Eclipse 3.8 (eclim 1.7.13 or greater)
+
+##下载
+
+到这里: [eclim官网安装界面](http://eclim.org/install.html) 下载对应的版本.
+
+##安装
+
+先保证vim有如下配置:
+
+    set nocompatible
+    filetype plugin indent on
+
+然后用下载的包运行:
+
+    java -jar eclim_2.3.2.jar # 或者对应的版本号的jar包
+
+然后按照提示一路继续即可. 安装过程中可能会提示选择eclipse安装路径, 因为eclim中的有一部分相当于eclipse插件, 是要放到eclipse中的.
+
+
+##测试安装结果
+
+1. 打开eclipse
+2. 选择: Window ‣ Show View ‣ Other ‣ Eclim ‣ eclimd
+3. 打开vim, 输入PingEclim, 如果显示版本号, 则是成功, 如果报错则是有问题.
+
+##问题解决
+
+参考: 
+
+[官方安装页面](http://eclim.org/install.html)
+
+[官方faq页面](http://eclim.org/faq.html)
+
+
+
+#配置
+
+##修改workspace的位置
+
+修改~/.eclimrc, 如果没有自己创建.
+
+    osgi.instance.area.default=@user.home/workspace
+
+其中的@user.home修改为自己的路径.
+
+
+#参考文献
+
+http://eclim.org/install.html
+
+
+<!-- vim:set tw=0:-->

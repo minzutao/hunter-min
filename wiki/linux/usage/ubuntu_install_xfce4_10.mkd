@@ -1,0 +1,28 @@
+<!---title:Ubuntu12.04安装xfce4.10-->
+<!---keywords:ubuntu, xfce4.10-->
+<!---date:2014.01.15; modification:2014.01.15-->
+
+#ppa安装
+
+(只适用于 ubuntu 12.04系列, 低版本不行. 更高的版本就直接安装xfce4就直接是4.10版本了, 不用添加ppa)
+
+对于 Xubuntu 12.04
+代码:
+
+    sudo add-apt-repository ppa:xubuntu-dev/xfce-4.10
+    sudo apt-get update
+    sudo apt-get dist-upgrade
+
+对于 Ubuntu/Kubuntu/Lubuntu 12.04
+
+代码:
+
+    sudo add-apt-repository ppa:xubuntu-dev/xfce-4.10
+    sudo apt-get update
+    sudo apt-get install xubuntu-desktop
+
+#参考资料
+
+http://forum.ubuntu.org.cn/viewtopic.php?f=39&t=377401
+
+<!-- vim:set tw=0:-->

@@ -1,0 +1,88 @@
+<!---title:Linux平铺式窗口管理器awesome widget使用-->
+<!---keywords:Linux,瓦片式,平铺式,窗口管理器,awesome,widget-->
+<!---date:2013.05.23-->
+
+#awesome widget(控件)简介
+
+awesome widget是什么? widget是awesome提供的一些基本的控件(文字显示, 绘图之类的), 可以用来实现比如系统托盘的时间显示, 音量控制等.
+
+awesome本身自带的只有少数几种: 除了系统托盘外, 就是文本与图像. 有图有文嘛, 再加上lua脚本的编程控制, 理论上说就可以实现任何插件了, 但是貌似这么底层的支持用来开发插件有点麻烦, 由于在此基础上还封装了awful控件. 详情见下文.
+
+
+
+#创建widget
+
+    mysystray = widget({ type = "systray" })
+
+
+
+#Widget类型
+widget类型有:
+
+* **systray(系统托盘)**: 遵守freedesktop协议.
+
+* **imagebox(图片框)**: 可使用png, jpg等格式. 可以与textbox一起使用, 创建启动器, 图标, 分隔符等.
+
+        myicon = widget({ type = "imagebox" })
+        myicon.image = image(awful.util.getdir("config") .. "/myicon.png")
+
+* **textbox(文本框)**: 
+
+        mytextbox = widget({ type = "textbox" })
+        mytextbox.text = "Hello, world!"
+        mytextbox.text = '<span color="white">Sacrebleu, I have seen a ghost!</span> '
+
+
+
+#awful widget
+
+awful是基于上述的基本部件封装的部件. 从而提供一些必备功能. 例如awesome默认配置提供的tag, 菜单, 按钮, 启动器, 提示框, layoutbox, 等等.
+
+
+
+##awful widget: Graph
+
+Graph用于创建和显示随时间而变化的图表. 如显示cpu利用率图标等.
+
+    mygraph = awful.widget.graph()
+    mygraph:set_width(50)
+    mygraph:set_background_color('#494B4F')
+    mygraph:set_color('#FF5656')
+    mygraph:set_gradient_colors({ '#FF5656', '#88A175', '#AECF96' })
+    mygraph:add_value(0.5)
+
+##awful widget: Progressbar
+
+Progressbar用于显示进度条.
+
+    myprogressbar = awful.widget.progressbar()
+    myprogressbar:set_width(8)
+    myprogressbar:set_height(10)
+    myprogressbar:set_vertical(true)
+    myprogressbar:set_background_color('#494B4F')
+    myprogressbar:set_color('#AECF96')
+    myprogressbar:set_gradient_colors({ '#AECF96', '#88A175', '#FF5656' })
+    myprogressbar:set_value(0.5)
+
+#Widget button
+
+Widget button就是向控件上绑定某些操作, 使之可以像按钮一样点按, 点一下它就去做点什么.
+
+文本框的按钮绑定:
+
+    mytextbox:buttons(awful.util.table.join(
+        awful.button({ }, 1, function () awful.util.spawn("echo Left mouse button pressed.") end)
+    ))
+
+图标的按钮绑定:
+
+    mygraph.widget:buttons(awful.util.table.join(
+    awful.button({ }, 1, function () awful.util.spawn("echo Left mouse button pressed again.") end)
+    ))
+
+#参考资料
+
+[awesome wiki](http://awesome.naquadah.org/wiki/Widgets_in_awesome)
+
+<!-- vim:set tw=0:-->
+

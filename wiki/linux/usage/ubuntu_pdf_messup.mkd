@@ -1,0 +1,78 @@
+<!---title:Ubuntu打开pdf中文乱码解决方法汇总-->
+<!---keywords:Linux,中文乱码-->
+<!---date:2013.07.11; modification:2013.07.11-->
+
+
+#安装poppler-data
+
+如果是ubuntu的话, 直接:
+
+    sudo apt-get install poppler-data , 安装之后就好了. 
+
+其他要自己找源下载, 下载. tar.gz安装也一样. 
+
+
+#安装附加字体
+
+**1. 拷贝字体文件**
+
+windows的字体一般存放在c:\windows\fonts目录下, 拷贝所需字体到文件夹wfonts:
+
+文件名          字体
+------------    ----------------------------------
+simfang.ttf     仿宋体
+simhei.ttf      黑体
+simkai.ttf      楷体
+simsun.ttf      宋体和新宋体, 原文件名simsun.ttc
+tahoma.ttf      tahoma字体
+tahomabd.ttf    tahoma字体的粗体形式
+verdana.ttf     verdana字体
+verdanab.ttf    verdana字体的粗体形式
+verdanai.ttf    verdana字体的斜体形式
+verdanaz.ttf    verdana字体的粗体＋斜体形式
+
+将文件夹wfonts拷贝到/usr/share/fonts目录下**
+
+**2. 生成字体的索引信息**
+
+打开终端, 进入/usr/share/fonts/wfonts目录下, 执行如下命令来生成字体的索引信息, 并更新字体缓存:
+
+    sudo mkfontscale
+    sudo mkfontdir
+    fc-cache -f -v
+
+至此, 字体已经安装成功, 但是在用openoffice编辑文档时, 可能会找不到所安装的字体, 而且在浏览windows下的文档时会产生乱码, 所以需要如下工作: 
+
+#安装Adobe支持
+
+    sudo apt-get install cmap-adobe-cns1
+    sudo apt-get install cmap-adobe-gb1
+
+#安装xpdf相关
+
+    sudo apt-get install xpdf xpdf-chinese-simplified xpdf-chinese-traditional xpdf-common
+
+#修改系统配置文件
+
+
+经过以上的步骤, xpdf已经好了, 但是evince还是乱码. 通过如下方法解决:
+
+修改系统配置文件(/etc/fonts/conf.avail/49-sansserif.conf)
+
+    <edit name="family" mode="append_last">  
+        <string>sans-serif</string>  
+    </edit>  
+
+    修改为:   
+
+    <edit name="family" mode="append_last">  
+        <string>SimSun</string>                                           
+    </edit>  
+
+
+_这里需要注意的是, 确认你的机器上的宋体是SimSun,这可以通过命令`fc-list :lang=zh`来查看:_
+
+    宋体,SimSun:style=Regular   # 注意这里的名称
+
+
+<!-- vim:set tw=0:-->

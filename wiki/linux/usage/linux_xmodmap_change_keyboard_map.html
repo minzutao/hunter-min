@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Linux xmodmap修改键盘映射</title>
+<meta name="keywords" content="Ubuntu,Linux,键值,keycode,keymap">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Linux xmodmap修改键盘映射</h1>
+<p>date: 2014.01.17; modification:2014.01.17</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#查看需要修改的物理按键的键值"><span class="toc-section-number">1</span> 查看需要修改的物理按键的键值</a></li>
+<li><a href="#查看需要映射的按键的映射名称"><span class="toc-section-number">2</span> 查看需要映射的按键的映射名称</a></li>
+<li><a href="#修改按键映射"><span class="toc-section-number">3</span> 修改按键映射</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Linux xmodmap修改键盘映射-->
+<!---keywords:Ubuntu,Linux,键值,keycode,keymap-->
+<!---date:2014.01.17; modification:2014.01.17-->
+
+<h1 id="查看需要修改的物理按键的键值"><span class="header-section-number">1</span> 查看需要修改的物理按键的键值</h1>
+<p>要想修改键值映射, 先要知道按键的键值. 用如下命令查看:</p>
+<pre><code>xev | grep keycode</code></pre>
+<h1 id="查看需要映射的按键的映射名称"><span class="header-section-number">2</span> 查看需要映射的按键的映射名称</h1>
+<p>例如, 执行命令查看Menu键相关的按键名:</p>
+<pre><code>xmodmap -pke | grep menu -i</code></pre>
+<p>显示结果为:</p>
+<pre><code>keycode 135 = Menu NoSymbol Menu
+keycode 147 = XF86MenuKB NoSymbol XF86MenuKB</code></pre>
+<h1 id="修改按键映射"><span class="header-section-number">3</span> 修改按键映射</h1>
+<p>比如想把键盘的右边的Alt改为Menu:</p>
+<pre><code>xmodmap -e &quot;keycode 108=Menu&quot;</code></pre>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

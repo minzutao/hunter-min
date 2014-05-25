@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Linux Samba安装, 配置与使用</title>
+<meta name="keywords" content="Linux,网络,Samba">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Linux Samba安装, 配置与使用</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#samba配置"><span class="toc-section-number">1</span> Samba配置</a></li>
+<li><a href="#linux访问windows共享"><span class="toc-section-number">2</span> Linux访问Windows共享</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Linux Samba安装, 配置与使用-->
+<!---keywords:Linux,网络,Samba-->
+<!---date:2013.05.23-->
+
+
+<h1 id="samba配置"><span class="header-section-number">1</span> Samba配置</h1>
+<p>sudo vi /etc/samba/smb.conf</p>
+<pre >
+[lunch]
+    comment = Samba lunch
+    browseable = no
+    path = /media/d/other/lunch
+    public = no
+    guest ok = no
+    writeable = no
+</pre>
+
+
+<h1 id="linux访问windows共享"><span class="header-section-number">2</span> Linux访问Windows共享</h1>
+<p>sudo mount -t cifs -o username=uuu,password=ppp //192.168.1.100/sambapath ./smb</p>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

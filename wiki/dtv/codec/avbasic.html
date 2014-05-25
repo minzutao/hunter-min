@@ -1,0 +1,215 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>数字音视频基础</title>
+<meta name="keywords" content="数字,音视频,基础">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>数字音视频基础</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#名词解释"><span class="toc-section-number">1</span> 名词解释</a></li>
+<li><a href="#音视频编解码与容器"><span class="toc-section-number">2</span> 音视频编解码与容器</a><ul>
+<li><a href="#编码"><span class="toc-section-number">2.1</span> 编码</a></li>
+<li><a href="#容器"><span class="toc-section-number">2.2</span> 容器</a></li>
+<li><a href="#常见编码容器组合"><span class="toc-section-number">2.3</span> 常见编码容器组合</a></li>
+<li><a href="#各种编码最佳码率"><span class="toc-section-number">2.4</span> 各种编码最佳码率</a></li>
+</ul></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:数字音视频基础-->
+<!---keywords:数字,音视频,基础-->
+<!---date:2013.05.23-->
+
+<h1 id="名词解释"><span class="header-section-number">1</span> 名词解释</h1>
+<ul>
+<li><p><strong>VBR</strong>: 动态比特率， 需要容器支持提供音视频的同步方法</p></li>
+<li><p><strong>CBR</strong>: 固定比特率</p></li>
+<li><p><strong>HDRIP</strong>: 重新编码，再次经过压缩的视频</p></li>
+<li><p><strong>REMUX版本</strong>: 意思是重新封装，从HD-DVD或者BD里提取音视频数据，封装到其他格式 如TS或AVI中。</p></li>
+<li><p><strong>ITU-T</strong>: 中文名称是国际电信联盟远程通信标准化组织(ITU-T for ITU Telecommunic- ation Standardization Sector), 它是国际电信联盟管理下的专门制 定远程通信相关国际标准的组织。</p>
+<p>ITU-T和ISO/IEC-MPEG 两个数字视频压缩领域内的标准化组织</p>
+<p>ITU-T 定制H.26x系列 ISO/IEC-MPEG 定制了MPEG系列</p></li>
+<li><p><strong>BT601</strong>: 我们知道，当前模拟电视存在着PAL、NTSC和SECAM三大制式并存的问题，因此， 数字电视的输入格式标准试图将这三种制式统一起来，形成一种统一的数字演播 室标准，这个标准就是CCIR601，现称ITU-RRec BT601标准</p></li>
+<li><p><strong>MPEG</strong>: 是活动图像专家组(Moving Picture Experts Group)的缩写，于1988年成立。目前MPEG 已颁布了三个活动图像及声音编码的正式国际标准，分别称为MPEG-1、MPEG-2和MPEG-4 ，而MPEG-7和MPEG-21都在研究中。</p></li>
+<li><p><strong>MP3</strong>: MPEG-2 layer 3. 移动图像专家组标准2第3层.</p></li>
+</ul>
+<h1 id="音视频编解码与容器"><span class="header-section-number">2</span> 音视频编解码与容器</h1>
+<h2 id="编码"><span class="header-section-number">2.1</span> 编码</h2>
+<ul>
+<li><p><strong>Mpeg1</strong>: VCD使用 352x288，低分辨率，压缩比低</p></li>
+<li><p><strong>Mpeg2 或称 ISO/IEC13818</strong>: DVD用和电视广播。有NTSC(720x480)和PAL(720x576)。压缩比高于Mpeg1 ISO/IEC13818-2为视频 ISO/IEC13818-3为音频 Mpeg-2的第一部分在ITU的命名中叫ITU-TRec.H.220 <br><a href="mpeg2.html">阅读更多关于MPEG-2的内容</a></p></li>
+<li><p><strong>Mpeg2 AAC</strong>: 先进音频编码. 采样频率可以低至8KHZ, 而高至96KHZ范围内的1-48个通道可选 的高音质音频编码。</p></li>
+<li><p><strong>Mpeg4</strong>: 目前使用最多，avi文件始祖。压缩比提过很多，质量堪比DVD</p></li>
+<li><p><strong>divx</strong>: 基于mpeg4开发，有一定算法优化。</p></li>
+<li><p><strong>xvid</strong>: 在divx技术封锁后，被人破解开发的。基于mpeg4改进。开放源码。画质更好。</p></li>
+<li><p><strong>h.261</strong>: 早期低码率编码，用于352x288和176x144，现在不用了</p></li>
+<li><p><strong>h.263</strong>: 低码率下比h261效果好。</p></li>
+<li><p><strong>h.263+</strong>: h263改进</p></li>
+<li><p><strong>h.264 或称 MPEG-4/10 或称 ISO/IEC 14496-10</strong>: 集中以往优点，高压缩。与h.263+和mpeg4 sp相比，减少50%比特率，高质量应用等。</p>
+<p>H.264或称MPEG-4/10 是由ITU-T和ISO/IEC-MPEG共同开发的视频编解码标准。编码技术称 为AVC编码。因此常称H.264为H.264/AVC（或者AVC/H.264或者H.264/MPEG-4 AVC或 MPEG-4/H.264 AVC）</p></li>
+<li><p><strong>rm/rmvb</strong>: real公司应用与网络的高压缩编码。rm是CBR，rmvb是VBR。</p></li>
+</ul>
+<h2 id="容器"><span class="header-section-number">2.2</span> 容器</h2>
+<ul>
+<li><p><strong>AVI</strong>: 微软的，成熟老技术。不支持VBR，不支持流媒体，因为索引在文件尾部。</p></li>
+<li><p><strong>ASF</strong>: 是标准的WMA和WMV的容器，是Advanced Streaming Format 高级串流格式的缩写 ，微软自Win98时开始使用该格式。</p></li>
+<li><p><strong>WMV</strong>: 由ASF延伸得来，是一种微软推出的流媒体格式，WMV1是微软采用MPEG-4.Part2 改进出来的，到WMV9则成了SMPTE的一个独立标准421M，也称为VC-1，使用了档 次的概念来区分所支持的不同应用和数据设置。</p></li>
+<li><p><strong>TS</strong>: Transfer stream. ts的每段可以分别解码。包有固定长度。适合传输介质不稳 定的状况。常用与电视广播。支持VBR。BD使用TS流</p></li>
+<li><p><strong>PS</strong>: Program stream. DVD和HDDVD使用ps流。后缀为VOB或EVO等。</p></li>
+<li><p><strong>MOV封装</strong>: QuickTime封装与AVI是同一个时代的。</p></li>
+<li><p><strong>MKV封装</strong>: 是Matroska的简称。一种新的封装格式，非常开放，支持VBR，提供时间戳来进 行音视频同步。支持流媒体。兼容性强。民间开发，商业支持少。不针对任何编 解码器</p></li>
+<li><p><strong>FLV</strong>: 针对与h.263编码家族的格式</p></li>
+<li><p><strong>rmvb/rm</strong>: real video</p></li>
+<li><p><strong>MP4</strong>: 主要用于封装mpeg4.</p></li>
+<li><p><strong>3GP</strong>: 移动电话多使用该格式</p></li>
+<li><p><strong>DV</strong>: 用于DV磁带的存储与编辑格式</p></li>
+<li><p><strong>M2V,M4V</strong>: 多为DVD上的视频格式</p></li>
+</ul>
+<h2 id="常见编码容器组合"><span class="header-section-number">2.3</span> 常见编码容器组合</h2>
+<table>
+<col width="13%" />
+<col width="18%" />
+<col width="13%" />
+<thead>
+<tr class="header">
+<th align="left">容器</th>
+<th align="left">视频编码</th>
+<th align="left">音频编码</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AVI</td>
+<td align="left">Xvid</td>
+<td align="left">MP3</td>
+</tr>
+<tr class="even">
+<td align="left">AVI</td>
+<td align="left">Dvix</td>
+<td align="left">MP3</td>
+</tr>
+<tr class="odd">
+<td align="left">MKV</td>
+<td align="left">Xvid</td>
+<td align="left">MP3</td>
+</tr>
+<tr class="even">
+<td align="left">MKV</td>
+<td align="left">Xvid</td>
+<td align="left">AAC</td>
+</tr>
+<tr class="odd">
+<td align="left">MKV</td>
+<td align="left">H264</td>
+<td align="left">AAC</td>
+</tr>
+<tr class="even">
+<td align="left">MP4</td>
+<td align="left">Xvid</td>
+<td align="left">mp3</td>
+</tr>
+<tr class="odd">
+<td align="left">MP4</td>
+<td align="left">H264</td>
+<td align="left">AAC</td>
+</tr>
+<tr class="even">
+<td align="left">3GP</td>
+<td align="left">H263</td>
+<td align="left">AAC</td>
+</tr>
+</tbody>
+</table>
+<h2 id="各种编码最佳码率"><span class="header-section-number">2.4</span> 各种编码最佳码率</h2>
+<table>
+<col width="22%" />
+<col width="15%" />
+<col width="16%" />
+<thead>
+<tr class="header">
+<th align="left">编码</th>
+<th align="left">分辨率</th>
+<th align="left">码率</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Real Video</td>
+<td align="left">640x720</td>
+<td align="left">350-600 kbps</td>
+</tr>
+<tr class="even">
+<td align="left">Xvid</td>
+<td align="left">1024x438</td>
+<td align="left">800-1300Kbps</td>
+</tr>
+<tr class="odd">
+<td align="left">MKV(X264/AVC)</td>
+<td align="left">720p</td>
+<td align="left">5-6Mbps</td>
+</tr>
+<tr class="even">
+<td align="left">H264/VC1</td>
+<td align="left">1080p</td>
+<td align="left">30Mbps</td>
+</tr>
+</tbody>
+</table>
+<!-- vim:set tw=0:-->
+
+
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>C/C++中extern "C"的使用</title>
+<meta name="keywords" content="c语言,c++">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>C/C++中extern "C"的使用</h1>
+<p>date: 2013.08.01; modification:2013.08.03</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#背景"><span class="toc-section-number">1</span> 背景</a></li>
+<li><a href="#应用场合"><span class="toc-section-number">2</span> 应用场合</a></li>
+<li><a href="#使用方法"><span class="toc-section-number">3</span> 使用方法</a></li>
+<li><a href="#extern-c的使用要点"><span class="toc-section-number">4</span> extern &quot;C&quot;的使用要点</a></li>
+<li><a href="#参考资料"><span class="toc-section-number">5</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:C/C++中extern "C"的使用-->
+<!---keywords:c语言,c++-->
+<!---date:2013.08.01; modification:2013.08.03-->
+
+<h1 id="背景"><span class="header-section-number">1</span> 背景</h1>
+<p>因为C, C++的编译器对函数名的修饰不同, 为了保证在C, C++中编写的函数能够被互相调用, 所以采用这个链接指示符.</p>
+<p>例如, 函数:</p>
+<pre class="brush: c; toolbar: false">
+    int func(int, int)
+</pre>
+
+<ul>
+<li>C的编译器会将名字改编为<code>_func</code></li>
+<li>C++的编译器会改编为<code>_func_int_int</code> 或<code>_funcii</code>(各编译器不同).</li>
+</ul>
+<p>所以如果不加任何说明, 直接在C和C++之间相互调用, 就会编译出错.</p>
+<h1 id="应用场合"><span class="header-section-number">2</span> 应用场合</h1>
+<ul>
+<li>当在C++中调用C的接口(如<code>func</code>)时, 需要对函数声明加extern &quot;C&quot;. 这样就使C++按照C的规则去理解这个被调接口(即_func而非_funcii).</li>
+<li>当C++中的接口, 需要提供给C程序调用时, 需要在函数定义时加extern &quot;C&quot;.</li>
+</ul>
+<h1 id="使用方法"><span class="header-section-number">3</span> 使用方法</h1>
+<p>通常C中编写的函数如果有在其它语言中使用的可能, 通常会有下面形式的声明:</p>
+<pre class="brush: c; toolbar: false">
+    #ifdef  __cplusplus
+    extern "C" {
+    #endif
+
+    /**** some declaration or so *****/
+
+    #ifdef  __cplusplus
+    }
+    #endif  /* end of __cplusplus */
+</pre>
+ 
+<p>即在声明时已经加上extern &quot;C&quot; 而不需要调用时麻烦. 例如在VC++中调用C的库函数就不用作特别的声明.</p>
+<h1 id="extern-c的使用要点"><span class="header-section-number">4</span> extern &quot;C&quot;的使用要点</h1>
+<ul>
+<li>可以是单一语句:</li>
+</ul>
+<pre class="brush: c; toolbar: false">
+    extern "C" double sqrt(double);
+</pre>
+
+<ul>
+<li>可以是复合语句, 相当于复合语句中的声明都加了extern &quot;C&quot;</li>
+</ul>
+<pre class="brush: c; toolbar: false">
+    extern "C"
+    {
+        double sqrt(double);
+        int min(int, int);
+    }
+</pre>
+
+<ul>
+<li>可以包含头文件, 相当于头文件中的声明都加了extern &quot;C&quot;</li>
+</ul>
+<pre class="brush: c; toolbar: false">
+    extern "C"
+    {
+        #include &lt;cmath.h>
+    }
+</pre>
+
+<ul>
+<li><p>不可以将extern &quot;C&quot; 添加在函数内部</p></li>
+<li><p>如果函数有多个声明, 可以都加extern &quot;C&quot;, 也可以只出现在第一次声明中, 后面的声明会接受第一个链接指示符的规则.</p></li>
+</ul>
+<h1 id="参考资料"><span class="header-section-number">5</span> 参考资料</h1>
+<p>http://blog.csdn.net/vinep/article/details/3899780</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

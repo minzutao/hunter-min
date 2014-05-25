@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Linux网络安装, 配置与使用</title>
+<meta name="keywords" content="Linux,网络,设置">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Linux网络安装, 配置与使用</h1>
+<p>date: 2013.05.23; modification:2014.05.06</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#修改主机映射表"><span class="toc-section-number">1</span> 修改主机映射表</a></li>
+<li><a href="#配置路由"><span class="toc-section-number">2</span> 配置路由</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Linux网络安装, 配置与使用-->
+<!---keywords:Linux,网络,设置-->
+<!---date:2013.05.23; modification:2014.05.06-->
+
+<h1 id="修改主机映射表"><span class="header-section-number">1</span> 修改主机映射表</h1>
+<p>功能: 指定主机名查找方法, 通常指先查找文件/etc/hosts,找不到时再向DNS服务器请求. 对于大多数用户不用改动此文件内容.</p>
+<p>Linux: /etc/host.conf文件内容order hosts, bind</p>
+<pre><code>multi on</code></pre>
+<p>Soalris: /etc/nsswitch.conf 中的hosts项</p>
+<pre><code>hosts files, dns</code></pre>
+<p>/etc/host.conf文件 该文件指定如何解析主机名. Linux通过解析器库来获得主机名对应的IP地址. 下面是一个&quot;/etc/host.conf&quot;的示例:</p>
+<pre><code>order  bind,hosts
+multi  on
+nospoof  on</code></pre>
+<ul>
+<li>&quot;order bind,hosts&quot;指定主机名查询顺序, 这里规定先使用DNS来解析域名, 然后再查询&quot;/etc/hosts&quot;文件(也可以相反).</li>
+<li>&quot;multi on&quot;指定是否&quot;/etc/hosts&quot;文件中指定的主机可以有多个地址, 拥有多个IP地址的主机一般称为多穴主机.</li>
+<li>&quot;nospoof on&quot;指不允许对该服务器进行IP地址欺骗. IP欺骗是一种攻击系统安全的手段, 通过把IP地址伪装成别的计算机, 来取得其它计算机的信任.</li>
+</ul>
+<h1 id="配置路由"><span class="header-section-number">2</span> 配置路由</h1>
+<pre><code>sudo route add default gw 172.16.6.0    # 添加默认路由
+sudo route add -net IP/24 eth1
+sudo route add -net 172.16.6.0 netmask 255.255.255.0 gw 172.16.2.254 dev eth0 # 添加指定网络的路由
+sudo route add -host 192.168.168.119 gw 192.168.168.1
+sudo route add -host 192.168.168.110 dev eth0
+
+sudo route del default                  # 删除默认网关
+sudo route del gw 172.16.2.254          # 删除网关172.16.2.254
+sudo route del -net 172.16.86.0/24      # 删除网络172.16.86.0</code></pre>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

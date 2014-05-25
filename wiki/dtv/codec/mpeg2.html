@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>MPEG-2</title>
+<meta name="keywords" content="MPEG-2">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>MPEG-2</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#简介"><span class="toc-section-number">1</span> 简介</a><ul>
+<li><a href="#技术介绍"><span class="toc-section-number">1.1</span> 技术介绍</a></li>
+<li><a href="#特点"><span class="toc-section-number">1.2</span> 特点</a></li>
+<li><a href="#层次"><span class="toc-section-number">1.3</span> 层次</a></li>
+</ul></li>
+<li><a href="#标准"><span class="toc-section-number">2</span> 标准</a><ul>
+<li><a href="#基本介绍"><span class="toc-section-number">2.1</span> 基本介绍</a></li>
+<li><a href="#具体解释"><span class="toc-section-number">2.2</span> 具体解释</a></li>
+</ul></li>
+<li><a href="#原理及技术"><span class="toc-section-number">3</span> 原理及技术</a><ul>
+<li><a href="#原理介绍"><span class="toc-section-number">3.1</span> 原理介绍</a></li>
+<li><a href="#图像分类"><span class="toc-section-number">3.2</span> 图像分类</a></li>
+</ul></li>
+<li><a href="#编码码流的六个层次"><span class="toc-section-number">4</span> 编码码流的六个层次</a><ul>
+<li><a href="#综述"><span class="toc-section-number">4.1</span> 综述</a></li>
+<li><a href="#具体介绍"><span class="toc-section-number">4.2</span> 具体介绍</a></li>
+<li><a href="#编码方法"><span class="toc-section-number">4.3</span> 编码方法</a></li>
+</ul></li>
+<li><a href="#关键技术环节"><span class="toc-section-number">5</span> 关键技术环节</a><ul>
+<li><a href="#余弦变换dct"><span class="toc-section-number">5.1</span> 余弦变换DCT</a></li>
+<li><a href="#量化器"><span class="toc-section-number">5.2</span> 量化器</a></li>
+<li><a href="#之型扫描与游程编码"><span class="toc-section-number">5.3</span> 之型扫描与游程编码</a></li>
+<li><a href="#熵编码"><span class="toc-section-number">5.4</span> 熵编码</a></li>
+<li><a href="#信道缓存"><span class="toc-section-number">5.5</span> 信道缓存</a></li>
+<li><a href="#运动估计"><span class="toc-section-number">5.6</span> 运动估计</a></li>
+<li><a href="#运动补偿"><span class="toc-section-number">5.7</span> 运动补偿</a></li>
+</ul></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:MPEG-2-->
+<!---keywords:MPEG-2-->
+<!---date:2013.05.23-->
+
+<h1 id="简介"><span class="header-section-number">1</span> 简介</h1>
+<p>MPEG-2音频是在1994年11月为数字电视而提出来的，其发展分为三个阶段：</p>
+<p>第一阶段是对MPEG-1增加了低采样频率，有16KHZ，22.05KHZ，以及24KHZ。</p>
+<p>第二阶段是对MPEG-1实施了向后兼容的多声道扩展，将其称为MPEG-2 BC。支持单声道， 双声道，多声道等编码。并附加“低频加重”扩展声道，从而达到五声道编码。</p>
+<p>第三阶段是向后不兼容，将其称为MPEG-2 AAC先进音频编码。采样频率可以低至8KHZ；而 高至96KHZ范围内的1-48个通道可选的高音质音频编码。</p>
+<h2 id="技术介绍"><span class="header-section-number">1.1</span> 技术介绍</h2>
+<p>MPEG-2制定于1994年，设计目标是高级工业标准的图象质量以及更高的传输率。MPEG-2所 能提供的传输率在3-10Mbits/sec间，其在NTSC制式下的分辨率可达720X486，MPEG-2也可 提供并能够提供广播级的视像和CD级的音质。MPEG-2的音频编码可提供左右中及两个环绕 声道,以及一个加重低音声道，和多达7个伴音声道（DVD可有8种语言配音的原因）。由于 MPEG-2在设计时的巧妙处理，使得大多数MPEG-2解码器也可播放MPEG-1格式的数据，如 VCD。</p>
+<p>同时，由于MPEG-2的出色性能表现，已能适用于HDTV，使得原打算为HDTV设计的MPEG-3， 还没出世就被抛弃了。（MPEG-3要求传输速率在20Mbits/sec-40Mbits/sec间，但这将使 画面有轻度扭曲）。除了作为DVD的指定标准外，MPEG-2还可用于为广播，有线电视网， 电缆网络以及卫星直播(DirectBroadcastSatellite)提供广播级的数字视频。</p>
+<div class="figure">
+<img src="mpeg2_encoder.jpg" alt="mpeg2_encoder" /><p class="caption">mpeg2_encoder</p>
+</div>
+<h2 id="特点"><span class="header-section-number">1.2</span> 特点</h2>
+<p>MPEG-2的另一特点是，其可提供一个较广的范围改变压缩比，以适应不同画面质量， 存储容量，以及带宽的要求。</p>
+<p>MPEG-2的编码图像被分为三类，分别称为I帧，P帧和B帧。 * I帧图像采用帧内编码方式，即只利用了单帧图像内的空间相关性，而没有利用时间相关性。 * P帧和B帧图像采用帧间编码方式，即同时利用了空间和时间上的相关性。 * P帧图像只采用前向时间预测，可以提高压缩效率和图像质量。P帧图像中可以包含帧内编码的部分，即P帧中的每一个宏块可以是前向预测，也可以是帧内编码。 * B帧图像采用双向时间预测，可以大大提高压缩倍数。</p>
+<h2 id="层次"><span class="header-section-number">1.3</span> 层次</h2>
+<h1 id="标准"><span class="header-section-number">2</span> 标准</h1>
+<h2 id="基本介绍"><span class="header-section-number">2.1</span> 基本介绍</h2>
+<p>MPEG-2标准目前分为9个部分，统称为ISO/IEC13818国际标准。各部分的内容描述如下：</p>
+<ul>
+<li>一部分－ISO/IEC13818-1，System：系统，描述多个视频，音频和数据基本码流合成传输码流和节目码流的方式。</li>
+<li>二部分－ISO/IEC13818-2，Video：视频，描述视频编码方法。</li>
+<li>三部分－ISO/IEC13818-3，Audio：音频，描述与MPEG-1音频标准反向兼容的音频编码方法。</li>
+<li>四部分－ISO/IEC13818-4，Compliance：符合测试，描述测试一个编码码流是否符合MPEG-2码流的方法。</li>
+<li>五部分－ISO/IEC13818-5，Software：软件，描述了MPEG-2标准的第一、二、三部分的软件实现方法。</li>
+<li>六部分－ISO/IEC13818-6，DSM-CC：数字存储媒体-命令与控制，描述交互式多媒体网络中服务器与用户间的会话信令集。</li>
+</ul>
+<p>上六个部分均已获得通过，成为正式的国际标准，并在数字电视等领域中得到了广泛的实 际应用。此外，MPEG-2标准还有三个部分：第七部分规定不与MPEG-1音频反向兼容的多通 道音频编码；第八部分现已停止；第九部分规定了传送码流的实时接口。</p>
+<p>1990年成立的ATM视频编码专家组与MPEG在ISO/IEC13818标准的第一和第二两个部分进行 了合作，因此上述两个部分也成为ITU-T的标准，分别为：ITU-TRec.H.220系统和 ITU-TRec.H.262视频。</p>
+<h2 id="具体解释"><span class="header-section-number">2.2</span> 具体解释</h2>
+<p>下面我们主要讨论一下MPEG视频编码系统，即ISO/IEC13818-2部分。MPEG-2视频编码</p>
+<p>MPEG-2视频编码标准是一个分等级的系列，按编码图像的分辨率分成四个“级(Levels)”； 按所使用的编码工具的集合分成五个“类（Profiles)”。“级”与“类”的若干组合构成 MPEG-2视频编码标准在某种特定应用下的子集：对某一输入格式的图像，采用特定集合的 压缩编码工具，产生规定速率范围内的编码码流。在20种可能的组合中，目前有11种是已 获通过的，称为MPEG-2适用点。</p>
+<p>我们知道，当前模拟电视存在着PAL、NTSC和SECAM三大制式并存的问题，因此，数字电视 的输入格式标准试图将这三种制式统一起来，形成一种统一的数字演播室标准，这个标准 就是CCIR601，现称ITU-RRec BT601标准。MPEG-2中的四个输入图像格式“级”都是基于这 个标准的。低级（LowLevel)的输入格式的像素是ITU-RRec BT601格式的1/4，即 352x240x30(代表图像帧频为每秒30帧，每帧图像的有效扫描行数为240行，每行的有效像 素为352个），或352x288x25。低级之上的主级（MainLevel)的输入图像格式完全符合 ITU-RRec BT601格式，即720x480x30或720x576x25。主级之上为HDTV范围，基本上为 ITU-RRec BT601格式的4倍，其中1440高级（High-1440Level)的图像宽高比为4:3，格式 为1440x1080x30，高级（HighLevel)的图像宽高比为16:9，格式为1920x1080x30。</p>
+<p>在MPEG-2的五个“类”中，较高的“类”意味着采用较多的编码工具集，对编码图像进行更精 细的处理，在相同比特率下将得到较好的图像质量，当然实现的代价也较大。较高类编码 除使用较低类的编码工具外，还使用了一些较低类没有使用的附加工具，因此，较高类的 解码器除能解码用本类方法编码的图像外，也能解码用较低类方法编码的图像，即MPEG-2 的“类”之间具有后向兼容性。简单类（SimpleProfile)使用最少的编码工具。主类（ MainProfile)除使用所有简单类的编码工具外，还加入了一种双向预测的方法。信噪比可 分级类（SNRScalableProfile)和空间可分级类（SpatiallyScalableProfile)提供了一种 多级广播的方式，将图像的编码信息分为基本信息层和一个或多个次要信息层。基本信息 层包含对图像解码至关重要的信息，解码器根据基本信息即可进行解码，但图像的质量较 差。次要信息层中包含图像的细节。广播时对基本信息层加以较强的保护，使其具有较强 的抗干扰能力。这样，在距离较近，接收条件较好的情况下，可以同时收到基本信息和次 要信息，恢复出高质量的图像；而在距离较远，接收条件较差的条件下，仍能收到基本信 息，恢复出图像，不至造成解码中断。高级类（HighProfile)实际上应用于比特率更高， 要求更高的图像质量时，此外，前四个类在处理Y，U，V时是逐行顺序处理色差信号的， 高级类中还提供同时处理色差信号的可能性。</p>
+<p>目前的标准数字电视采用的是MP@ML主类和主级，而HDTV采用的是MP@HL主类和高级。下面 ，我们以MP@ML为例来说明一下MPEG-2视频编码系统原理及关键技术。</p>
+<h1 id="原理及技术"><span class="header-section-number">3</span> 原理及技术</h1>
+<h2 id="原理介绍"><span class="header-section-number">3.1</span> 原理介绍</h2>
+<p>概括地说，MPEG-2图像压缩的原理是利用了图像中的两种特性：空间相关性和时间相关性 。一帧图像内的任何一个场景都是由若干像素点构成的，因此一个像素通常与它周围的某 些像素在亮度和色度上存在一定的关系，这种关系叫作空间相关性；一个节目中的一个情 节常常由若干帧连续图像组成的图像序列构成，一个图像序列中前后帧图像间也存在一定 的关系，这种关系叫作时间相关性。这两种相关性使得图像中存在大量的冗余信息。如果 我们能将这些冗余信息去除，只保留少量非相关信息进行传输，就可以大大节省传输频带 。而接收机利用这些非相关信息，按照一定的解码算法，可以在保证一定的图像质量的前 提下恢复原始图像。一个好的压缩编码方案就是能够最大限度地去除图像中的冗余信息。</p>
+<h2 id="图像分类"><span class="header-section-number">3.2</span> 图像分类</h2>
+<p>MPEG-2中编码图像被分为三类，分别称为I帧，P帧和B帧。</p>
+<p>I帧图像采用帧内编码方式，即只利用了单帧图像内的空间相关性，而没有利用时间相关 性。I帧主要用于接收机的初始化和信道的获取，以及节目的切换和插入，I帧图像的压缩 倍数相对较低。I帧图像是周期性出现在图像序列中的，出现频率可由编码器选择。</p>
+<p>P帧和B帧图像采用帧间编码方式，即同时利用了空间和时间上的相关性。P帧图像只采用 前向时间预测，可以提高压缩效率和图像质量。P帧图像中可以包含帧内编码的部分，即P 帧中的每一个宏块可以是前向预测，也可以是帧内编码。B帧图像采用双向时间预测，可 以大大提高压缩倍数。值得注意的是，由于B帧图像采用了未来帧作为参考，因此MPEG-2 编码码流中图像帧的传输顺序和显示顺序是不同的。</p>
+<h1 id="编码码流的六个层次"><span class="header-section-number">4</span> 编码码流的六个层次</h1>
+<h2 id="综述"><span class="header-section-number">4.1</span> 综述</h2>
+<p>从上至下依次为：视频序列层（Sequence)，图像组层（GOP：GroupofPicture)，图像层 （Picture)，像条层（Slice)，宏块层（MacroBlock)和像块层（Block)。从图1中可以看 到，除宏块层和像块层外，上面四层中都有相应的起始码（SC：StartCode)，可用于因误 码或其它原因收发两端失步时，解码器重新捕捉同步。因此一次失步将至少丢失一个像条 的数据。</p>
+<h2 id="具体介绍"><span class="header-section-number">4.2</span> 具体介绍</h2>
+<p>序列指构成某路节目的图像序列，序列起始码后的序列头中包含了图像尺寸，宽高比，图 像速率等信息。序列扩展中包含了一些附加数据。为保证能随时进入图像序列，序列头是 重复发送的。</p>
+<p>序列层下是图像组层，一个图像组由相互间有预测和生成关系的一组I、P、B图像构成， 但头一帧图像总是I帧。GOP头中包含了时间信息。</p>
+<p>图像组层下是图像层，分为I、P、B三类。PIC头中包含了图像编码的类型和时间参考信息 。</p>
+<p>图像层下是像条层，一个像条包括一定数量的宏块，其顺序与扫描顺序一致。MP@ML中一 个像条必须在同一宏块行内。</p>
+<p>像条层下是宏块层。MPEG-2中定义了三种宏块结构：4:2:0宏块4:2:2宏块和4:4:4宏块， 分别代表构成一个宏块的亮度像块和色差像块的数量关系。</p>
+<p>4:2:0宏块中包含四个亮度像块，一个Cb色差像块和一个Cr色差像块；4:2:2宏块中包含四 个亮度像块，二个Cb色差像块和二个Cr色差像块；4:4:4宏块中包含四个亮度像块，四个 Cb色差像块和四个Cr色差像块。这三种宏块结构实际上对应于三种亮度和色度的抽样方式 。</p>
+<h2 id="编码方法"><span class="header-section-number">4.3</span> 编码方法</h2>
+<p>在进行视频编码前，分量信号R、G、B被变换为亮度信号Y和色差信号Cb、Cr的形式。 4:2:2格式中亮度信号的抽样频率为13.5MHz，两个色差信号的抽样频率均为6.75MHz，这 样空间的抽样结构中亮度信号为每帧720x576样值，Cb，Cr都为360x576样值，即每行中每 隔一个像素对色差信号抽一次样，如图3所示，○代表Y信号的抽样点，×代表Cb，Cr信号的 抽样点。</p>
+<p>4:4:4格式中，亮度和色差信号的抽样频率都是13.5MHz，因此空间的抽样结构中亮度和色 差信号都为每帧720x576样值。而4:2:0格式中，亮度信号的抽样频率13.5MHz，空间的抽 样结构中亮度信号为每帧720x576样值，Cb，Cr都为360x288样值，即每隔一行对两个色差 信号抽一次样，每抽样行中每隔一个像素对两个色差信号抽一次样。</p>
+<p>通过上述分析不难计算出，4:2:0格式中，每四个Y信号的像块空间内的Cb，Cr样值分别构 成一个Cb，Cr像块；4:2:2格式中，每四个Y信号的像块空间内的Cb，Cr样值分别构成两个 Cb，Cr像块；而4:4:4格式中，每四个Y信号的像块空间内的Cb，Cr样值分别构成四个Cb， Cr像块。相应的宏块结构正是以此基础构成的。</p>
+<p>宏块层之下是像块层，像块是MPEG-2码流的最底层，是DCT变换的基本单元。MP@ML中一个 像块由8x8个抽样值构成，同一像块内的抽样值必须全部是Y信号样值，或全部是Cb信号样 值，或全部是Cr信号样值。另外，像块也用于表示8x8个抽样值经DCT变换后所生成的8x8 个DCT系数。</p>
+<p>在帧内编码的情况下，编码图像仅经过DCT，量化器和比特流编码器即生成编码比特流， 而不经过预测环处理。DCT直接应用于原始的图像数据。</p>
+<p>在帧间编码的情况下，原始图像首先与帧存储器中的预测图像进行比较，计算出运动矢量 ，由此运动矢量和参考帧生成原始图像的预测图像。而后，将原始图像与预测像素差值所 生成的差分图像数据进行DCT变换，再经过量化器和比特流编码器生成输出的编码比特流 。</p>
+<p>可见，帧内编码与帧间编码流程的区别在于是否经过预测环的处理。</p>
+<h1 id="关键技术环节"><span class="header-section-number">5</span> 关键技术环节</h1>
+<h2 id="余弦变换dct"><span class="header-section-number">5.1</span> 余弦变换DCT</h2>
+<p>DCT是一种空间变换，在MPEG-2中DCT以8x8的像块为单位进行，生成的是8x8的DCT系数数 据块。DCT变换的最大特点是对于一般的图像都能够将像块的能量集中于少数低频DCT系数 上，即生成8x8DCT系数块中，仅左上角的少量低频系数数值较大，其余系数的数值很小， 这样就可能只编码和传输少数系数而不严重影响图像质量。</p>
+<p>DCT不能直接对图像产生压缩作用，但对图像的能量具有很好的集中效果，为压缩打下了 基础。</p>
+<h2 id="量化器"><span class="header-section-number">5.2</span> 量化器</h2>
+<p>量化是针对DCT变换系数进行的，量化过程就是以某个量化步长去除DCT系数。量化步长的 大小称为量化精度，量化步长越小，量化精度就越细，包含的信息越多，但所需的传输频 带越高。不同的DCT变换系数对人类视觉感应的重要性是不同的，因此编码器根据视觉感 应准则，对一个8x8的DCT变换块中的64个DCT变换系数采用不同的量化精度，以保证尽可 能多地包含特定的DCT空间频率信息，又使量化精度不超过需要。DCT变换系数中，低频系 数对视觉感应的重要性较高，因此分配的量化精度较细；高频系数对视觉感应的重要性较 低，分配的量化精度较粗，通常情况下，一个DCT变换块中的大多数高频系数量化后都会 变为零。</p>
+<h2 id="之型扫描与游程编码"><span class="header-section-number">5.3</span> 之型扫描与游程编码</h2>
+<p>DCT变换产生的是一8x8的二维数组，为进行传输，还须将其转换为一维排列方式。有两种 二维到一维的转换方式，或称扫描方式：之型扫描（Zig-Zag)和交替扫描，其中之型扫描 是最常用的一种。由于经量化后，大多数非零DCT系数集中于8x8二维矩阵的左上角，即低 频分量区，之型扫描后，这些非零DCT系数就集中于一维排列数组的前部，后面跟着长串 的量化为零的DCT系数，这些就为游程编码创造了条件。</p>
+<p>游程编码中，只有非零系数被编码。一个非零系数的编码由两部分组成：前一部分表示非 零系数前的连续零系数的数量（称为游程），后一部分是那个非零系数。这样就把之型扫 描的优点体现出来了，因为之型扫描在大多数情况下出现连零的机会比较多，游程编码的 效率就比较高。当一维序列中的后部剩余的DCT系数都为零时，只要用一个“块结束”标志 (EOB)来指示，就可结束这一8x8变换块的编码，产生的压缩效果是非常明显的。</p>
+<h2 id="熵编码"><span class="header-section-number">5.4</span> 熵编码</h2>
+<p>量化仅生成了DCT系数的一种有效的离散表示，实际传输前，还须对其进行比特流编码， 产生用于传输的数字比特流。简单的编码方法是采用定长码，即每个量化值以同样数目的 比特表示，但这种方法的效率较低。而采用熵编码可以提高编码效率。熵编码是基于编码 信号的统计特性，使得平均比特率下降。游程和非零系数既可独立的，也可联合的作熵编 码。熵编码中使用较多的一种是霍夫曼编码，MPEG-2视频压缩系统中采用的就是霍夫曼编 码。霍夫曼编码中，在确定了所有编码信号的概率后生产一个码表，对经常发生的大概率 信号分配较少的比特表示，对不常发生的小概率信号分配较多的比特表示，使得整个码流 的平均长度趋</p>
+<h2 id="信道缓存"><span class="header-section-number">5.5</span> 信道缓存</h2>
+<p>由于采用了熵编码，产生的比特流的速率是变化的，随着视频图像的统计特性变化。但大 多数情况下传输系统分配的频带都是恒定的，因此在编码比特流进入信道前需设置信道缓 存。信道缓存是一缓存器，以变比特率从熵编码器向里写入数据，以传输系统标称的恒定 比特率向外读出，送入信道。缓存器的大小，或称容量是设定好的，但编码器的瞬时输出 比特率常明显高于或低于传输系统的频带，这就有可能造成缓存器的上溢出或下溢出。因 此缓存器须带有控制机制，通过反馈控制压缩算法，调整编码器的比特率，使得缓存器的 写入数据速率与读出数据速率趋于平衡。缓存器对压缩算法的控制是通过控制量化器的量 化步长实现的，当编码器的瞬时输出速率过高，缓存器将要上溢时，就使量化步长增大以 降低编码数据速率，当然也相应增大了图像的损失；当编码器的瞬时输出速率过低，缓存 器将要下溢出时，就使量化步长减小以提高编码数据</p>
+<h2 id="运动估计"><span class="header-section-number">5.6</span> 运动估计</h2>
+<p>运动估计使用于帧间编码方式时，通过参考帧图像产生对被压缩图像的估计。运动估计的 准确程度对帧间编码的压缩效果非常重要。如果估计作的好，那么被压缩图像与估计图像 相减后只留下很小的值用于传输。运动估计以宏块为单位进行，计算被压缩图像与参考图 像的对应位置上的宏块间的位置偏移。这种位置偏移是以运动矢量来描述的，一个运动矢 量代表水平和垂直两个方向上的位移。运动估计时，P帧和B帧图像所使用的参考帧图像是 不同的。P帧图像使用前面最近解码的I帧或P帧作参考图像，称为前向预测；而B帧图像使 用两帧图像作为预测参考，称为双向预测，其中一个参考帧在显示顺序上先于编码帧（前 向预测），另一帧在显示顺序上晚于编码帧（后向预测），B帧的参考帧在任何情况下都 是I帧或P帧。</p>
+<h2 id="运动补偿"><span class="header-section-number">5.7</span> 运动补偿</h2>
+<p>利用运动估计算出的运动矢量，将参考帧图像中的宏块移至水平和垂直方向上的相对应位 置，即可生成对被压缩图像的预测。在绝大多数的自然场景中运动都是有序的。因此这种 运动补偿生成的预测图像与被压缩图像的差分值是很小的。数字图像质量的主观评价</p>
+<p>主观评价的条件包括：评价小组结构，观察距离，测试图像，环境照度和背景色调等。评 价小组由一定人数观察人员构成，其中专业人员与非专业人员各占一定比例。观察距离为 显示器对角线尺寸的3-6倍。测试图像有若干具有一定图像细节和运动的图像序列构成。 主观评价反映的是许多人对图像质量统计评价的平均值。</p>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

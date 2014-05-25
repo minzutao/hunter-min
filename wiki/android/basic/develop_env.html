@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Android源码开发环境搭建</title>
+<meta name="keywords" content="repo,git,编译,安装,源代码">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Android源码开发环境搭建</h1>
+<p>date: 2013.05.31; modification:2014.04.22</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#android源代码编译环境安装"><span class="toc-section-number">1</span> Android源代码编译环境安装</a><ul>
+<li><a href="#安装sun-jdk"><span class="toc-section-number">1.1</span> 安装sun jdk</a></li>
+<li><a href="#安装其他linux工具"><span class="toc-section-number">1.2</span> 安装其他linux工具</a></li>
+</ul></li>
+<li><a href="#设置ccache非必须"><span class="toc-section-number">2</span> 设置ccache(非必须)</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Android源码开发环境搭建-->
+<!---keywords:repo,git,编译,安装,源代码-->
+<!---date:2013.05.31; modification:2014.04.22-->
+
+<h1 id="android源代码编译环境安装"><span class="header-section-number">1</span> Android源代码编译环境安装</h1>
+<p>以ubuntu为例. 我用的是mint 14, 也就相当于ubuntu 12.10. 这里只列出我的安装过程. ubuntu10.04和12.04的, 具体可以参照: <a href="http://source.android.com/source/initializing.html">android源码官网</a>.</p>
+<h2 id="安装sun-jdk"><span class="header-section-number">1.1</span> 安装sun jdk</h2>
+<p>ubuntu自带的是openjdk, 据说开发android时候这个不好使. 对于android 2.3之前的需要jdk5, 之后的需要jdk6. 这里列出了我的安装(这种貌似比较简单):</p>
+<pre><code>sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install  oracle-java6-installer</code></pre>
+<p>这里的java6, 可以根据需要换成7或8, 目前(2013.05.28)android需要的是6. 然后会弹出一个字符界面的对话框, 选择同意协议就好了.</p>
+<p>切换版本:</p>
+<p>如果安装了多个版本的java jdk, 可以用如下命令切换:</p>
+<pre><code>sudo update-alternatives --config java
+sudo update-alternatives --config javac</code></pre>
+<h2 id="安装其他linux工具"><span class="header-section-number">1.2</span> 安装其他linux工具</h2>
+<p>对于ubuntu12.04以及12.10:</p>
+<pre><code>sudo apt-get install git gnupg flex bison gperf build-essential \
+    zip curl libc6-dev libncurses5-dev:i386 x11proto-core-dev \
+    libx11-dev:i386 libreadline6-dev:i386 libgl1-mesa-glx:i386 \
+    libgl1-mesa-dev g++-multilib mingw32 tofrodos \
+    python-markdown libxml2-utils xsltproc zlib1g-dev:i386
+sudo ln -s /usr/lib/i386-linux-gnu/mesa/libGL.so.1 /usr/lib/i386-linux-gnu/libGL.so</code></pre>
+<h1 id="设置ccache非必须"><span class="header-section-number">2</span> 设置ccache(非必须)</h1>
+<p>ccache是一个用于加速重编译速度的缓存, 在make clean后也有效. 再.bashrc中加入:</p>
+<pre><code>export USE_CCACHE=1</code></pre>
+<p>如果需要手动配置ccache的缓存路径(同样是.bashrc中):</p>
+<pre><code>export CCACHE_DIR=&lt;path-to-your-cache-directory&gt;</code></pre>
+<p>android建议的ccache是50GB~100GB空间. (看来开发android没台好电脑是不行呀, NND). 下载完代码后, 运行如下命令:</p>
+<pre><code>prebuilts/misc/linux-x86/ccache/ccache -M 50G</code></pre>
+<p>对于Ice Cream Sandwich (4.0.x)及其之前的版本:</p>
+<pre><code>prebuilt/linux-x86/ccache/ccache -M 50G</code></pre>
+<p>这个配置会配置在<code>CCACHE_DIR</code>中, 并且永久生效.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>emacs配色插件</title>
+<meta name="keywords" content="颜色,配置,mode,color,theme">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>emacs配色插件</h1>
+<p>date: 2013.08.23; modification:2013.08.25</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#前言"><span class="toc-section-number">1</span> 前言</a></li>
+<li><a href="#安装"><span class="toc-section-number">2</span> 安装</a></li>
+<li><a href="#选择配色方案"><span class="toc-section-number">3</span> 选择配色方案</a></li>
+<li><a href="#自定义"><span class="toc-section-number">4</span> 自定义</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:emacs配色插件-->
+<!---keywords:颜色,配置,mode,color,theme-->
+<!---date:2013.08.23; modification:2013.08.25-->
+
+<h1 id="前言"><span class="header-section-number">1</span> 前言</h1>
+<p>&quot;color-theme&quot;这个mode能让你方便地修改Emacs的配色.</p>
+<h1 id="安装"><span class="header-section-number">2</span> 安装</h1>
+<p>首先, 从color-theme项目的网站上找到它的下载地址, 现在最新的版本是6.6.0.</p>
+<p>然后在你的Home里建一个文件夹(例如&quot;elisp&quot;), 将刚刚下载的归档解压出来. 虽然这些工作在图形界面里都能很容易地完成, 但既然这篇日志有一个&quot;Linux&quot;的Tag, 那就来复习一下怎样在命令行里完成这个工作吧. 这里假设你把&quot;color-theme-6.6.0.tar.gz&quot;文件放在了&quot;~/download&quot;目录里.</p>
+<pre><code>cd ~
+mkdir elisp
+cd elisp
+tar -zxvf ~/download/color-theme-6.6.0.tar.gz</code></pre>
+<p>OK, 然后在&quot;.emacs&quot;里加入这样几句话:</p>
+<pre><code>(add-to-list &#39;load-path &quot;~/elisp&quot;)
+(require &#39;color-theme)
+(color-theme-initialize)</code></pre>
+<p>第一句是将&quot;~/elisp&quot;这个目录加入到&quot;load-path&quot;变量中. &quot;load-path&quot;变量里记录了Emacs搜索装载文件的目录, 将&quot;~/elisp&quot;加入进去, Emacs才能找到我们刚刚添加的Elisp扩展文件.</p>
+<p>第二句是调用&quot;color-theme&quot;扩展. 至于调用的方式, 通常在Elisp扩展的README文件里都有介绍.</p>
+<h1 id="选择配色方案"><span class="header-section-number">3</span> 选择配色方案</h1>
+<p>重启Emacs, 在&quot;Tools&quot;菜单里就多出来一项&quot;Color Themes&quot;. 点击它, 会打开一个叫做&quot;Color Theme Seletion&quot;的Buffer. 在这里列出了很多不同风格的配色方案, 选择(用方向键或者C-p, C-n)一个配色方案, 按&quot;Enter&quot;键就可以预览配色效果(有些切换有点问题, 最好按两次Enter). 多找找吧, 九十个配色方案里应该有你喜欢的了. 找到合适的方案后, 将这句加入.emacs.</p>
+<pre><code>(color-theme-lawrence)
+; 这里的lawrence就是你选择的方案名, 将刚刚在列表中的名称中的大写开头改为小
+; 写, 将空格改为&#39;-&#39;即可.</code></pre>
+<p>再次重启emacs即可生效. 如果提示错误, 很可能是名字没写对.</p>
+<h1 id="自定义"><span class="header-section-number">4</span> 自定义</h1>
+<p>在上面挑选配色方案的列表中, 将光标移动到你选中的那个项目上, 按&quot;p&quot;, 会在一个新的Buffer里打印出一段代码. 把这些代码保存到&quot;~/.emacs-color-theme&quot;. 还记得怎么保存文件么?</p>
+<pre><code>C-x C-s ~/.emacs-color-theme</code></pre>
+<p>下一步是去修改&quot;.emacs&quot;文件.</p>
+<p>首先在&quot;(require 'color-theme)&quot;前加上分号&quot;;&quot;将这一行注释掉.</p>
+<p>然后在它的下面加上这样的两行</p>
+<pre><code>(load-file &quot;~/.emacs-color-theme&quot;)
+(my-color-theme)</code></pre>
+<p>修改这个.emacs-color-theme就可以实现自定义颜色了. 建议挑选一个自己比较满意的, 然后稍作修改即可.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!---title:linux firefox 安装flash player-->
+<!---keywords:linux, firefox, flashplayer, flash播放器-->
+<!---date:2014.01.09; modification:2014.01.09-->
+
+#下载
+
+对于包含flash的网页, 会提示需要安装flashplayer, 从那里点进去, 即可转向ADOBE的网站, 下载install_flash_player_10_linux.tar.gz
+
+
+
+#安装
+
+##解压
+
+解压, 命令为:
+
+    tar -zxvf install_flash_player_11_linux.x86_64.tar.gz # 文件名根据下载版本可能会不同
+
+得到:
+
+* libflashplayer.so
+* readme.txt
+* usr
+
+
+##拷贝
+
+复制libflashplayer.so到火狐浏览器插件文件夹下, 命令为:
+
+    sudo cp libflashplayer.so /usr/lib/mozilla/plugins/ 
+
+此目录可能根据火狐不同的版本有所不同, 大家可以先去lib下面 搜索一下mozilla
+
+复制usr:
+
+    sudo cp -r usr /usr
+
+重启firefox.  它就会提示有更新了(也可能会没有). 现在就可以播放flash了.
+
+
+
+#问题解决
+
+(来自参考页面, 本人未尝试)
+用firefox 播放flash时出现乱码解决: 
+
+    sudo vim /etc/fonts/conf.d/49-sansserif.conf
+
+将
+
+    <edit name="family" mode="append_last">
+        <string>sans-serif</string>
+    </edit>
+
+中的红色部分改为
+
+    <string>sans</string>
+
+#参考资料
+
+http://www.cppblog.com/koson/archive/2010/03/03/108770.aspx
+
+
+<!-- vim:set tw=0:-->

@@ -1,0 +1,15 @@
+<!---title:Linux安装中文字体-->
+<!---keywords:ubuntu,chinese,font,window-->
+<!---date:2013.08.21; modification:2013.08.21-->
+
+1. windows的字体一般存放在c:\windows\fonts目录下, copy你要的字体到linux下, 文件是ttf格式.
+
+2. 把字体copy到/usr/share/fonts 目录下, 然后执行以下命令
+
+        mkfontscale
+        mkfontdir   //这两条命令是生成字体的索引信息
+        fc-cache    //更新字体缓存
+
+安装完成.
+
+<!-- vim:set tw=0:-->

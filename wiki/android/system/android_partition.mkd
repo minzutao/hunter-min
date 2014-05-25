@@ -1,0 +1,156 @@
+<!---title:Android常见分区解释-->
+<!---keywords:boot,system,recovery,data,cache,partition-->
+<!---date:2014.04.04; modification:2014.04.27-->
+
+#引言
+
+除非你的Android手机只是用来打电话, 发短信, 上网和基本apps, 否则你就应该了解你的android设备使用了几个分区来管理文件和文件夹. 每个分区在设备上都有不同的功能, 但是不是所有的Android用户都知道每个分区的功能和分区上的内容. 在本文中, 我们将会一起梳理一下Android分区, 分区的内容和修改分区的内容会有些什么影响. 
+
+#概述
+
+Android手机和平板的内部存储分区列表如下: 
+
+    /boot
+    /system
+    /recovery
+    /data
+    /cache
+    /misc
+
+另外还有 SD card分区: 
+
+    /sdcard
+    /sd-ext
+
+请注意只有/sdcard是所有Android设备都有的, /sd-ext只在某些设备上可以看到. 现在让我们分别分析这些分区的内容和功能. 
+
+#详解
+
+##/boot
+
+这个分区上有Android的引导程序, 包括内核和内存操作程序. 没有这个分区设备就不能被引导. 恢复系统的时候会擦除这个分区, 并且必须重新安装引导程序和ROM才能重启系统. 
+
+##/system
+
+这个分区上是除了内核和内存操作之外的整个操作系统. 里面包含了Android用户接口和预先安装的系统应用. 擦除了这个分区就会删除掉Andorid系统, 所以你需要进入recovery模式或者bootloader模式去安装一个新的ROM. 
+
+##/recovery
+
+recovery分区被认为是另一个启动分区, 你可以启动设备进入recovery控制台去执行高级的系统恢复和管理操作. 
+
+##/data
+
+这个分区保存着用户数据. 通讯录, 短信, 设置和你安装的apps都在这个分区上. 擦除这个分区相当于恢复出厂设置, 当你第一次启动设备的时候或者在安装了官方或者客户的ROM之后系统会自动重建这个分区. 当你执行恢复出厂设置时, 就是在擦除这个分区. 
+
+##/cache
+
+这个分区是Android系统存储频繁访问的数据和app的地方. 擦除这个分区不影响你的个人数据, 当你继续使用设备时, 被擦除的数据就会自动被创建. 
+
+##/misc
+
+这个分区包含各种复杂的类似于on/off的系统设置. 这些设置可能是USB配置和某些硬件配置信息. 这是一个重要的分区, 如果该分区损坏或者丢失, 设备的功能可能就工作不正常. 
+
+##/sdcard
+
+这个分区不是内部的存储区, 而是SD card. 这是你个人存储大文件的地方, 存储多媒体文件, 文档, ROM文件等等. 如果你备份了这个分区上文件, 那么擦除这个分区将会很安全. 不过请注意一些用户安装的apps会存储数据和设置参数到SD card上, 擦除这个分区会掉的这些数据. 
+
+##/sd-ext
+
+这个分区不是Android设备的标准分区, 但是在有客户ROM的情况下变得很流行. 
+
+#小结
+
+以上我们总结了Android各个分区的功能. 当你安装ROM时或者系统询问你要删除某个分区时, 你就会准确地知道哪些会丢失哪些不会丢失, 因此你就会去备份那些将会丢失文件. 
+
+
+#英文解释
+
+Unless you have been using your Android phone just for calls, SMS, browsing and basic apps, you should know that Android uses several partitions to organize files and folders on the device. Each of these partitions has a distinct role in the functionality of the device, but not many Android users know the significance of each partition and its contents. In this guide, we will take you on a tour of Android partitions, what they contain and what can be the possible consequences of modifying their content.
+
+
+Let’s start with a list of standard internal memory partitions on Android phones and tablets. These are:
+
+/boot
+
+/system
+
+/recovery
+
+/data
+
+/cache
+
+/misc
+
+In addition, there are the SD card partitions.
+
+/sdcard
+
+/sd-ext
+
+Note that only /sdcard is found in all Android devices and the rest are present only in select devices. Let’s now take a look at the purpose and contents of each of these partitions.
+
+ 
+
+##/boot
+
+This is the partition that enables the phone to boot, as the name suggests. It includes the bootloader and the kernel. Without this partition, the device will simply not be able to boot. Wiping this partition from recovery should only be done if absolutely required and once done, the device must NOT be rebooted before installing a new one, which can be done by installing a ROM that includes a /boot partition.
+
+ 
+
+##/system
+
+This partition basically contains the entire operating system, other than the kernel and the bootloader. This includes the Android user interface as well as all the system applications that come pre-installed on the device. Wiping this partition will remove Android from the device without rendering it unbootable, and you will still be able to put the phone into recovery or bootloader mode to install a new ROM.
+
+ 
+
+##/recovery
+
+The recovery partition can be considered as an alternative boot partition that lets you boot the device into a recovery console for performing advanced recovery and maintenance operations on it. To learn more about this partition and its contents, see the ‘About Android Recovery’ section of our guide to ClockworkMod recovery.
+
+ 
+
+##/data
+
+Also called userdata, the data partition contains the user’s data – this is where your contacts, messages, settings and apps that you have installed go. Wiping this partition essentially performs a factory reset on your device, restoring it to the way it was when you first booted it, or the way it was after the last official or custom ROM installation. When you perform a wipe data/factory reset from recovery, it is this partition that you are wiping.
+
+ 
+
+##/cache
+
+This is the partition where Android stores frequently accessed data and app components. Wiping the cache doesn’t effect your personal data but simply gets rid of the existing data there, which gets automatically rebuilt as you continue using the device.
+
+ 
+
+##/misc
+
+This partition contains miscellaneous system settings in form of on/off switches. These settings may include CID (Carrier or Region ID), USB configuration and certain hardware settings etc. This is an important partition and if it is corrupt or missing, several of the device’s features will will not function normally.
+
+ 
+
+##/sdcard
+
+This is not a partition on the internal memory of the device but rather the SD card. In terms of usage, this is your storage space to use as you see fit, to store your media, documents, ROMs etc. on it. Wiping it is perfectly safe as long as you backup all the data you require from it, to your computer first. Though several user-installed apps save their data and settings on the SD card and wiping this partition will make you lose all that data.
+
+ 
+
+On devices with both an internal and an external SD card – devices like the Samsung Galaxy S and several tablets – the /sdcard partition is always used to refer to the internal SD card. For the external SD card – if present – an alternative partition is used, which differs from device to device. In case of Samsung Galaxy S series devices, it is /sdcard/sd while in many other devices, it is /sdcard2. Unlike /sdcard, no system or app data whatsoever is stored automatically on this external SD card and everything present on it has been added there by the user. You can safely wipe it after backing up any data from it that you need to save.
+
+ 
+
+##/sd-ext
+
+This is not a standard Android partition, but has become popular in the custom ROM scene. It is basically an additional partition on your SD card that acts as the /data partition when used with certain ROMs that have special features called APP2SD+ or data2ext enabled. It is especially useful on devices with little internal memory allotted to the /data partition. Thus, users who want to install more programs than the internal memory allows can make this partition and use it with a custom ROM that supports this feature, to get additional storage for installing their apps. Wiping this partition is essentially the same as wiping the /data partition – you lose your contacts, SMS, market apps and settings.
+
+With this, we conclude our tour of Android partitions. Now whenever you install a ROM or mod that requires you to wipe certain partitions before the installation, you should be in a better position to know what you’re losing and what not and thus, you’ll know what to backup and what not.
+
+
+#参考资料
+
+[http://blog.chinaunix.net/uid-26569496-id-3891554.html](http://blog.chinaunix.net/uid-26569496-id-3891554.html)
+
+[http://hi.baidu.com/royfantasy/item/df442332acfab921b2c0c5d4](http://hi.baidu.com/royfantasy/item/df442332acfab921b2c0c5d4)
+
+
+
+<!-- vim:set tw=0:-->

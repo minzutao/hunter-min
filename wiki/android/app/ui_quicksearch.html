@@ -1,0 +1,349 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Android UI编程速查</title>
+<meta name="keywords" content="Layout,View,Button,Textview,笔记">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Android UI编程速查</h1>
+<p>date: 2013.06.17; modification:2014.05.04</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#layout"><span class="toc-section-number">1</span> Layout</a><ul>
+<li><a href="#线性布局linearlayout"><span class="toc-section-number">1.1</span> 线性布局(LinearLayout)</a></li>
+</ul></li>
+<li><a href="#控件"><span class="toc-section-number">2</span> 控件</a><ul>
+<li><a href="#文本框textview"><span class="toc-section-number">2.1</span> 文本框(TextView)</a></li>
+<li><a href="#输入框edittext"><span class="toc-section-number">2.2</span> 输入框(EditText)</a></li>
+<li><a href="#按钮button"><span class="toc-section-number">2.3</span> 按钮(Button)</a></li>
+<li><a href="#复选框checkbox"><span class="toc-section-number">2.4</span> 复选框(CheckBox)</a></li>
+<li><a href="#单选按钮radiobutton"><span class="toc-section-number">2.5</span> 单选按钮(RadioButton)</a></li>
+<li><a href="#图片imageview"><span class="toc-section-number">2.6</span> 图片(ImageView)</a></li>
+</ul></li>
+<li><a href="#其他"><span class="toc-section-number">3</span> 其他</a><ul>
+<li><a href="#删除eclipse创建的activity"><span class="toc-section-number">3.1</span> 删除Eclipse创建的Activity</a></li>
+</ul></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Android UI编程速查-->
+<!---keywords:Layout,View,Button,Textview,笔记-->
+<!---date:2013.06.17; modification:2014.05.04-->
+
+<h1 id="layout"><span class="header-section-number">1</span> Layout</h1>
+<h2 id="线性布局linearlayout"><span class="header-section-number">1.1</span> 线性布局(LinearLayout)</h2>
+<p>XML:</p>
+<pre class = "brush: xml; toolbar: false">
+    &lt;LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:orientation="vertical"
+        tools:context=".MainActivity" >
+
+        ...some views...
+
+    &lt;/LinearLayout>
+</pre>
+
+<h1 id="控件"><span class="header-section-number">2</span> 控件</h1>
+<h2 id="文本框textview"><span class="header-section-number">2.1</span> 文本框(TextView)</h2>
+<p>XML:</p>
+<pre class = "brush: xml; toolbar: false">
+    &lt;TextView
+        android:layout_width="480dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:background="#888888"
+        android:text="@string/hello_world" />
+</pre>
+
+<p>JAVA:</p>
+<pre class = "brush: java; toolbar: false">
+    private TextView textView;
+
+    textView = (TextView)findViewById(R.id.textView);
+    textView.setText("^_^");
+</pre>
+
+
+<h2 id="输入框edittext"><span class="header-section-number">2.2</span> 输入框(EditText)</h2>
+<p>XML:</p>
+<pre class = "brush: xml; toolbar: false">
+    &lt;EditText android:id="@+id/edit_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/edit_message" />
+</pre>
+
+<p>JAVA:</p>
+<pre class = "brush: java; toolbar: false">
+    略
+</pre>
+
+
+
+
+<h2 id="按钮button"><span class="header-section-number">2.3</span> 按钮(Button)</h2>
+<p>XML:</p>
+<pre class = "brush: xml; toolbar: false">
+    &lt;Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Select All" />
+</pre>
+
+<p>说明:</p>
+<ul>
+<li>'@'符号: 表示要引用的是xml中的资源对象(resource object而非资源本身). '@'之后跟的是resource type/resource name.</li>
+<li>'+'符号: 表示要引用的资源在此第一次出现(即定义).</li>
+</ul>
+<p>JAVA:</p>
+<pre class = "brush: java; toolbar: false">
+    import android.view.View.OnClickListener;
+
+    Button button = (Button)findViewById(R.id.button1);
+    button.setOnClickListener(buttonSelectAllListener);
+
+    OnClickListener buttonSelectAllListener = new OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            Button button = (Button)v;
+            if(button.getId() == R.id.button1) {
+                Log.d(TAG, "onClick button1\n");
+            }
+        }
+    };
+</pre>
+
+
+<h2 id="复选框checkbox"><span class="header-section-number">2.4</span> 复选框(CheckBox)</h2>
+<p>XML:</p>
+<pre class = "brush: xml; toolbar: false">
+    &lt;CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CheckBox1" />
+</pre>
+
+<p>JAVA方法1(使用通用Listener):</p>
+<pre class = "brush: java; toolbar: false">
+    import android.view.View.OnClickListener;
+
+    private CheckBox checkBox1;
+    checkBox1 = (CheckBox)findViewById(R.id.checkBox1);
+    checkBox1.setOnClickListener(listener);
+
+    // 点击相应Listener
+    OnClickListener listener = new OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            // TODO Auto-generated method stub
+            CheckBox box = (CheckBox)v;
+            if(box.getId() == R.id.checkBox1) {  // 用于当listener绑定到多个checkbox时候以做区分.
+                Log.d(TAG, "onClick checkBox1\n");
+            }
+            else {
+                Log.d(TAG, "onClick checkBox2\n");
+            }
+            Log.d(TAG, box.isChecked() ? "Checked" : "UnChecked");
+        }
+
+    };
+</pre>
+
+
+<p>JAVA方法2(使用通用OnCheckedChangeListener):</p>
+<pre class = "brush: java; toolbar: false">
+    import android.widget.CompoundButton.OnCheckedChangeListener;
+
+    private CheckBox checkBox1;
+    checkBox1 = (CheckBox)findViewById(R.id.checkBox1);
+    checkBox1.setOnCheckedChangeListener(listener);
+
+    OnCheckedChangeListener listener = new OnCheckedChangeListener() {
+
+        @Override
+        public void onCheckedChanged(CompoundButton box, boolean isChecked) {
+            if(box.getId() == R.id.checkBox1) {
+                Log.d(TAG, "onClick checkBox1\n");
+            }
+            else {
+                Log.d(TAG, "onClick checkBox2\n");
+            }
+            Log.d(TAG, box.isChecked() ? "Checked" : "UnChecked");
+        }
+    };
+</pre>
+
+<h2 id="单选按钮radiobutton"><span class="header-section-number">2.5</span> 单选按钮(RadioButton)</h2>
+<p>XML:</p>
+<pre class = "brush: xml; toolbar: false">
+    &lt;RadioGroup
+        android1:id="@+id/radioGroup1"
+        android1:layout_width="wrap_content"
+        android1:layout_height="wrap_content" >
+
+        &lt;RadioButton
+            android1:id="@+id/radio0"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:checked="true"
+            android1:text="RadioButton0" />
+
+        &lt;RadioButton
+            android1:id="@+id/radio1"
+            android1:layout_width="wrap_content"
+            android1:layout_height="wrap_content"
+            android1:text="RadioButton1" />
+    &lt;/RadioGroup>
+</pre>
+
+<p>JAVA:</p>
+<pre class = "brush: java; toolbar: false">
+    import android.widget.RadioGroup.OnCheckedChangeListener;
+
+    private RadioGroup radioGroup;
+    private RadioButton radio0;
+    private RadioButton radio1;
+
+    radio0 = (RadioButton)findViewById(R.id.radio0);
+    radio1 = (RadioButton)findViewById(R.id.radio1);
+    radioGroup = (RadioGroup)findViewById(R.id.radioGroup1);
+    radioGroup.setOnCheckedChangeListener(radioCheckedChangeListener);
+
+    OnCheckedChangeListener radioCheckedChangeListener = new OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if(checkedId == radio0.getId()) {
+                Log.d(TAG, "radio0 Checked.");
+            }
+            else if(checkedId == radio1.getId()) {
+                Log.d(TAG, "radio1 Checked.");
+            }
+            else {
+                Log.d(TAG, "unKnown Checked.");
+            }
+        }
+    };
+</pre>
+
+
+<h2 id="图片imageview"><span class="header-section-number">2.6</span> 图片(ImageView)</h2>
+<p>XML:</p>
+<pre class = "brush: xml; toolbar: false">
+    &lt;ImageView
+        android1:id="@+id/imageView1"
+        android1:layout_width="wrap_content"
+        android1:layout_height="match_parent"
+        android1:scaleType="fitXY"
+        android1:src="@drawable/iron3" />
+</pre>
+
+<p>JAVA:</p>
+<pre><code>和其他类似.</code></pre>
+<p>缩放参数:</p>
+<pre><code>fitCenter:    等比例缩放至完全容纳并居中.
+fitStart:     等比例缩放至完全容纳并居首.
+fitEnd:       等比例缩放至完全容纳并居尾.
+fitXY:        不等比例拉伸至刚好完全充满View.
+center:       不缩放(可能会截取)并居中.
+centerInside: 等比例缩小(但不放大)至完全容纳并居中.
+centerCrop:   等比例缩放至短边完全容纳(长边可能被截取).</code></pre>
+<h1 id="其他"><span class="header-section-number">3</span> 其他</h1>
+<h2 id="删除eclipse创建的activity"><span class="header-section-number">3.1</span> 删除Eclipse创建的Activity</h2>
+<p>需要删除的便是Eclipse自动创建出来的代码. 以创建名称为TestActivity为例, Eclipse会添加:</p>
+<ul>
+<li>新建的文件:
+<ul>
+<li><code>res/layout/activity_test.xml</code></li>
+<li><code>res/menu/test.xml</code></li>
+<li><code>src/com/mikewootc/androidlearn/TestActivity.java</code></li>
+</ul></li>
+<li>添加的代码行:
+<ul>
+<li>AndroidManifest.xml中:
+<pre class = "brush: xml; toolbar: false">
+    &lt;activity
+        android:name="com.mikewootc.androidlearn.TestActivity"
+        android:label="@string/title_activity_test" >
+    &lt;/activity>
+</pre></li>
+<li>res/values/strings.xml中:
+<pre class = "brush: xml; toolbar: false">
+    <string name="title_activity_test">TestActivity</string>
+</pre></li>
+<li>gen/com/mikewootc/androidlearn/R.java中:
+<pre class = "brush: java; toolbar: false">
+    public static final int activity_test=0x7f030001;
+    public static final int test=0x7f070001;
+    public static final int title_activity_test=0x7f050003;
+</pre>
+</li>
+</ul></li>
+</ul>
+<p>删除以上代码即可.</p>
+<p>如果是用Eclipse来build的话, bin/AndroidManifest.xml中相应的标签也要删除.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

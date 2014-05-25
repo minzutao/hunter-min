@@ -1,0 +1,254 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Linux平铺式窗口管理器awesome安装配置与使用</title>
+<meta name="keywords" content="Linux瓦片式,平铺式,窗口管理器,awesome">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Linux平铺式窗口管理器awesome安装配置与使用</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#简介"><span class="toc-section-number">1</span> 简介</a><ul>
+<li><a href="#优势"><span class="toc-section-number">1.1</span> 优势</a></li>
+<li><a href="#劣势"><span class="toc-section-number">1.2</span> 劣势</a></li>
+</ul></li>
+<li><a href="#安装"><span class="toc-section-number">2</span> 安装</a></li>
+<li><a href="#配置"><span class="toc-section-number">3</span> 配置</a><ul>
+<li><a href="#配置自启动程序"><span class="toc-section-number">3.1</span> 配置自启动程序</a></li>
+<li><a href="#分辨率设置"><span class="toc-section-number">3.2</span> 分辨率设置</a></li>
+<li><a href="#插件widgetvicious使用"><span class="toc-section-number">3.3</span> 插件(widget)Vicious使用</a><ul>
+<li><a href="#vicious安装"><span class="toc-section-number">3.3.1</span> Vicious安装</a></li>
+<li><a href="#vicious使用"><span class="toc-section-number">3.3.2</span> Vicious使用</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#使用"><span class="toc-section-number">4</span> 使用</a><ul>
+<li><a href="#默认快捷键"><span class="toc-section-number">4.1</span> 默认快捷键</a></li>
+</ul></li>
+<li><a href="#参考文献"><span class="toc-section-number">5</span> 参考文献:</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Linux平铺式窗口管理器awesome安装配置与使用-->
+<!---keywords:Linux瓦片式,平铺式,窗口管理器,awesome-->
+<!---date:2013.05.23-->
+
+<h1 id="简介"><span class="header-section-number">1</span> 简介</h1>
+<p>Tiling window manager, 直译就是&quot;瓦片式窗口管理器&quot;, 意译为&quot;平铺式窗口管理器&quot;. 说白了, 它上面的所有的窗口都不是像windows下那样相互重叠的(当然也可以配置成允许重叠), 而是像瓦片那样一片接一片的平铺在平面上, 所以才叫&quot;瓦片式窗口管理器&quot;. 个人理解这里还有个言外之意, 就是瓦片是要把屋顶盖的滴水不漏的, 而&quot;瓦片式窗口管理器&quot;中的窗口, 不管有多少个, 不管怎么排列, 也是把平面充满的, 这样提高了屏幕的利用率.</p>
+<h2 id="优势"><span class="header-section-number">1.1</span> 优势</h2>
+<ul>
+<li>窗口自动平铺.</li>
+<li>屏幕利用效率最大化.</li>
+<li>配合快捷键效率高.</li>
+</ul>
+<p>举个我个人的例子说明, 比如我现在正在写这篇wiki文章, 我需要同时打开3个窗口: * 一个vim窗口来用markdown写文章. * 一个终端窗口用来make把markdown格式make成html网页. * 一个firefox用来看效果, 或查资料. 我喜欢每个窗口都并排而非重叠放置, 这样我make完了, firefox上直接就看到效果了. 如果是在非平铺式的界面下, 我需要对每个窗口先调整大小, 然后在将每个窗口再移动到相应的位置. 有时候这几步操作, 比我记笔记本身花的时间还要长, 而用&quot;平铺式窗口管理器&quot;, 就直接可以自动排布窗口. 现在计算机屏幕都越来越大, 反正在我的1920*1018的平面上, 用着就很爽.</p>
+<h2 id="劣势"><span class="header-section-number">1.2</span> 劣势</h2>
+<ul>
+<li>配合快捷键才好用, 对于鼠标流操作的人没多大用.</li>
+<li>配置曲线较陡峭. 其实这也不算劣势, 因为非平铺式的基本上没啥可配的.</li>
+</ul>
+<h1 id="安装"><span class="header-section-number">2</span> 安装</h1>
+<p>ubuntu下, 直接:</p>
+<pre><code>sudo apt-get install awesome</code></pre>
+<h1 id="配置"><span class="header-section-number">3</span> 配置</h1>
+<p>个人配置文件在~/.config/awesome, 如果没有, 从默认配置考过来即可.</p>
+<p>未完待续...</p>
+<p><strong>注意: 再配置完了重启前, 一定要在终端中键入awesome -k来检查一下配置文件的语法正确性, 否则有可能会造成awesome起不来.</strong></p>
+<p>修改完配置之后, 按Mod4 + Control + r直接重启awesome即可看到效果.</p>
+<h2 id="配置自启动程序"><span class="header-section-number">3.1</span> 配置自启动程序</h2>
+<p>在rc.lua的任意位置添加如下代码：</p>
+<pre><code>-- Autorun programs
+autorun = &quot;true&quot;
+autorunApps =
+{
+    &quot;firefox&quot;,
+    &quot;thunderbird&quot;,
+    &quot;amarok&quot;,
+    &quot;linux-fetion&quot;,
+    &quot;amule&quot;,
+}
+if autorun then
+    for app = 1, #autorunApps do
+        awful.util.spawn(autorunApps[app])
+    end
+end</code></pre>
+<h2 id="分辨率设置"><span class="header-section-number">3.2</span> 分辨率设置</h2>
+<p>有时候分辨率显示不对, 可以在上面的子启动中加入命令:</p>
+<pre><code>xrandr --output default --mode &quot;1920x1080&quot;</code></pre>
+<p>详情参见: <a href="set_x_reso.html">Linux通过命令设置屏幕分辨率</a></p>
+<h2 id="插件widgetvicious使用"><span class="header-section-number">3.3</span> 插件(widget)Vicious使用</h2>
+<h3 id="vicious安装"><span class="header-section-number">3.3.1</span> Vicious安装</h3>
+<p>Ubuntu下:</p>
+<pre><code>sudo apt-get install awesome-extra</code></pre>
+<h3 id="vicious使用"><span class="header-section-number">3.3.2</span> Vicious使用</h3>
+<p>在rc.lua的开始处, 添加配置行:</p>
+<pre><code>vicious = require(&quot;vicious&quot;)</code></pre>
+<h1 id="使用"><span class="header-section-number">4</span> 使用</h1>
+<h2 id="默认快捷键"><span class="header-section-number">4.1</span> 默认快捷键</h2>
+<table>
+<col width="38%" />
+<col width="50%" />
+<thead>
+<tr class="header">
+<th align="left">keys</th>
+<th align="left">maps</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Mod4 + Return</td>
+<td align="left">打开一个终端</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + F1</td>
+<td align="left">运行命令</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Shift + c</td>
+<td align="left">关掉当前窗口</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Control + r</td>
+<td align="left">重启awesome</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Shift + q</td>
+<td align="left">退出awesome</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + j</td>
+<td align="left">切换到下一个窗口</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + k</td>
+<td align="left">切换到前一个窗口</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Left</td>
+<td align="left">查看前一个tag</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Right</td>
+<td align="left">查看后一个tag</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + 1-9</td>
+<td align="left">切换到tag 1-9</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Control + j</td>
+<td align="left">切换到下一个屏幕</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Control + k</td>
+<td align="left">切换到前一个屏幕</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Shift + j</td>
+<td align="left">当前窗口和前一个窗口互换位置</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Shift + k</td>
+<td align="left">当前窗口和后一个窗口互换位置</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + h</td>
+<td align="left">把主区域(master width)的宽度增大5%</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + l</td>
+<td align="left">把主区域(master width)的宽度减少5%</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Shift + h</td>
+<td align="left">增加主区域窗口的数量</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Shift + l</td>
+<td align="left">减少主区域窗口的数量</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Control + h</td>
+<td align="left">增加非主区域窗口的数量</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Control + l</td>
+<td align="left">减少非主区域窗口的数量</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + space</td>
+<td align="left">把当前tag更换为下一种布局</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Shift + space</td>
+<td align="left">把当前tag更换为前一种布局</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Control + space</td>
+<td align="left">切换当前窗口是否为浮动的</td>
+</tr>
+<tr class="even">
+<td align="left">Mod4 + Shift + i</td>
+<td align="left">显示当前窗口的class和instance. 不过我个人试着没反应.</td>
+</tr>
+<tr class="odd">
+<td align="left">Mod4 + Shift + r</td>
+<td align="left">重绘当前窗口</td>
+</tr>
+</tbody>
+</table>
+<h1 id="参考文献"><span class="header-section-number">5</span> 参考文献:</h1>
+<p><a href="http://confusedfly.yo2.cn/articles/awesome%E4%BD%BF%E7%94%A8%E7%AE%80%E5%8D%95%E9%85%8D%E7%BD%AE.html">没头苍蝇的工具箱:Awesome使用&amp;简单配置</a></p>
+<!--vim: set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

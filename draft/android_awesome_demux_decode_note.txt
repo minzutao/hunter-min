@@ -1,0 +1,106 @@
+
+============================================================
+创建:
+============================================================
+------------------------------------------------------------
+Source与Demux创建:
+------------------------------------------------------------
+AwesomePlayer::nPrepareAsyncEvent()
+|
++-> finishSetDataSource_l()
+    |
+    +-> mConnectingDataSource = HTTPBase::Create()  // 创建HTTP的dataSource
+    |
+    +-> mConnectingDataSource->connect(mUri, &mUriHeaders)  // 建立连接
+    |
+    +-> dataSource = mConnectingDataSource          // 如果是isWidevineStreaming则指向NuCachedSource2
+    |
+    +-> dataSource->sniff(&tmp, &confidence, &meta) // 探测流数类型
+    |
+    +-> extractor = MediaExtractor::Create(dataSource, sniffedMIME.empty() ? NULL : sniffedMIME.c_str());
+    |
+    +-> setDataSource_l(extractor)                  // 设置码率, demux的音视频通道等
+        |
+        +-> setVideoSource(extractor->getTrack(i))  // 以及AudioSource
+            |
+            +-> mVideoTrack = source;               // 该VideoTrack在下面创建Decoder时, 挂载到OMXCodec上.
+
+------------------------------------------------------------
+Decoder创建与start:
+------------------------------------------------------------
+
+AwesomePlayer::onPrepareAsyncEvent()
+|
++-> AwesomePlayer::initVideoDecoder(uint32_t flags)
+    |
+    +-> mVideoSource = OMXCodec::           // OMXCodec继承了MediaSource
+    |   Create(mClient.interface()/*即下面的omx*/, , , mVideoTrack)
+    |   |
+    |   +-> findMatchingCodecs(mime, )      // 查找匹配的解码器(只是找到名称字符串)
+    |   |
+    |   +-> observer = new OMXCodecObserver()
+    |   |
+    |   +-> omx->allocateNode(componentName, observer, &node)
+    |   |   |
+    |   |   +-> <<OMXMaster::>>mMaster->makeComponentInstance
+    |   |
+    |   +-> codec = new OMXCodec(omx, node, , source, )
+    |   |
+    |   +-> observer->setCodec(codec)
+    |   |
+    |   +-> codec->configureCodec(meta)     // 配置codec
+    |
+    +-> mVideoSource->start()
+
+
+============================================================
+运行:
+============================================================
+AwesomePlayer::onVideoEvent()
+|
++-> mVideoSource->read(&mVideoBuffer, )  // 即OMXCodec::read()
+|   |   // 从Track里面读取数据给解码器解码后返回给AwesomePlayer
+|   |   // mVideoSource即上面创建出来的Decoder<OMXCodec>.
+|   |
+|   +-> OMXCodec::drainInputBuffers()       // 从Track读取来的数据交给OMX解码器解码
+|   |   |
+|   |   +-> OMXCodec::drainInputBuffer(BufferInfo *info)
+|   |       |
+|   |       +-> mSource->read(&srcBuffer)
+|   |       |
+|   |       +-> memcpy(info->mData + offset, srcBuffer->data() + srcBuffer->range_offset(), srcBuffer->range_length());
+|   |       |
+|   |       +-> mOMX->emptyBuffer(, info->mBuffer, ..., timestampUs)
+|   |           |
+|   |           +-> OMXNodeInstance::emptyBuffer()
+|   |               |
+|   |               +-> buffer_meta->CopyToOMX(header)      // 将数据拷给具体的omx解码器
+|   |
+|   +-> OMXCodec::fillOutputBuffers(BufferInfo *info)    // 向OMX解码器请求获取解码后的数据
+|
++-> mVideoRenderer->render(mVideoBuffer) // 将视频帧渲染(贴图)到屏幕上
+
+
+------------------------------------------------------------
+解码:
+------------------------------------------------------------
+
+SimpleSoftOMXComponent::onMessageReceived()
+|
++-> onQueueFilled(i);
+    |
+    +-> SoftAVC::onQueueFilled
+        |
+        +-> SoftAVC::drainAllOutputBuffers()
+            |
+            +-> H264SwDecNextPicture() 解码
+
+
+
+============================================================
+疑问:
+============================================================
+Q: isWidevineStreaming和mWVMExtractor是什么?
+Q: SniffDRM什么意思?
+Q: 3gpp是什么? 与3gp有没有关系?
+

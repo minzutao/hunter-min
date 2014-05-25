@@ -1,0 +1,113 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Ubuntu 12.04“初始化月份字符串出错”的解决方法</title>
+<meta name="keywords" content="ubuntu,linux,初始化月份字符串出错">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Ubuntu 12.04“初始化月份字符串出错”的解决方法</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#增加字符集配置"><span class="toc-section-number">1</span> 增加字符集配置</a></li>
+<li><a href="#生成字符集"><span class="toc-section-number">2</span> 生成字符集</a></li>
+<li><a href="#配置locale"><span class="toc-section-number">3</span> 配置locale</a></li>
+<li><a href="#完善语言支持"><span class="toc-section-number">4</span> 完善语言支持</a></li>
+<li><a href="#参考资料"><span class="toc-section-number">5</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Ubuntu 12.04“初始化月份字符串出错”的解决方法-->
+<!---keywords:ubuntu,linux,初始化月份字符串出错-->
+<!---date:2013.05.23-->
+
+
+<p>在登录到系统后ls -l总是提示“初始化月份字符串出错”. 解决方法如下:</p>
+<h1 id="增加字符集配置"><span class="header-section-number">1</span> 增加字符集配置</h1>
+<pre><code>sudo vi /var/lib/locales/supported.d/local</code></pre>
+<p>将文件内容修改如下:</p>
+<pre><code>en_US.UTF-8 UTF-8
+zh_CN.UTF-8 UTF-8
+zh_CN.GBK GBK
+zh_CN GB2312</code></pre>
+<h1 id="生成字符集"><span class="header-section-number">2</span> 生成字符集</h1>
+<pre><code>sudo local-gen</code></pre>
+<p>此时可能问题已经解决, 重新登录试试. 如果不行, 继续进行以下步骤.</p>
+<h1 id="配置locale"><span class="header-section-number">3</span> 配置locale</h1>
+<pre><code>sudo vi /etc/default/locale</code></pre>
+<p>修改内容如下:</p>
+<pre><code>LANG=”zh_CN.UTF-8″
+LANGUAGE=”zh_CN:zh”
+LC_NUMERIC=”zh_CN.UTF-8″
+LC_TIME=”zh_CN.UTF-8″
+LC_MONETARY=”zh_CN.UTF-8″
+LC_PAPER=”zh_CN.UTF-8″
+LC_NAME=”zh_CN.UTF-8″
+LC_ADDRESS=”zh_CN.UTF-8″
+LC_TELEPHONE=”zh_CN.UTF-8″
+LC_MEASUREMENT=”zh_CN.UTF-8″
+LC_IDENTIFICATION=”zh_CN.UTF-8″</code></pre>
+<p>如果问题仍然不能够解决, 继续向下:</p>
+<h1 id="完善语言支持"><span class="header-section-number">4</span> 完善语言支持</h1>
+<ol style="list-style-type: decimal">
+<li>先在“语言支持”里面把“地区格式”设置成英文, 应用到整个系统.</li>
+<li>注销退出, 然后重新登录系统. 在“语言支持”中会提示支持不完全.</li>
+<li>修复后, 把“地区格式”在设置成中文, 应用到整个系统.</li>
+<li>退出重新登录系统.</li>
+</ol>
+<h1 id="参考资料"><span class="header-section-number">5</span> 参考资料</h1>
+<p><a href="http://blog.jiqila.com/post/287/">http://blog.jiqila.com/post/287/</a></p>
+<p><a href="http://forum.ubuntu.org.cn/viewtopic.php?f=80&amp;t=371208">http://forum.ubuntu.org.cn/viewtopic.php?f=80&amp;t=371208</a></p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>tcp/ip协议速查</title>
+<meta name="keywords" content="tcp/ip,速查表,速查笔记">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>tcp/ip协议速查</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#总体"><span class="toc-section-number">1</span> 总体</a><ul>
+<li><a href="#名词解释"><span class="toc-section-number">1.1</span> 名词解释</a></li>
+<li><a href="#分层"><span class="toc-section-number">1.2</span> 分层</a></li>
+<li><a href="#ip地址分类"><span class="toc-section-number">1.3</span> IP地址分类</a></li>
+<li><a href="#各层封装"><span class="toc-section-number">1.4</span> 各层封装</a></li>
+<li><a href="#特殊ip"><span class="toc-section-number">1.5</span> 特殊IP</a></li>
+<li><a href="#专用ip"><span class="toc-section-number">1.6</span> 专用IP</a></li>
+</ul></li>
+<li><a href="#链路层"><span class="toc-section-number">2</span> 链路层</a><ul>
+<li><a href="#以太网数据帧"><span class="toc-section-number">2.1</span> 以太网数据帧</a></li>
+</ul></li>
+<li><a href="#ip层"><span class="toc-section-number">3</span> IP层</a><ul>
+<li><a href="#ip数据报首部datagram-header"><span class="toc-section-number">3.1</span> IP数据报首部(Datagram Header)</a></li>
+</ul></li>
+<li><a href="#考考资料"><span class="toc-section-number">4</span> 考考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:tcp/ip协议速查-->
+<!---keywords:tcp/ip,速查表,速查笔记-->
+<!---date:2013.05.23-->
+
+<h1 id="总体"><span class="header-section-number">1</span> 总体</h1>
+<h2 id="名词解释"><span class="header-section-number">1.1</span> 名词解释</h2>
+<ul>
+<li><p><strong>MMS</strong>: 最大分段大小(Maximum Segment Size). 是TCP协议里面的一个概念. MSS是TCP每次能够传输的数据分段(Segment)的最大长度. MSS是TCP报文段中的数据字段的最大长度。数据字段加上TCP首部才等于整个的TCP报文段。所以MSS并不是TCP报文段的最大长度，而是：MSS=TCP报文段长度-TCP首部长度.</p></li>
+<li><p><strong>MTU</strong> 最大传输单元（Maximum Transmission Unit）是链路层的概念. 指链路层数据帧的最大长度(不包含头和尾). 如以太网是1500.</p></li>
+</ul>
+<h2 id="分层"><span class="header-section-number">1.2</span> 分层</h2>
+<table>
+    <tr>
+        <th>
+层次
+</th>  <th>
+具体协议
+</th> <th>
+功能
+</th>
+    </tr>
+    <tr>
+        <td>
+应用层
+</td>  <td>
+Telnet, FTP, Email
+</td> <td>
+处理应用程序细节
+</td>
+    </tr>
+    <tr>
+        <td>
+运输层
+</td>  <td>
+TCP, UDP
+</td> <td>
+为主机上的应用程序提供端到端的通信
+</td>
+    </tr>
+    <tr>
+        <td>
+网络层 / 互联网层
+</td>  <td>
+IP, ICMP, IGMP
+</td> <td>
+处理分组在网络中的活动
+</td>
+    </tr>
+    <tr>
+        <td>
+(数据)链路层 / 网络接口层
+</td>  <td>
+Ether
+</td> <td>
+驱动, 网卡硬件
+</td>
+    </tr>
+</table>
+
+<p>层次图:</p>
+<pre><code>   +---------+  +---------+  +---------+  +---------+
+   |   user  |  |   user  |  |   user  |  |   user  |     应用层
+   | process |  | process |  | process |  | process |
+   +---------+  +---------+  +---------+  +---------+
+        \              \         |          /
+         \              \        |         /
+          \              \       |        /
+           \            +-----+  |   +-----+
+            \           | TCP |  |   | UDP |              运输层
+             \          +-----+  |   +-----+
+              \             \    |     /
+               \             \   |    /
+                \             \  |   /
+             +------+         +------+          +------+
+             | ICMP | ------- |  IP  | -------- | IGMP |  网络层
+             +------+         +------+          +------+
+                                 |
+                                 |
+                                 |
+             +------+       +----------+        +------+
+             | ARP  | ----- |  Driver  | ------ | RARP |  链路层
+             +------+       | Hardware |        +------+
+                            +----------+</code></pre>
+<h2 id="ip地址分类"><span class="header-section-number">1.3</span> IP地址分类</h2>
+<pre><code>   +---+-------------+---------------------------+
+A  | 0 | Network No. |          Host No.         |    0.0.0.0 ~ 127.255.255.255
+   +---+-------------+---------------------------+
+           7 Bits               24 Bits
+
+   +---+---+-------------+-----------------------+
+B  | 1 | 0 | Network No. |         Host No.      |  128.0.0.0 ~ 191.255.255.255
+   +---+---+-------------+-----------------------+
+              14 Bits              16 Bits
+
+   +---+---+---+---------------------+-----------+
+B  | 1 | 1 | 0 |     Network No.     |  Host No. |  192.0.0.0 ~ 223.255.255.255
+   +---+---+---+---------------------+-----------+
+                      21 Bits           8 Bits
+
+   +---+---+---+---+-----------------------------+
+D  | 1 | 1 | 1 | 0 |     Multicast Group No.     |  224.0.0.0 ~ 239.255.255.255
+   +---+---+---+---+-----------------------------+
+                              28 Bits
+
+   +---+---+---+---+---+-------------------------+
+E  | 1 | 1 | 1 | 1 | 0 |        Reserved         |  240.0.0.0 ~ 247.255.255.255
+   +---+---+---+---+---+-------------------------+
+                                27 Bits</code></pre>
+<h2 id="各层封装"><span class="header-section-number">1.4</span> 各层封装</h2>
+<pre><code>                                      +------+
+                                      | User |
+                                      | Data |
+                                      +------+
+                                          | App
+                                          v
+                             +--------+------+
+                             |  App   | User |
+                             | Header | Data |
+                             +--------+------+
+                                          | TCP
+                                          v
+                    +--------+---------------+
+                    |  TCP   |      App      |  TCP section
+                    | Header |      Data     |
+                    +--------+---------------+
+                                          | IP
+                                          v
+           +--------+--------+---------------+
+           |   IP   |  TCP   |      App      |  IP datagram
+           | Header | Header |      Data     |
+           +--------+--------+---------------+
+                                          | Ethernet Driver
+                                          v
++----------+--------+--------+---------------+----------+
+| Ethernet |   IP   |  TCP   |      App      | Ethernet |  Ethernet Frame
+|  Header  | Header | Header |      Data     | Footer   |
++----------+--------+--------+---------------+----------+
+|&lt;-- 14 --&gt;|&lt;- 20 -&gt;|&lt;- 20 -&gt;|               |&lt;--- 4 --&gt;|
+           |&lt;-------- 46 ~ 1500 Bytes ------&gt;|</code></pre>
+<h2 id="特殊ip"><span class="header-section-number">1.5</span> 特殊IP</h2>
+<table>
+  <tr>
+    <th>
+特殊地址
+</th> <th>
+NETID
+</th> <th>
+HOSTID
+</th> <th>
+源地址或目的地址
+</th> <th>
+示例说明
+</th>
+  </tr>
+  <tr>
+    <td>
+网络地址
+</td> <td>
+特定的
+</td> <td>
+全0
+</td> <td>
+都不是
+</td> <td>
+不分配给任何主机, 仅用于表示某个网络的网络地址; 例: 202.114.206.0
+</td>
+  </tr>
+  <tr>
+    <td>
+直接广播地址
+</td> <td>
+特定的
+</td> <td>
+全1
+</td> <td>
+目的地址
+</td> <td>
+不分配给任何主机, 用作广播地址, 对应分组传递给该网络中的所有结点(能否执行广播, 则依赖于支撑的物理网络是否具有广播的功能); 例: 202.114.206.255
+</td>
+  </tr>
+  <tr>
+    <td>
+受限广播地址
+</td> <td>
+全1
+</td> <td>
+全1
+</td> <td>
+目的地址
+</td> <td>
+称为有限广播地址, 通常由无盘工作站启动时使用, 希望从网络IP地址服务器处获得一个IP地址; 例: 255.255.255.255
+</td>
+  </tr>
+  <tr>
+    <td>
+本网络的本主机
+</td> <td>
+全0
+</td> <td>
+全0
+</td> <td>
+源地址
+</td> <td>
+表示本身本机地址, 仅在系统启动时允许使用, 并且永远不是一个有效的目的地址; 例: 0.0.0.0
+</td>
+  </tr>
+  <tr>
+    <td>
+本网络的特定主机
+</td> <td>
+全0
+</td> <td>
+特定的
+</td> <td>
+目的地址
+</td> <td>
+本网络的特定主机; 例: 0.0.0.126
+</td>
+  </tr>
+  <tr>
+    <td>
+回送地址
+</td> <td>
+127
+</td> <td>
+任意
+</td> <td>
+目的地址
+</td> <td>
+常用于本机上软件测试和本机上网络应用程序之间的通信地址; 例: 127.0.0.1 localhost
+</td>
+  </tr>
+</table>
+
+<h2 id="专用ip"><span class="header-section-number">1.6</span> 专用IP</h2>
+<p>RFC1918定义的专用IP地址：</p>
+<ul>
+<li>10.0.0.0 — 10.255.255.255 1个A类地址；</li>
+<li>172.16.0.0 — 172.31.255.255 16个连续的B类地址；</li>
+<li>192.168.0.0 — 192.168.255.255 256个连续的C类地址。</li>
+</ul>
+<h1 id="链路层"><span class="header-section-number">2</span> 链路层</h1>
+<h2 id="以太网数据帧"><span class="header-section-number">2.1</span> 以太网数据帧</h2>
+<p>帧格式:</p>
+<pre><code>+---------+---------+------+---------------------+-----+
+| dst-MAC | src-MAC | type |         data        | CRC |
++---------+---------+------+---------------------+-----+
+     6         6       2            46~1500         4 
+以太帧:
+                    +------+---------------------+
+                    | type |     IP datagram     |
+                    | 0800 |                     |
+                    +------+---------------------+
+                       2            46~1500    
+ARP帧:
+                    +------+---------------+-----+
+                    | type |  ARP request/ | PAD |
+                    | 0806 |  ARP answer   |     |
+                    +------+---------------+-----+
+                       2         28         18
+RARP帧:
+                    +------+---------------+-----+
+                    | type | RARP request/ | PAD |
+                    | 0835 | RARP answer   |     |
+                    +------+---------------+-----+
+                       2          28         18</code></pre>
+<p>说明: * 以太网的MTU(最大传输单元,出去以太帧头和帧尾)为1500. * 如果IP层的数据报大于链路层MTU则需要分片(fragmentation).</p>
+<p>具体参考: <a href="rfc894_ethernet.txt">rfc894</a></p>
+<h1 id="ip层"><span class="header-section-number">3</span> IP层</h1>
+<h2 id="ip数据报首部datagram-header"><span class="header-section-number">3.1</span> IP数据报首部(Datagram Header)</h2>
+<pre><code> 0                   1                   2                   3   
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|Version|  IHL  |Type of Service|          Total Length         |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|         Identification        |Flags|      Fragment Offset    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Time to Live |    Protocol   |         Header Checksum       |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                       Source Address                          |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Destination Address                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|                    Options                    |    Padding    |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                 Example Internet Datagram Header</code></pre>
+<p>具体参考: <a href="rfc791_ip_spec.txt">rfc791</a></p>
+<h1 id="考考资料"><span class="header-section-number">4</span> 考考资料</h1>
+<p><a href="http://course.cug.edu.cn/cugfourth/jsjyyjch/book2/Chapter02/2.3.3.htm">http://course.cug.edu.cn/cugfourth/jsjyyjch/book2/Chapter02/2.3.3.htm</a></p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>vim+eclim安装与配置</title>
+<meta name="keywords" content="vim,eclipse,eclim,c++,java">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>vim+eclim安装与配置</h1>
+<p>date: 2014.01.22; modification:2014.01.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#什么是vimeclim"><span class="toc-section-number">1</span> 什么是vim+eclim</a><ul>
+<li><a href="#vim自身不足之处"><span class="toc-section-number">1.1</span> vim自身不足之处</a></li>
+<li><a href="#eclipse的vim插件不足之处"><span class="toc-section-number">1.2</span> eclipse的vim插件不足之处</a></li>
+<li><a href="#何为eclim"><span class="toc-section-number">1.3</span> 何为eclim?</a></li>
+</ul></li>
+<li><a href="#eclim的三种工作方式"><span class="toc-section-number">2</span> eclim的三种工作方式</a><ul>
+<li><a href="#headless-eclipse-server"><span class="toc-section-number">2.1</span> Headless eclipse server</a></li>
+<li><a href="#headed-eclipse-server"><span class="toc-section-number">2.2</span> Headed eclipse server</a></li>
+<li><a href="#embedded-gvim"><span class="toc-section-number">2.3</span> Embedded gvim</a></li>
+</ul></li>
+<li><a href="#安装"><span class="toc-section-number">3</span> 安装</a><ul>
+<li><a href="#eclim与eclipse的版本对应关系"><span class="toc-section-number">3.1</span> eclim与eclipse的版本对应关系</a></li>
+<li><a href="#下载"><span class="toc-section-number">3.2</span> 下载</a></li>
+<li><a href="#安装-1"><span class="toc-section-number">3.3</span> 安装</a></li>
+<li><a href="#测试安装结果"><span class="toc-section-number">3.4</span> 测试安装结果</a></li>
+<li><a href="#问题解决"><span class="toc-section-number">3.5</span> 问题解决</a></li>
+</ul></li>
+<li><a href="#配置"><span class="toc-section-number">4</span> 配置</a><ul>
+<li><a href="#修改workspace的位置"><span class="toc-section-number">4.1</span> 修改workspace的位置</a></li>
+</ul></li>
+<li><a href="#参考文献"><span class="toc-section-number">5</span> 参考文献</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:vim+eclim安装与配置-->
+<!---keywords:vim,eclipse,eclim,c++,java-->
+<!---date:2014.01.22; modification:2014.01.23-->
+
+
+<h1 id="什么是vimeclim"><span class="header-section-number">1</span> 什么是vim+eclim</h1>
+<h2 id="vim自身不足之处"><span class="header-section-number">1.1</span> vim自身不足之处</h2>
+<p>vim其实并不仅仅是一个编辑器, 更是一种操作方式, 一种操作习惯. 用惯了vim, 再用其他的编辑器(或IDE), 会觉得非常之不爽. 以前一直用vim+cscope来开发c程序, 所以一直也用着挺舒服, 但是当后来需要开发c++和java(Android)的时候, 就觉得符号跳转非常不够用了.</p>
+<h2 id="eclipse的vim插件不足之处"><span class="header-section-number">1.2</span> eclipse的vim插件不足之处</h2>
+<p>曾经尝试过eclipse, 它的c++/java符号跳转倒是挺好, 自动不全也挺好, 但是就是操作方式不好用, 也曾经用过vipper等模拟vim操作的插件, 但是这些插件有很多毛病:</p>
+<ul>
+<li>bug多, 有时候用着用着就出问题了, 必须重启eclipse才行.</li>
+<li>只是实现了部分功能, vim的很多优秀支持都体现不出来.</li>
+<li>快捷键无法配置到和我的vim一样, 操作起来憋屈.</li>
+</ul>
+<h2 id="何为eclim"><span class="header-section-number">1.3</span> 何为eclim?</h2>
+<p>eclim的出现解决了如上两个方面的问题, 它相当于在vim(真正的vim而不是模拟)与eclipse之间打起了一座桥梁, 与让我既能使用完全的vim特性, 又能使用到eclipse强大的符号跳转能力.</p>
+<h1 id="eclim的三种工作方式"><span class="header-section-number">2</span> eclim的三种工作方式</h1>
+<p>eclim有3种使用方式, 大家可以根据自己的需求任意选择:</p>
+<h2 id="headless-eclipse-server"><span class="header-section-number">2.1</span> Headless eclipse server</h2>
+<p>eclim作为一个后台的服务(deamon)程序运行, 没有eclipse的前台窗口, 然后vim该怎么用还怎么用, 只是在需要符号跳转/补全等vim本身不好用或者不具备的功能时候, 可以调用eclim的命令.</p>
+<ul>
+<li>优缺点: 见第二种的优缺点, 倒过来就是了.</li>
+</ul>
+<h2 id="headed-eclipse-server"><span class="header-section-number">2.2</span> Headed eclipse server</h2>
+<p>独立的开一个eclipse, 再独立的开一个vim, 然后在eclipse中开启eclim服务, 这样vim就可以利用eclipse的跳转功能了.</p>
+<ul>
+<li>优点: 两程序相互独立运行, 如果需要eclipse中的某些eclim未实现的功能, 便一个直接到eclipse中操作.</li>
+<li>缺点: 会多一个eclipse的前台程序, 多出来一个窗口. 也会多一些内存, 不过这个内存的差量不太多.</li>
+</ul>
+<h2 id="embedded-gvim"><span class="header-section-number">2.3</span> Embedded gvim</h2>
+<p>将vim作为一种eclipse的内嵌编辑器使用.</p>
+<ul>
+<li>优点: 只开一个eclipse.</li>
+<li>缺点: buffer(文件)管理等还是用的eclipse的, 可能有些vim用户会用着别扭.</li>
+</ul>
+<p>个人认为第三种没多大用, 这种应该是适合与习惯eclipse的用户的, 但是话说, 习惯用eclipse的人, 会用vim来编辑吗?</p>
+<h1 id="安装"><span class="header-section-number">3</span> 安装</h1>
+<p>安装之前要确认, 你的系统有</p>
+<ul>
+<li>JDK1.5或更高</li>
+<li>Eclipse 3.5.x或更高</li>
+<li>vim 7.1.x或更高, 并且vimrc里面要set nocompatible并打开filetype plugin on</li>
+</ul>
+<h2 id="eclim与eclipse的版本对应关系"><span class="header-section-number">3.1</span> eclim与eclipse的版本对应关系</h2>
+<ul>
+<li>Eclipse 4.3.x (Kepler) (eclim 2.2.x)</li>
+<li>Eclipse 3.7.x (Indigo) (eclim 1.7.x)</li>
+<li>Eclipse 3.8 (eclim 1.7.13 or greater)</li>
+</ul>
+<h2 id="下载"><span class="header-section-number">3.2</span> 下载</h2>
+<p>到这里: <a href="http://eclim.org/install.html">eclim官网安装界面</a> 下载对应的版本.</p>
+<h2 id="安装-1"><span class="header-section-number">3.3</span> 安装</h2>
+<p>先保证vim有如下配置:</p>
+<pre><code>set nocompatible
+filetype plugin indent on</code></pre>
+<p>然后用下载的包运行:</p>
+<pre><code>java -jar eclim_2.3.2.jar # 或者对应的版本号的jar包</code></pre>
+<p>然后按照提示一路继续即可. 安装过程中可能会提示选择eclipse安装路径, 因为eclim中的有一部分相当于eclipse插件, 是要放到eclipse中的.</p>
+<h2 id="测试安装结果"><span class="header-section-number">3.4</span> 测试安装结果</h2>
+<ol style="list-style-type: decimal">
+<li>打开eclipse</li>
+<li>选择: Window ‣ Show View ‣ Other ‣ Eclim ‣ eclimd</li>
+<li>打开vim, 输入PingEclim, 如果显示版本号, 则是成功, 如果报错则是有问题.</li>
+</ol>
+<h2 id="问题解决"><span class="header-section-number">3.5</span> 问题解决</h2>
+<p>参考:</p>
+<p><a href="http://eclim.org/install.html">官方安装页面</a></p>
+<p><a href="http://eclim.org/faq.html">官方faq页面</a></p>
+<h1 id="配置"><span class="header-section-number">4</span> 配置</h1>
+<h2 id="修改workspace的位置"><span class="header-section-number">4.1</span> 修改workspace的位置</h2>
+<p>修改~/.eclimrc, 如果没有自己创建.</p>
+<pre><code>osgi.instance.area.default=@user.home/workspace</code></pre>
+<p>其中的@user.home修改为自己的路径.</p>
+<h1 id="参考文献"><span class="header-section-number">5</span> 参考文献</h1>
+<p>http://eclim.org/install.html</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

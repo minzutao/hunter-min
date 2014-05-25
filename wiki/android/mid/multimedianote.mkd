@@ -1,0 +1,32 @@
+<!---title:android mediaplayer框架-->
+<!---keywords:android,mediaplayer,框架,原理,开发-->
+
+## 接口调用流程 
+0. JNI入口是JNINativeMethod gMethods[], 这里定义了各种接口, 供APP层JAVA使用.
+  该接口在android_media_MediaPlayer.cpp中. <br/>
+  gMethods中的android_media_MediaPlayer_native_setup调用了:
+<pre >
+sp<MediaPlayer> mp = new MediaPlayer();
+</pre>
+  从而生成了MediaPlayer: 多媒体服务的客户端. 之后的start, stop等操作, 就是通过`MediaPlayer`的start,
+  stop来调用的.
+0. 那么MediaPlayer中的start又是怎么工作的呢? 这是通过`MediaPlayer`中的一个成员变量
+  *mPlayer* 来实现的. 该成员是`IMediaPlayer`类型的指针. 该类是个接口类, 其中声明了
+  start, stop等接口. 并且该类继承了`BnMediaPlayerClient`, 进而继承了
+  `BnInterface`和`IMediaPlayerClient`, 又通过BnInterface继承了`BBinder`.
+  <br/>这就又产生几个问题:
+  * MediaPlayer中的mPlayer又是怎么来的呢?
+  * mPlayer指向的又是哪个具体的实现呢?
+0. MediaPlayer::setDataSource()中做了几件关键的事, 把各个部分串了起来:
+  * *获得MediaPlayerService服务*: getMediaPlayerService()通过binder拿到了名为`media.player`服务.
+    这个是在MediaPlayerService.cpp中通过`MediaPlayerService::instantiate`来注册的.
+    并且赋给`IMediaPlayerService`类型的service, 通过调用`service->create()`,
+    来创建一个player, 也就是来获取`media.player`这个服务的binder, 这样就相当于拿到了MediaPlayerServce
+    这个服务. <br/>
+    `service->create()`还干了一件事, 就是把申请服务的这个client(`IMediaPlayerClient`)记录到服务中.
+  * *保存服务*: 通过attachNewPlayer(player)将刚刚获得的服务, 保存到上面说的
+    mPlayer中, 这就是mPlayer这个成员的由来.
+<pre >
+sp<IMediaPlayer> player(service->create(getpid(), this, mAudioSessionId));
+</pre>
+  * 

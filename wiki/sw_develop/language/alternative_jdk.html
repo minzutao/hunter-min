@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>linux切换java的jdk版本</title>
+<meta name="keywords" content="javac,update-alternatives,javadoc,ubuntu,android">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>linux切换java的jdk版本</h1>
+<p>date: 2013.07.10; modification:2014.05.13</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#查看版本"><span class="toc-section-number">1</span> 查看版本</a></li>
+<li><a href="#查看相应的jdk是否在ubuntu的jdk菜单里"><span class="toc-section-number">2</span> 查看相应的jdk是否在ubuntu的jdk菜单里</a></li>
+<li><a href="#添加jdk"><span class="toc-section-number">3</span> 添加jdk</a></li>
+<li><a href="#选择jdk版本"><span class="toc-section-number">4</span> 选择jdk版本</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:linux切换java的jdk版本-->
+<!---keywords:javac,update-alternatives,javadoc,ubuntu,android-->
+<!---date:2013.07.10; modification:2014.05.13-->
+
+<p>安装在ubuntu10.10 系统下，开发环境需要，有时会需要安装JDK5和JDK6，怎么实现这两者之间的切换呢？使用update-alternatives 命令可以完成此任务</p>
+<p>具体如下：</p>
+<h1 id="查看版本"><span class="header-section-number">1</span> 查看版本</h1>
+<p>查看当前jdk版本:</p>
+<pre><code>java -version
+javac -version</code></pre>
+<h1 id="查看相应的jdk是否在ubuntu的jdk菜单里"><span class="header-section-number">2</span> 查看相应的jdk是否在ubuntu的jdk菜单里</h1>
+<p>命令：</p>
+<pre><code>update-alternatives --config java
+update-alternatives --config javac 
+update-alternatives --config javadoc</code></pre>
+<h1 id="添加jdk"><span class="header-section-number">3</span> 添加jdk</h1>
+<p>如果没有在菜单里可以如下方式添加： update-alternatives --install /usr/bin/java java /usr/lib/jvm/java/jdk1.6.0_12/bin/java 300 update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/java/jdk1.6.0_12/bin/javac 300</p>
+<p>注意：jdk1.6.0_12 版本不同会有变动</p>
+<h1 id="选择jdk版本"><span class="header-section-number">4</span> 选择jdk版本</h1>
+<pre><code>sudo update-alternatives --config java
+sudo update-alternatives --config javac
+sudo update-alternatives --config javadoc</code></pre>
+<p>选择序号，回车即可；</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

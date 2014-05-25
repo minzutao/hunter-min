@@ -1,0 +1,24 @@
+<!---title:Linux Samba安装, 配置与使用-->
+<!---keywords:Linux,网络,Samba-->
+<!---date:2013.05.23-->
+
+
+#Samba配置
+
+sudo vi /etc/samba/smb.conf
+
+<pre >
+[lunch]
+    comment = Samba lunch
+    browseable = no
+    path = /media/d/other/lunch
+    public = no
+    guest ok = no
+    writeable = no
+</pre>
+
+
+#Linux访问Windows共享
+
+sudo mount -t cifs -o username=uuu,password=ppp //192.168.1.100/sambapath ./smb
+

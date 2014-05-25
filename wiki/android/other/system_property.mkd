@@ -1,0 +1,70 @@
+<!---title:Android命令行/c语言/java设置获取系统属性的方法-->
+<!---keywords:system property,setprop,property_get,shell-->
+<!---date:2013.07.09; modification:2013.07.09-->
+
+Android提供了一套系统参数设置和获取的方法，这些参数可以在android系统中静态或动态的设定和获取。
+
+
+#命令行(shell) properties设置和获取接口
+
+    getprop “key”
+
+    setprop "key" "value"
+
+
+#c/c++语言 properties设置和获取接口
+
+代码定义在:
+
+<pre class="brush: c; toolbar: false">
+    system/core/libcutils/properties.c
+
+    #define PROPERTY_KEY_MAX   32
+    #define PROPERTY_VALUE_MAX  92
+
+    int property_get(const char *key, char *value, const char *default_value);
+    int property_set(const char *key, const char *value);
+    int property_list(void (*propfn)(const char *key, const char *value, void *cookie), void *cookie);    
+</pre>
+
+使用:
+
+<pre class="brush: c; toolbar: false">
+    #include "cutils/properties.h"
+
+    char prop[PROPERTY_VALUE_MAX] = "000";
+    if(property_get("prop_name", prop, NULL) != 0) {
+        ...
+    }
+</pre>
+
+说明:
+
+* property_get返回值为get到的属性值的字符串长度.
+* prop_name为属性名.
+* prop为存放属性值字符串的地方.
+
+
+
+#Java语言 properties设置和获取的接口
+
+frameworks/base/core/java/android/os/SystemProperties.java
+
+<pre class="brush: java; toolbar: false">
+    public static final int PROP_NAME_MAX = 31;
+    public static final int PROP_VALUE_MAX = 91;
+    public static String get(String key) ；
+    public static String get(String key, String def) ;
+    public static int getInt(String key, int def) ;
+    public static long getLong(String key, long def) ;
+    public static boolean getBoolean(String key, boolean def) ;
+    public static void set(String key, String val) ;
+    public static void addChangeCallback(Runnable callback) ;
+</pre>
+
+
+#参考资料
+
+[http://blog.csdn.net/flyingqr/article/details/8617519](http://blog.csdn.net/flyingqr/article/details/8617519)
+
+<!-- vim:set tw=0:-->

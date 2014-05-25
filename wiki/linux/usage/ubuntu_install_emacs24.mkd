@@ -1,0 +1,38 @@
+<!---title:Ubuntu编译安装emacs24-->
+<!---keywords:ubuntu,make,make install-->
+<!---date:2013.08.20; modification:2013.08.20-->
+
+#编译安装
+
+本来只需:
+
+    ./configure
+    make
+    sudo make install
+
+但是在10.04中可能会提示错误, 解决如下:
+
+#问题解决
+    
+1. 提示"No X toolkit could be found"的解决
+
+解决:
+
+    sudo apt-get install libgtk2.0-dev
+
+2. 提示"configure: error: The following required libraries were not found: libXpm libgif/libungif libtiff"
+
+解决:
+
+    sudo apt-get install libxpm-dev
+    sudo apt-get install libjpeg62-dev
+    sudo apt-get install libgif-dev
+    sudo apt-get install libtiff4-dev
+    sudo apt-get install libncurses5-dev
+
+3. 系统原有的ctags在安装完emacs24后可能会执行出错
+
+原因: emacs安装了自己的ctags, 如果不用可以把它去掉, 或者改名.
+
+
+<!-- vim:set tw=0:-->

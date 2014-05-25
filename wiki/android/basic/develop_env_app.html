@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Android应用开发环境搭建</title>
+<meta name="keywords" content="Android,app,develop,setup">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Android应用开发环境搭建</h1>
+<p>date: 2013.06.01</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#概述"><span class="toc-section-number">1</span> 概述</a></li>
+<li><a href="#安装eclipse的adt插件"><span class="toc-section-number">2</span> 安装Eclipse的ADT插件</a></li>
+<li><a href="#配置adt插件安装sdk"><span class="toc-section-number">3</span> 配置ADT插件(安装SDK)</a></li>
+<li><a href="#添加platform"><span class="toc-section-number">4</span> 添加Platform</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Android应用开发环境搭建-->
+<!---keywords:Android,app,develop,setup-->
+<!---date:2013.06.01-->
+
+<h1 id="概述"><span class="header-section-number">1</span> 概述</h1>
+<p>Android至今(2013.06.01)为止提供如下几种开发环境:</p>
+<ol style="list-style-type: decimal">
+<li><strong>ADT Bundle</strong>: 一个打包好的集成开发环境, 比较适合于新人. 其中包括:
+<ul>
+<li>Eclipse + ADT plugin</li>
+<li>Android SDK Tools</li>
+<li>Android Platform-tools</li>
+<li>The latest Android platform</li>
+<li>The latest Android system image for the emulator</li>
+</ul></li>
+<li>其实第二种和上面的一样, 只不过是分立的各个SDK部件, 比如你机器上已经有了eclipse, 就可以用这种.</li>
+<li><strong>Android Studio</strong>: 这是一个还在测试版本的开发环境. 提供更多的功能, 比如性能优化之类的.</li>
+</ol>
+<p>由于我的机器上已经有了eclipse, 所以本文主要介绍第二种分立部件的开发环境的搭建. 其他的两种可以参考: <a href="http://developer.android.com/tools/index.html">developer.android.com</a></p>
+<h1 id="安装eclipse的adt插件"><span class="header-section-number">2</span> 安装Eclipse的ADT插件</h1>
+<p>Android提供一个叫ADT的eclipse插件, 帮你在eclipse中进行APP的开发.</p>
+<p>安装步骤如下:</p>
+<ol style="list-style-type: decimal">
+<li>打开eclipse, 菜单中选择: <code>Help &gt; Install New Software</code>.</li>
+<li>点击右上角的Add按钮.</li>
+<li>在弹出的对话框中:
+<ul>
+<li>Name栏填: &quot;ADT Plugin&quot;</li>
+<li>Location栏填: https://dl-ssl.google.com/android/eclipse/ 点击OK.</li>
+</ul></li>
+<li>回到刚才的对话框, 在复选框中选中&quot;Developer Tools&quot;. 另外一个NDK Plugins是用于直接用C语言开发的, 如果没这需求可以不选. 然后点击Next.</li>
+<li>一路next, 如果有协议, 选择同意协议. 如果中间有warning, 说授权或者校验无法建立之类的, 直接点OK.</li>
+<li>之后会提示重启, 点重启.</li>
+<li>重启之后, 可能会提示...Android SDK has not been setup..., 这个不用理他, 点取消, SDK会在下一步安装.</li>
+</ol>
+<h1 id="配置adt插件安装sdk"><span class="header-section-number">3</span> 配置ADT插件(安装SDK)</h1>
+<p>上一步骤中重启后, 会显示一个&quot;Welcome to Android Development&quot;对话框. 在这里配置SDK</p>
+<ol style="list-style-type: decimal">
+<li>从浏览器下载SDK: 在<a href="http://developer.android.com/sdk/index.html">sdk下载页面</a>下载相应的SDK. 例如, 我这里用的是linux, 所以在SDK Tools Only那一栏选择<code>android-sdk_r22.0.1-linux.tgz</code>进行下载.</li>
+<li>在单选框中选择&quot;Use existing SDKs&quot;, 并在&quot;Browse&quot;, 选择刚刚下载的SDK. 这里只能选择文件夹, 所以需要解压. <em>注意, 这里有个坑, 我一开始以为这里指定的只是一个安装包的临时文件夹了, 所以就放在了一个临时的位置, 但是最后发现它就是最终使用的路径了, 因此又得重新配置一遍了. 特此提醒: 找个非临时的长久的路径放它.</em></li>
+<li>点击Finish.</li>
+<li>这时候可能会提示两个对话框:
+<ul>
+<li>SDK Platform Tools component is missing. Plesase use the SDK Manager to install it.</li>
+<li>The Android SDK requires the new Build Tools component to be installed. Please open the SDK Manager and install &quot;Android SDK Build-tools&quot;.</li>
+</ul>
+(先不要着急点close)这是因为Platform相关的工具还没有安装, 没关系, 继续往下进行:</li>
+</ol>
+<h1 id="添加platform"><span class="header-section-number">4</span> 添加Platform</h1>
+<ol style="list-style-type: decimal">
+<li>在上面弹出的对话框中, 点击&quot;Open SDK Manager&quot;.</li>
+<li>弹出的对话框中有很多选项, 推荐的选项为:
+<ul>
+<li>Tools中全选.</li>
+<li>在各个Android x.x.x中, 选择最新的(在版本前面总的复选框打勾), 以及你的目标软件需要兼容的.</li>
+<li>Extras下的Android Support Library.</li>
+</ul>
+点击Install, 同意协议, 进行安装. 然后就等它装完吧, 可能比较慢.</li>
+</ol>
+<p>装完之后, 就可以进行APP的开发了. 欢迎继续浏览: <a href="../app/helloworld.html">Android的hello world程序</a></p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

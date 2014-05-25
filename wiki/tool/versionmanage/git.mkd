@@ -1,0 +1,127 @@
+<!---title:git速查笔记-->
+<!---keywords:git,命令,速查,使用-->
+<!---date:2013.05.23-->
+
+
+#git 
+
+##配置 
+
+* git config --global user.name "Your Name Comes Here"
+* git config --global user.email you@yourdomain.example.com
+* git config --global core.quotepath false # 解决git status中文文件乱码问题.
+* git config --global log.date iso8601 # 日志的时间格式
+* 带颜色显示
+    * git config --global color.ui auto
+    * git config --global color.status auto
+    * git config --global color.diff auto
+    * git config --global color.branch auto
+    * git config --global color.interactive auto
+
+##创建仓库 
+
+* git init
+* git init --bare # 创建空仓库. 区别是将仓库建在当前目录而非.git中.
+* git add
+* git commit
+
+##克隆仓库 
+* git clone lyr@192.168.0.7:~/work/m2ge # ssh协议lyr登录.0.7的~/work/m2ge
+* git clone ssh://192.168.0.2:12345/test
+* git clone ssh://192.168.0.2/test -b b1 # 克隆某个分支
+* git checkout origin/xxx --track # 将远程仓库的某个分支拿到本地.
+
+##忽略 
+*全仓库有效(其他人clone仓库也有效)*
+
+    cd $WORK; echo "*.d" > .gitignore; git add .gitignore; git commit # 方法1
+
+    vi $WORK/.git/info/exclude # 加入被忽略文件名 # 方法2
+
+*子目录有效*
+
+    .gitignore放在子目录, 则其下所有子集有效.
+
+*个人git全局有效*
+
+    git config --global core.excludesfile /path/to/.gitignore
+
+
+##查看log 
+
+* git log
+* git log --stat --summary  # 看一下每一次版本的大致变动情况
+* git log --pretty=oneline # 每次提交得的log在一行里显示
+* git log --pretty=format:%h%an%ai%s # 自定义格式
+    * %H      提交对象（commit）的完整哈希字串
+    * %h      提交对象的简短哈希字串
+    * %an     作者（author）的名字
+    * %cn     提交者(committer)的名字
+    * %ci     提交者(committer)的日期
+    * %ai     作者的日期
+    * %s      提交说明
+
+##查看版本细节 
+
+* git show dfb02e6e4f2f7b573337763e5c0013802e392818
+* git show HEAD   # 显示当前分支的最新版本的更新细节
+* git show HEAD^  # 查看 HEAD 的父版本更新细节
+* git show HEAD^^ # 查看 HEAD 的祖父版本更新细节
+* git show HEAD~4 # 查看 HEAD 的祖父之祖父的版本更新细节
+
+##协同工作 
+
+* git pull tzc@192.168.0.5:~/work/m2ge # 1. 从远程取出更新; 2. 合并到本地仓库
+* git push origin master # 推到远程, 一般要先pull并解决冲突后, 再push.
+* git push m2@192.168.0.2:~/project/m2ge.git master
+
+##撤销与恢复 
+
+* git reset # 将已经add过的改回"Changed but not updated"状态
+* git reset file # 只撤销某个文件的add.
+* git reset --soft #
+* git reset --hard #
+* git reset HEAD^ # 将本地仓库的最近一个提交版本干掉. 最好不要干掉已经push出去的提交.
+
+##添加远程仓库 
+* git remote add origin https://github.com/mikewootc/xxx.git
+
+##分支 
+* git branch b1    # 创建分支
+* git branch       # 查看分支
+* git branch -d b1 # 删除分支b1, 只能删除未合并的
+* git branch -D b1 # 删除分支b1, 相当于强制删除
+* git checkout b1  # 切换到b1分支
+* git merge b1     # 将b1合并到当前分支, 会使当前分支的仓库与工作路径都合并.
+
+##查看信息 
+
+* git log/show --pretty=raw # 查看具体的对象信息(tree, parent等)
+* git diff # 查看当前工作路径与索引之间的区别.
+* git diff --cached # 查看索引与仓库之间的区别.
+
+
+##tag 
+
+* git tag v0.1 dfb02
+
+##储藏 
+
+* git stash save "Some message here" # 存储修改.
+* git stash list # 查看都有哪些修改.
+* `git stash apply [stash@{1}]` # 取出编号为1的存储. 弹出后存储还存在.
+* git stash pop # 弹出最近的一次存储. 弹出后存储就没了.
+* git stash drop stash@{0} # 删除某个修改.
+
+#repo 
+* wget http://android.git.kernel.org/repo  # 下载repo
+* repo init -u git://android.git.kernel.org/platform/manifest.git
+* `repo sync [project-list]`  # 将远程代码同步到本地. 如果在merge 的过程中出现冲突, 这需要手动运行git rebase --continue
+* repo status  # 显示 project 的状态
+* `repo update[ project-list ]`  # 上传修改的代码.
+* `repo diff [ project-list ]`  # 显示提交的代码和当前工作目录代码之间的差异.
+* repo download  target revision  # 下载特定的修改版本到本地, 例如: repo downloadpltform/frameworks/base 1241 下载修改版本为1241的代码
+* repo start newbranchname  # 创建新的branch分支
+* `repo prune [project list]`  # 删除已经merge 的 project
+* `repo foreach [ project-lists]` -c command  # 对每一个project运行command命令
+

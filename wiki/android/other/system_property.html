@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Android命令行/c语言/java设置获取系统属性的方法</title>
+<meta name="keywords" content="system property,setprop,property_get,shell">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Android命令行/c语言/java设置获取系统属性的方法</h1>
+<p>date: 2013.07.09; modification:2013.07.09</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#命令行shell-properties设置和获取接口"><span class="toc-section-number">1</span> 命令行(shell) properties设置和获取接口</a></li>
+<li><a href="#cc语言-properties设置和获取接口"><span class="toc-section-number">2</span> c/c++语言 properties设置和获取接口</a></li>
+<li><a href="#java语言-properties设置和获取的接口"><span class="toc-section-number">3</span> Java语言 properties设置和获取的接口</a></li>
+<li><a href="#参考资料"><span class="toc-section-number">4</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Android命令行/c语言/java设置获取系统属性的方法-->
+<!---keywords:system property,setprop,property_get,shell-->
+<!---date:2013.07.09; modification:2013.07.09-->
+
+<p>Android提供了一套系统参数设置和获取的方法，这些参数可以在android系统中静态或动态的设定和获取。</p>
+<h1 id="命令行shell-properties设置和获取接口"><span class="header-section-number">1</span> 命令行(shell) properties设置和获取接口</h1>
+<pre><code>getprop “key”
+
+setprop &quot;key&quot; &quot;value&quot;</code></pre>
+<h1 id="cc语言-properties设置和获取接口"><span class="header-section-number">2</span> c/c++语言 properties设置和获取接口</h1>
+<p>代码定义在:</p>
+<pre class="brush: c; toolbar: false">
+    system/core/libcutils/properties.c
+
+    #define PROPERTY_KEY_MAX   32
+    #define PROPERTY_VALUE_MAX  92
+
+    int property_get(const char *key, char *value, const char *default_value);
+    int property_set(const char *key, const char *value);
+    int property_list(void (*propfn)(const char *key, const char *value, void *cookie), void *cookie);    
+</pre>
+
+<p>使用:</p>
+<pre class="brush: c; toolbar: false">
+    #include "cutils/properties.h"
+
+    char prop[PROPERTY_VALUE_MAX] = "000";
+    if(property_get("prop_name", prop, NULL) != 0) {
+        ...
+    }
+</pre>
+
+<p>说明:</p>
+<ul>
+<li>property_get返回值为get到的属性值的字符串长度.</li>
+<li>prop_name为属性名.</li>
+<li>prop为存放属性值字符串的地方.</li>
+</ul>
+<h1 id="java语言-properties设置和获取的接口"><span class="header-section-number">3</span> Java语言 properties设置和获取的接口</h1>
+<p>frameworks/base/core/java/android/os/SystemProperties.java</p>
+<pre class="brush: java; toolbar: false">
+    public static final int PROP_NAME_MAX = 31;
+    public static final int PROP_VALUE_MAX = 91;
+    public static String get(String key) ；
+    public static String get(String key, String def) ;
+    public static int getInt(String key, int def) ;
+    public static long getLong(String key, long def) ;
+    public static boolean getBoolean(String key, boolean def) ;
+    public static void set(String key, String val) ;
+    public static void addChangeCallback(Runnable callback) ;
+</pre>
+
+
+<h1 id="参考资料"><span class="header-section-number">4</span> 参考资料</h1>
+<p><a href="http://blog.csdn.net/flyingqr/article/details/8617519">http://blog.csdn.net/flyingqr/article/details/8617519</a></p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

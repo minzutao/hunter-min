@@ -1,0 +1,58 @@
+<!---title:Linux网络安装, 配置与使用-->
+<!---keywords:Linux,网络,Tftp-->
+<!---date:2013.05.23; modification:2013.09.26-->
+
+#Tftp 
+
+##tftp服务配置 
+
+* Ubuntu10.04 下安装TFTP软件, tftp-hpa是客户端,tftpd-hpa是服务器端
+
+<pre >
+sudo aptitude install tftp-hpa tftpd-hpa
+</pre>
+
+* 配置TFTP服务器
+
+<pre>
+    sudo vi /etc/default/tftpd-hpa
+
+    TFTP_USERNAME="tftp"
+    #TFTP_DIRECTORY="/var/lib/tftpboot"
+    TFTP_ADDRESS="0.0.0.0:69"
+    #TFTP_OPTIONS="--secure"
+
+    #服务器目录,需要设置权限为777,chomd 777
+    #这个目录要改为你自己的TFTP根目录～～～
+    TFTP_DIRECTORY="/home/stone/tmp"
+    TFTP_OPTIONS="-l -c -s"
+</pre>
+
+* 重新启动TFTP服务
+
+<pre >
+sudo service tftpd-hpa restart
+</pre>
+
+* 测试下
+
+    测试向tftp服务器上传:
+
+<pre >
+cd ~/temp               # 随便进入一个目录
+echo "hello">>hello.txt # 创建一个文件
+tftp 127.0.0.1          # tftp登录到本机
+put hello.txt           # 将hello.txt上传到服务器
+</pre>
+
+如果没有提示错误, 应该在上面配置的"TFTP\_DIRECTORY"路径下会有刚刚上传的合理hello.txt
+
+测试从tftp服务器下载:
+<pre >
+cd ~/temp               # 进入刚刚创建hello.txt的路径
+rm hello.txt            # 删除, 准备再从服务器上下载.
+tftp 127.0.0.1
+get hello.txt
+</pre>
+如果没有提示错误, 应该在本文件夹下又出现了刚刚删除的hello.txt
+

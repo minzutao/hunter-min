@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Ubuntu编译安装emacs24</title>
+<meta name="keywords" content="ubuntu,make,make install">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Ubuntu编译安装emacs24</h1>
+<p>date: 2013.08.20; modification:2013.08.20</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#编译安装"><span class="toc-section-number">1</span> 编译安装</a></li>
+<li><a href="#问题解决"><span class="toc-section-number">2</span> 问题解决</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Ubuntu编译安装emacs24-->
+<!---keywords:ubuntu,make,make install-->
+<!---date:2013.08.20; modification:2013.08.20-->
+
+<h1 id="编译安装"><span class="header-section-number">1</span> 编译安装</h1>
+<p>本来只需:</p>
+<pre><code>./configure
+make
+sudo make install</code></pre>
+<p>但是在10.04中可能会提示错误, 解决如下:</p>
+<h1 id="问题解决"><span class="header-section-number">2</span> 问题解决</h1>
+<ol style="list-style-type: decimal">
+<li>提示&quot;No X toolkit could be found&quot;的解决</li>
+</ol>
+<p>解决:</p>
+<pre><code>sudo apt-get install libgtk2.0-dev</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>提示&quot;configure: error: The following required libraries were not found: libXpm libgif/libungif libtiff&quot;</li>
+</ol>
+<p>解决:</p>
+<pre><code>sudo apt-get install libxpm-dev
+sudo apt-get install libjpeg62-dev
+sudo apt-get install libgif-dev
+sudo apt-get install libtiff4-dev
+sudo apt-get install libncurses5-dev</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>系统原有的ctags在安装完emacs24后可能会执行出错</li>
+</ol>
+<p>原因: emacs安装了自己的ctags, 如果不用可以把它去掉, 或者改名.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

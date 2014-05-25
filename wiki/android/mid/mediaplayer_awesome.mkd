@@ -1,0 +1,698 @@
+<!---title:Android播放器框架分析之AwesomePlayer-->
+<!---keywords:mediaplayer,stagefright-->
+<!---date:2013.09.25; modification:2013.09.28-->
+
+#简介
+
+Java层 要开启一个播放器进行播放, 需要以下几行代码:
+
+<pre class="brush: java; toolbar: false">
+    MediaPlayer mp = new MediaPlayer();  
+    mp.setDisplay (...);            /// 设置播放器Suface  
+    mp.setDataSource(PATH_TO_FILE); ///设置媒体URI  
+    mp.prepare();                   /// 初始化播放器  
+    mp.start();                     /// 开始播放 
+</pre>
+
+MediaPlayer 的 Native 层定义了各种负责实际播放的player, 分别对应不同的媒体类型. 其中比较重要的一个player就是 stagefright. StagefrightPlayer其实只是个壳, 里面具体调用的是AwesomePlayer.
+
+
+
+#AwesomePlayer概述
+
+忽略掉 JNI 封装层, Stagefright 从 AwesomePlayer开始. AwesomePlayer 是Stagefright核心. AwesomePlayer有一些接口甚至与MediaPlayer 是一一对应的, 例如setDataSource, prepare.
+
+AwesomePlayer的结构框图如下:
+
+![AwesomePlayer结构框图](mediaplayer_awesome.png)
+
+说明:
+
+* 本文中DataSource有两个概念:
+    * 一个是上面框图中的DataSource Input(这是为了区分, 我给起的名字, 在代码中就叫DataSource)指的是单纯的数据输入(未demux的), 例如: 
+        * 对http来说, 指的是一个网络连接.
+        * 对本地播放来说指的是一个open的流媒体文件.
+    * 在后文的setDataSource中的datasource指的是从数据输入到demux输出的一个过程(即上面框图中最外层的DataSource).
+    * 这两个概念在代码中都有出现, 但是代表数据输入的datasource只在setDataSource接口的内部实现中出现, 对于外部看来, datasource指的就是图中外层的DataSource.
+
+* VideoTrack与AudioTrack指的是Extractor(即demux)的两个通道, 从这里输出的分别就是单纯的解复用后的Video/Audio流了.
+* VideoRenderer + Surface即视频的输出.
+* AudioSink即音频的输出.
+
+
+##关键成员分析
+
+###Demux相关
+
+**`sp<MediaSource> mVideoTrack; sp<MediaSource> mAudioTrack`**
+
+分别代表一个视频轨道和音频轨道, 用于提取视频流和音频流(Demux后但未解码的数据). mVideoTrack和mAudioTrack 在 onPrepareAsyncEvent事件被触发时, 由MediaExtractor分离出来.
+
+<pre class="brush: c; toolbar: false">
+    void AwesomePlayer::onPrepareAsyncEvent() {   
+            status_t err = finishSetDataSource_l();   
+    }  
+
+    status_t AwesomePlayer::finishSetDataSource_l() {   
+     sp&lt;MediaExtractor> extractor = MediaExtractor::Create(dataSource);   
+        return setDataSource_l(extractor);   
+    }   
+
+    status_t AwesomePlayer::setDataSource_l(const sp&lt;MediaExtractor> &extractor) {   
+        for (size_t i = 0; i &lt; extractor->countTracks(); ++i) {   
+            sp&lt;MetaData> meta = extractor->getTrackMetaData(i);   
+
+            const char *mime;   
+            CHECK(meta->findCString(kKeyMIMEType, &mime));   
+
+            if (!haveVideo && !strncasecmp(mime, "video/", 6)) {   
+                setVideoSource(extractor->getTrack(i));   //
+                haveVideo = true;   
+            } else if (!haveAudio && !strncasecmp(mime, "audio/", 6)) {   
+                setAudioSource(extractor->getTrack(i));   
+                haveAudio = true;   
+            if (haveAudio && haveVideo) {   
+                break;   
+            }   
+        }   
+    }  
+</pre>
+
+从上面这段代码可以看到AwesomePlayer默认采用第一个VideoTrack和第一个AudioTrack, 那如何切换VideoTrack和AudioTrack?
+
+###音频相关
+
+**`sp<MediaSource> mAudioSource;`**
+
+mAudioSource 可以认为是一个音频解码器的封装
+
+**`sp<MediaPlayerBase::AudioSink> mAudioSink;`**
+
+mAudioSink 代表一个音频输出设备. 用于播放解码后的音频数据. (AudioSink is used for in-memory decode and potentially other applications where output doesn't go straight to hardware)
+
+**`AudioPlayer *mAudioPlayer;`**
+
+mAudioPlayer 把mAudioSource和mAudioSink 包起来,完成一个音频播放器的功能. 如start, stop, pause, seek 等.
+
+AudioPlayer和 AudioSink通过Callback建立关联. 当AudioSink可以输出音频时,会通过回调通知AudioPlayer填充音频数据. 而此时AudioPlayer 会尝试从AudioSource 读取音频数据.
+
+###视频相关
+
+**`sp<MediaSource> mVideoSource`**
+
+mVideoSource 可以认为是一个视频解码器的封装, 用于产生视频图像供AwesomeRender渲染,  mVideoSource的数据源则由mVideoTrack提供.
+
+mVideoSource 由OMXCodec创建.
+
+<pre class="brush: c; toolbar: false">
+    status_t AwesomePlayer::initVideoDecoder(uint32_t flags) {   
+        mVideoSource = OMXCodec::Create(   
+                mClient.interface(), mVideoTrack->getFormat(),   
+                false, // createEncoder   
+                mVideoTrack,   
+                NULL, flags);   
+    }   
+</pre>
+
+**`sp<AwesomeRenderer> mVideoRenderer`**
+
+负责将解码后的图片渲染输出
+
+**`sp<ISurface> mISurface`**
+
+供播放器渲染的画布
+
+###其他
+
+**`OMXClient mClient`**
+
+OMX可以理解为一个编解码器的库, AwesomePlayer利用OMXClient 跟OMX IL进行通信. 这里OMX IL类似于一个服务端. AwesomePlayer 作为一个客户端, 请求OMX IL进行解码的工作.
+
+**`TimedEventQueue mQueue`**
+
+AwesomePlayer采用定时器队列的方式进行运作. mQueue 在MediaPlayer调用 prepare的时候就开始运作, (而不是MediaPlayer.start).
+
+<pre class="brush: c; toolbar: false">
+    status_t AwesomePlayer::prepareAsync_l() {  
+        if (!mQueueStarted) {  
+            mQueue.start();  
+            mQueueStarted = true;  
+        }  
+        return OK;  
+    }  
+</pre>
+
+AwesomePlayer处理了几个定时器事件, 包括:
+
+* onVideoEvent();
+* onStreamDone();
+* onBufferingUpdate();
+* onCheckAudioStatus();
+* onPrepareAsyncEvent();
+
+
+总结: 从关键的成员可以看出, AwesomePlayer 拥有视频源和音频源 (VideoTrack, AudioTrack), 有音视频解码器(VideoSoure, AudioSource), 可以渲染图像 (AwesomeRenderer) , 可以输出声音 (AudioSink), 具备一个播放器完整的材料了.
+
+##基本播放流程
+
+###设置数据源URI
+
+<pre class="brush: c; toolbar: false">
+    status_t AwesomePlayer::setDataSource_l(   
+            const char *uri, const KeyedVector&lt;String8, String8> *headers) {   
+        /// 这里只是把URL保存起来而已, 真正的工作在Prepare之后进行   
+        mUri = uri;   
+        return OK;   
+    }  
+</pre>
+
+
+
+###开启定时器队列,并且 Post一个AsyncPrepareEvent 事件
+
+<pre class="brush: c; toolbar: false">
+    status_t AwesomePlayer::prepareAsync_l() {   
+
+        /// 开启定时器队列   
+        mQueue.start();   
+
+        /// Post AsyncPrepare 事件   
+        mAsyncPrepareEvent = new AwesomeEvent(   
+                this, &AwesomePlayer::onPrepareAsyncEvent);   
+
+        mQueue.postEvent(mAsyncPrepareEvent);   
+        return OK;   
+    }   
+</pre>
+
+Prepare 之后,  AwesomePlayer 开始运作.
+
+###AsyncPrepare 事件被触发
+
+当这个事件被触发时, AwesomePlayer 开始创建 VideoTrack和AudioTrack , 然后创建 VideoDecoder和AudioDecoder
+
+<pre class="brush: c; toolbar: false">
+    void AwesomePlayer::onPrepareAsyncEvent() {   
+        /// a. 创建视频源和音频源   
+        finishSetDataSource_l();   
+
+        /// b. 创建视频解码器   
+        initVideoDecoder();   
+
+        /// c. 创建音频解码器   
+        initAudioDecoder();   
+    }   
+</pre>
+
+至此,播放器准备工作完成, 可以开始播放了
+
+
+
+###Post 第一个VideoEvent
+
+AwesomePlayer::play() 调用 -> AwesomePlayer::play_l() 调用 -> AwesomePlayer::postVideoEvent_l(int64_t delayUs)
+
+<pre class="brush: c; toolbar: false">
+    void AwesomePlayer::postVideoEvent_l(int64_t delayUs) {   
+        mQueue.postEventWithDelay(mVideoEvent, delayUs < 0 ? 10000 : delayUs);   
+    }   
+</pre>
+
+###VideoEvent 被触发
+
+<pre class="brush: c; toolbar: false">
+    void AwesomePlayer::onVideoEvent() {   
+
+        /// 从视频解码器中读出视频图像   
+        mVideoSource->read(&mVideoBuffer, &options);   
+
+        /// 创建AwesomeRenderer (如果没有的话)   
+        if (mVideoRendererIsPreview || mVideoRenderer == NULL) {   
+            initRenderer_l();   
+        }   
+
+        /// 渲染视频图像   
+         mVideoRenderer->render(mVideoBuffer);   
+
+        /// 再次发送一个VideoEvent, 这样播放器就不停的播放了   
+         postVideoEvent_l();   
+    }   
+</pre>
+
+
+
+总结: SetDataSource -> Prepare -> Play -> postVieoEvent -> OnVideoEvent -> postVideoEvent-> .... onVideoEvent-> postStreamDoneEvent -> 播放结束
+
+##视频 / 音频 分离
+
+###创建DataSource
+
+如前面提到的, 当AsyncPrepare 事件被触发时, AwesomePlayer会调用 finishSetDataSource_l 创建 VideoTrack 和 AudioTrack.
+
+`finishSetDataSource_l` 通过URI前缀判断 _媒体类型_, 比如 http, rtsp,或者本地文件等
+这里的uri就是一开始 通过setDataSource设置的
+根据uri 创建相应的DataSource, 再进一步的利用 DataSource 创建MediaExtractor做A/V分离
+
+<pre class="brush: c; toolbar: false">
+    status_t AwesomePlayer::finishSetDataSource_l() {   
+        sp<DataSource> dataSource;   
+        /// 通过URI前缀判断媒体类型, 比如 http, rtsp,或者本地文件等   
+        /// 这里的uri就是一开始 通过setDataSource设置的   
+        /// 根据uri 创建相应的MediaExtractor   
+
+        if (!strncasecmp("http://", mUri.string(), 7)) {   
+            mConnectingDataSource = new NuHTTPDataSource;   
+            mConnectingDataSource->connect(mUri, &mUriHeaders);   
+            mCachedSource = new NuCachedSource2(mConnectingDataSource);   
+            dataSource = mCachedSource;   
+        } else if (!strncasecmp("rtsp://", mUri.string(), 7)) {   
+            mRTSPController->connect(mUri.string());   
+            sp<MediaExtractor> extractor = mRTSPController.get();   
+
+            /// rtsp 比较特殊, MediaExtractor对象的创建不需要DataSource   
+            return setDataSource_l(extractor);   
+        } else {   
+            /// 本地文件   
+            dataSource = DataSource::CreateFromURI(mUri.string(), &mUriHeaders);   
+        }   
+
+        /// 用dataSource创建一个MediaExtractor用于A/V分离        
+        sp<MediaExtractor> extractor = MediaExtractor::Create(dataSource);   
+
+        return setDataSource_l(extractor);   
+    }  
+</pre>
+
+
+
+###根据DataSource 创建MediaExtractor
+
+先看看 AwesomePlayer 的构造函数,里面有一行代码.
+
+<pre class="brush: c; toolbar: false">
+    AwesomePlayer::AwesomePlayer(){   
+        //...   
+        DataSource::RegisterDefaultSniffers();   
+        //...   
+    }   
+</pre>
+
+RegisterDefaultSniffers 注册了一些了媒体的MIME类型的探测函数.
+
+<pre class="brush: c; toolbar: false">
+    void DataSource::RegisterDefaultSniffers() {   
+        RegisterSniffer(SniffMPEG4);   
+        RegisterSniffer(SniffMatroska);   
+        RegisterSniffer(SniffOgg);   
+        RegisterSniffer(SniffWAV);   
+        RegisterSniffer(SniffAMR);   
+        RegisterSniffer(SniffMPEG2TS);   
+        RegisterSniffer(SniffMP3);   
+    }  
+</pre>
+
+这些探测用于判断媒体的MIME类型, 进而决定要创建什么样的MediaExtractor.
+
+再回到 MediaExtractor::Create, MediaExtractor对象在这里创建. 下面代码有点长, 其实这段代码只是根据MIME类型创建Extractor的各个分支而已.
+
+<pre class="brush: c; toolbar: false">
+    sp<MediaExtractor> MediaExtractor::Create(
+            const sp<DataSource> &source, const char *mime) {
+        sp<AMessage> meta;
+
+        String8 tmp;
+        if (mime == NULL) {
+            float confidence;
+            if (!source->sniff(&tmp, &confidence, &meta)) {
+                LOGV("FAILED to autodetect media content.");
+
+                return NULL;
+            }
+
+            mime = tmp.string();
+            LOGV("Autodetected media content as '%s' with confidence %.2f",
+                 mime, confidence);
+        }
+
+        bool isDrm = false;
+        // DRM MIME type syntax is "drm+type+original" where
+        // type is "es_based" or "container_based" and
+        // original is the content's cleartext MIME type
+        if (!strncmp(mime, "drm+", 4)) {
+            const char *originalMime = strchr(mime+4, '+');
+            if (originalMime == NULL) {
+                // second + not found
+                return NULL;
+            }
+            ++originalMime;
+            if (!strncmp(mime, "drm+es_based+", 13)) {
+                // DRMExtractor sets container metadata kKeyIsDRM to 1
+                return new DRMExtractor(source, originalMime);
+            } else if (!strncmp(mime, "drm+container_based+", 20)) {
+                mime = originalMime;
+                isDrm = true;
+            } else {
+                return NULL;
+            }
+        }
+
+        MediaExtractor *ret = NULL;
+        if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MPEG4)
+                || !strcasecmp(mime, "audio/mp4")) {
+            ret = new MPEG4Extractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_MPEG)) {
+            ret = new MP3Extractor(source, meta);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AMR_NB)
+                || !strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AMR_WB)) {
+            ret = new AMRExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_FLAC)) {
+            ret = new FLACExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_WAV)) {
+            ret = new WAVExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_OGG)) {
+            ret = new OggExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MATROSKA)) {
+            ret = new MatroskaExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_MPEG2TS)) {
+            ret = new MPEG2TSExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_AVI)) {
+            ret = new AVIExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_CONTAINER_WVM)) {
+            ret = new WVMExtractor(source);
+        } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_AAC_ADTS)) {
+            ret = new AACExtractor(source);
+        }
+
+        if (ret != NULL) {
+           if (isDrm) {
+               ret->setDrmFlag(true);
+           } else {
+               ret->setDrmFlag(false);
+           }
+        }
+
+        return ret;
+    }
+</pre>
+
+
+
+
+###根据MediaExtractor 做A/V分离
+
+再看看 setDataSource_l(const sp<MediaExtractor> &extractor) , 这是A/V分离的最后步骤.
+
+<pre class="brush: c; toolbar: false">
+    status_t AwesomePlayer::setDataSource_l(const sp<MediaExtractor> &extractor) {   
+
+        /// 从全部的Track中选取一个Video Track和一个AudioTrack   
+        for (size_t i = 0; i < extractor->countTracks(); ++i) {   
+            sp<MetaData> meta = extractor->getTrackMetaData(i);   
+
+            const char *mime;   
+            CHECK(meta->findCString(kKeyMIMEType, &mime));   
+
+            if (!haveVideo && !strncasecmp(mime, "video/", 6)) {   
+                setVideoSource(extractor->getTrack(i));   
+                haveVideo = true;   
+            } else if (!haveAudio && !strncasecmp(mime, "audio/", 6)) {   
+                setAudioSource(extractor->getTrack(i));   
+                haveAudio = true;   
+            }   
+
+            if (haveAudio && haveVideo) {   
+                break;   
+            }   
+        }   
+
+        /// Flags 标志这个媒体的一些属性:   
+         /// CAN_SEEK_BACKWARD 是否能后退10秒   
+        /// CAN_SEEK_FORWARD 是否能前进10秒   
+        /// CAN_SEEK 能否Seek?   
+        /// CAN_PAUSE 能否暂停   
+        mExtractorFlags = extractor->flags();   
+        return OK;   
+    }   
+</pre>
+
+从这个函数可以看到MediaExtractor 需要实现的基本比较重要的接口 (这个几个接口都是纯虚函数, 可见Extractor的子类是一定要搞定它们的)
+
+virtual size_t countTracks() = 0; /// 该媒体包含了几个Track?
+
+virtual sp<MediaSource> getTrack(size_t index) = 0;  /// 获取指定的Video/Audio Track,  可以看到一个Track本质上就是一个MediaSource.
+
+virtual sp<MetaData> getTrackMetaData ( size_t index, uint32_t flags = 0) = 0; ///获取指定的Track的MetaData. 在AwesomePlayer 中, MetaData 实际上就是一块可以任意信息字段的叉烧, 字段类型可以是字符串或者是整形等等.这里Track的MetaData包含了Track的MIME类型. 这样AwesomePlayer就可以知道这个Track是Video 还是Audio的了.
+
+总结: 至此, AwesomePlayer 就拥有VideoTrack 和AudioTrack了 (可能只有VideoTrack或者只有AudioTrack, 例如MP3).  接下来 音视频解码器 VideoSource/AudioSource 将从Video/Audio Track 中读取数据进行解码.
+
+
+
+##创建视频解码器
+
+VideoTrack/AudioTrack 创建完毕之后, 紧接着就是创建 VideoSource了 (见 1.2.3). 看看initVideoDecoder
+
+<pre class="brush: c; toolbar: false">
+    status_t AwesomePlayer::initVideoDecoder(uint32_t flags) {   
+        mVideoSource = OMXCodec::Create(   
+                mClient.interface(), mVideoTrack->getFormat(),   
+                false, // createEncoder   
+                mVideoTrack,   
+                NULL, flags);   
+        /// ...   
+        return mVideoSource != NULL ? OK : UNKNOWN_ERROR;   
+    }   
+</pre>
+
+VideoSource 是由 OMXCodec::Create 创建的. 从OMXCodec::Create的参数可以看出创建一个视频解码器需要什么材料:
+
+a. OMXClient. 用于跟OMX IL 通讯. 假如最后用的是OMXCodec 也不是SoftCodec的话, 需要用到它.
+
+b. mVideoTrack->getFormat ().  getFormat返回包含该video track格式信息的MetaData.
+
+c. mVideoTrack. 如前面1.3.3 说的. 解码器会从 Video Track 中读取数据进行解码.
+
+
+
+##OMXCodec::Create
+
+
+<pre class="brush: c; toolbar: false">
+    sp<MediaSource> OMXCodec::Create(   
+            const sp<IOMX> &omx,   
+            const sp<MetaData> &meta, bool createEncoder,   
+            const sp<MediaSource> &source,   
+            const char *matchComponentName,   
+            uint32_t flags) {   
+
+        /// 获取MIME类型   
+        const char *mime;   
+        bool success = meta->findCString(kKeyMIMEType, &mime);   
+
+        /// 根据MIME找出可能匹配的Codec   
+        Vector<String8> matchingCodecs;   
+        findMatchingCodecs(   
+                mime, createEncoder, matchComponentName, flags, &matchingCodecs);   
+
+        IOMX::node_id node = 0;   
+
+        /// 对每一种可能匹配的Codec, 尝试申请Codec   
+        const char *componentName;   
+        for (size_t i = 0; i < matchingCodecs.size(); ++i) {   
+            componentName = matchingCodecs[i].string();   
+
+            /// 尝试申请软Codec   
+            sp<MediaSource> softwareCodec = createEncoder?   
+                InstantiateSoftwareEncoder(componentName, source, meta):   
+                InstantiateSoftwareCodec(componentName, source);   
+
+            if (softwareCodec != NULL) {   
+                return softwareCodec;   
+            }   
+
+            /// 尝试申请OMXCodec   
+            status_t err = omx->allocateNode(componentName, observer, &node);   
+            if (err == OK) {   
+                sp<OMXCodec> codec = new OMXCodec(   
+                        omx, node, quirks,   
+                        createEncoder, mime, componentName,   
+                        source);   
+
+                /// 配置申请出来的OMXCodec   
+                err = codec->configureCodec(meta, flags);   
+                if (err == OK) {   
+                    return codec;   
+                }   
+            }   
+        }   
+
+        return NULL;   
+    }  
+</pre>
+
+
+
+###OMXCodec::findMatchingCodecs 找出可能匹配的Codec
+
+findMatchingCodecs 根据传入的MIME 从kDecoderInfo 中找出MIME对于的Codec名 (一种MIME可能对应多种Codec)
+
+<pre class="brush: c; toolbar: false">
+    void    
+    OMXCodec::findMatchingCodecs(   
+            const char *mime,   
+            bool createEncoder, const char *matchComponentName,   
+            uint32_t flags,   
+            Vector<String8> *matchingCodecs) {   
+
+        for (int index = 0;; ++index) {   
+            const char *componentName;   
+
+        componentName = GetCodec(   
+                        kDecoderInfo,   
+                        sizeof(kDecoderInfo) / sizeof(kDecoderInfo[0]),   
+                        mime, index);   
+
+
+            matchingCodecs->push(String8(componentName));   
+        }   
+    }  
+</pre>
+
+看看 kDecoderInfo 里面包含了什么Codec吧, 有点长.
+
+<pre class="brush: c; toolbar: false">
+    static const CodecInfo kDecoderInfo[] = {   
+        { MEDIA_MIMETYPE_IMAGE_JPEG, "OMX.TI.JPEG.decode" },   
+    //    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.TI.MP3.decode" },   
+        { MEDIA_MIMETYPE_AUDIO_MPEG, "MP3Decoder" },   
+    //    { MEDIA_MIMETYPE_AUDIO_MPEG, "OMX.PV.mp3dec" },   
+    //    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.TI.AMR.decode" },   
+        { MEDIA_MIMETYPE_AUDIO_AMR_NB, "AMRNBDecoder" },   
+    //    { MEDIA_MIMETYPE_AUDIO_AMR_NB, "OMX.PV.amrdec" },   
+        { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.TI.WBAMR.decode" },   
+        { MEDIA_MIMETYPE_AUDIO_AMR_WB, "AMRWBDecoder" },   
+    //    { MEDIA_MIMETYPE_AUDIO_AMR_WB, "OMX.PV.amrdec" },   
+        { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.TI.AAC.decode" },   
+        { MEDIA_MIMETYPE_AUDIO_AAC, "AACDecoder" },   
+    //    { MEDIA_MIMETYPE_AUDIO_AAC, "OMX.PV.aacdec" },   
+        { MEDIA_MIMETYPE_AUDIO_G711_ALAW, "G711Decoder" },   
+        { MEDIA_MIMETYPE_AUDIO_G711_MLAW, "G711Decoder" },   
+        { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.7x30.video.decoder.mpeg4" },   
+        { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.qcom.video.decoder.mpeg4" },   
+        { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TI.Video.Decoder" },   
+        { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.SEC.MPEG4.Decoder" },   
+        { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.TCC.mpeg4dec" },   
+        { MEDIA_MIMETYPE_VIDEO_MPEG4, "M4vH263Decoder" },   
+    //    { MEDIA_MIMETYPE_VIDEO_MPEG4, "OMX.PV.mpeg4dec" },   
+        { MEDIA_MIMETYPE_VIDEO_H263, "OMX.qcom.7x30.video.decoder.h263" },   
+        { MEDIA_MIMETYPE_VIDEO_H263, "OMX.qcom.video.decoder.h263" },   
+        { MEDIA_MIMETYPE_VIDEO_H263, "OMX.SEC.H263.Decoder" },   
+        { MEDIA_MIMETYPE_VIDEO_H263, "OMX.TCC.h263dec" },   
+        { MEDIA_MIMETYPE_VIDEO_H263, "M4vH263Decoder" },   
+    //    { MEDIA_MIMETYPE_VIDEO_H263, "OMX.PV.h263dec" },   
+        { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.7x30.video.decoder.avc" },   
+        { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.video.decoder.avc" },   
+        { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },   
+        { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.AVC.Decoder" },   
+        { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TCC.avcdec" },   
+        { MEDIA_MIMETYPE_VIDEO_AVC, "AVCDecoder" },   
+    //    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.PV.avcdec" },   
+        { MEDIA_MIMETYPE_AUDIO_VORBIS, "VorbisDecoder" },   
+        { MEDIA_MIMETYPE_VIDEO_VPX, "VPXDecoder" },   
+
+        // TELECHIPS, SSG   
+        { MEDIA_MIMETYPE_AUDIO_MPEG_TCC, "OMX.TCC.mp3dec" },   
+        { MEDIA_MIMETYPE_AUDIO_AAC_TCC, "OMX.TCC.aacdec" },   
+        { MEDIA_MIMETYPE_AUDIO_VORBIS_TCC, "OMX.TCC.vorbisdec" },   
+        { MEDIA_MIMETYPE_AUDIO_WMA, "OMX.TCC.wmadec" },   
+        { MEDIA_MIMETYPE_AUDIO_AC3, "OMX.TCC.ac3dec" },   
+        { MEDIA_MIMETYPE_AUDIO_RA, "OMX.TCC.radec" },   
+        { MEDIA_MIMETYPE_AUDIO_FLAC, "OMX.TCC.flacdec" },   
+        { MEDIA_MIMETYPE_AUDIO_APE, "OMX.TCC.apedec" },   
+        { MEDIA_MIMETYPE_AUDIO_MP2, "OMX.TCC.mp2dec" },   
+        { MEDIA_MIMETYPE_AUDIO_PCM, "OMX.TCC.pcmdec" },   
+        { MEDIA_MIMETYPE_AUDIO_DTS, "OMX.TCC.dtsdec" },   
+
+        { MEDIA_MIMETYPE_VIDEO_VC1, "OMX.TCC.wmvdec" },   
+        { MEDIA_MIMETYPE_VIDEO_WMV12, "OMX.TCC.wmv12dec" },   
+        { MEDIA_MIMETYPE_VIDEO_RV, "OMX.TCC.rvdec" },   
+        { MEDIA_MIMETYPE_VIDEO_DIVX, "OMX.TCC.divxdec" },   
+        { MEDIA_MIMETYPE_VIDEO_MPEG2, "OMX.TCC.mpeg2dec" },   
+        { MEDIA_MIMETYPE_VIDEO_MJPEG, "OMX.TCC.mjpegdec" },   
+        { MEDIA_MIMETYPE_VIDEO_FLV1, "OMX.TCC.flv1dec" },   
+    };  
+</pre>
+
+可以看到MPEG4就对应了6种Codec.
+
+###InstantiateSoftwareCodec 创建软编码器
+
+InstantiateSoftwareCodec  从 kFactoryInfo (软编码器列表) 挑挑看有没有. 有的话就创建一个软编码器. 看看kFactoryInfo 里面有哪些软编码器
+
+<pre class="brush: c; toolbar: false">
+    static const FactoryInfo kFactoryInfo[] = {   
+        FACTORY_REF(MP3Decoder)   
+        FACTORY_REF(AMRNBDecoder)   
+        FACTORY_REF(AMRWBDecoder)   
+        FACTORY_REF(AACDecoder)   
+        FACTORY_REF(AVCDecoder)   
+        FACTORY_REF(G711Decoder)   
+        FACTORY_REF(M4vH263Decoder)   
+        FACTORY_REF(VorbisDecoder)   
+        FACTORY_REF(VPXDecoder)   
+    };  
+</pre>
+
+
+
+###编码器名称的一点说明
+
+OMX.XXX.YYY
+
+中间的XXX是厂商名称. 如OMX.TI.Video.Decoder 就是TI 芯片的硬视频解码器. 而 OMX.TCC.avcdec 则是TCC的AVC 视频解码器.  没有OMX开头的,说明是软解码器.
+
+以AVC为例:
+
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.7x30.video.decoder.avc" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.qcom.video.decoder.avc" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TI.Video.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.SEC.AVC.Decoder" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "OMX.TCC.avcdec" },
+    { MEDIA_MIMETYPE_VIDEO_AVC, "AVCDecoder" },
+
+可以看到软解码器被放到最后. 这样的话后面尝试申请解码器的时候便会优先申请硬Codec. 除非硬Codec不存在.
+
+
+
+###创建OMXCodec
+
+申请OMXCodec比较简单, 调用IOMX::allocateNode 申请即可. 编码器的名称例如 OMX.TCC.avcdec 即是OMX 组件(Component)的名称
+
+IOMX::node_id node = 0;
+
+omx->allocateNode(componentName, observer, &node); /// 这个时候就已经是和OMX IL 层进行通讯了, 虽然是进程间通讯. 但是封装成这个样子,我们也看不出来了, 和本地调用一样.
+
+sp<OMXCodec> codec = new OMXCodec(
+                    omx, node, quirks,
+                    createEncoder, mime, componentName,
+                    source);
+
+codec->configureCodec(meta, flags); /// codec 创建出来后, 要配置一下codec.
+
+如果进去看看configureCodec的代码, 可以看到实际上是调用 IOMX::setParameter, 和IOMX::setConfig. 同样,也是属于IPC, 因为是和OMX IL 通讯.
+
+总结:  理想的情况下,  调用OMXCodec::Create 应该返回一个OMXCodec 对象而不是软解对象.  Android 默认的策略也是优先创建硬解码器.  至此AwesomePlayer 通过OMXCodec 进而跟OML IL 打交道.  其中关键的对象为IOMX和IOMX::node_id. node_id 相当于一个OMX Component的句柄. 音频解码器的创建过程跟视频解码器的创建过程几乎一样, 所以不分析了.
+
+
+
+##解封装, 解码
+
+看回 2.2.5,  当Video Event 被触发时, AwesomePlayer::onVideoEvent 会被调用. onVideoEvent 会尝试调用 mVideoSource.read 读取视频图像,然后将视频图像交给AwesomeRenderer进行渲染.
+
+如果采用硬解码的话 mVideoSource 实际是就是一个OMXCodec 对象.
+
+#参考资料
+
+http://blog.csdn.net/helloaya/article/details/6663128
+
+
+<!-- vim:set tw=0:-->

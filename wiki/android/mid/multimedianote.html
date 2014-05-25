@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>android mediaplayer框架</title>
+<meta name="keywords" content="android,mediaplayer,框架,原理,开发">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>android mediaplayer框架</h1>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#接口调用流程"><span class="toc-section-number">0.1</span> 接口调用流程</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:android mediaplayer框架-->
+<!---keywords:android,mediaplayer,框架,原理,开发-->
+
+<h2 id="接口调用流程"><span class="header-section-number">0.1</span> 接口调用流程</h2>
+<ol start="0" style="list-style-type: decimal">
+<li>JNI入口是JNINativeMethod gMethods[], 这里定义了各种接口, 供APP层JAVA使用. 该接口在android_media_MediaPlayer.cpp中. <br/> gMethods中的android_media_MediaPlayer_native_setup调用了:
+<pre >
+sp<MediaPlayer> mp = new MediaPlayer();
+</pre>
+  
+从而生成了MediaPlayer: 多媒体服务的客户端. 之后的start, stop等操作, 就是通过<code>MediaPlayer</code>的start, stop来调用的.</li>
+<li>那么MediaPlayer中的start又是怎么工作的呢? 这是通过<code>MediaPlayer</code>中的一个成员变量 <em>mPlayer</em> 来实现的. 该成员是<code>IMediaPlayer</code>类型的指针. 该类是个接口类, 其中声明了 start, stop等接口. 并且该类继承了<code>BnMediaPlayerClient</code>, 进而继承了 <code>BnInterface</code>和<code>IMediaPlayerClient</code>, 又通过BnInterface继承了<code>BBinder</code>. <br/>这就又产生几个问题:</li>
+</ol>
+<ul>
+<li>MediaPlayer中的mPlayer又是怎么来的呢?</li>
+<li>mPlayer指向的又是哪个具体的实现呢?</li>
+</ul>
+<ol start="0" style="list-style-type: decimal">
+<li>MediaPlayer::setDataSource()中做了几件关键的事, 把各个部分串了起来:</li>
+</ol>
+<ul>
+<li><em>获得MediaPlayerService服务</em>: getMediaPlayerService()通过binder拿到了名为<code>media.player</code>服务. 这个是在MediaPlayerService.cpp中通过<code>MediaPlayerService::instantiate</code>来注册的. 并且赋给<code>IMediaPlayerService</code>类型的service, 通过调用<code>service-&gt;create()</code>, 来创建一个player, 也就是来获取<code>media.player</code>这个服务的binder, 这样就相当于拿到了MediaPlayerServce 这个服务. <br/> <code>service-&gt;create()</code>还干了一件事, 就是把申请服务的这个client(<code>IMediaPlayerClient</code>)记录到服务中.</li>
+<li><em>保存服务</em>: 通过attachNewPlayer(player)将刚刚获得的服务, 保存到上面说的 mPlayer中, 这就是mPlayer这个成员的由来.
+<pre >
+sp<IMediaPlayer> player(service->create(getpid(), this, mAudioSessionId));
+</pre></li>
+</ul>
+<p>*</p>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

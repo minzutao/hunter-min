@@ -1,0 +1,29 @@
+<!---title:Linux xmodmap修改键盘映射-->
+<!---keywords:Ubuntu,Linux,键值,keycode,keymap-->
+<!---date:2014.01.17; modification:2014.01.17-->
+
+#查看需要修改的物理按键的键值
+
+要想修改键值映射, 先要知道按键的键值. 用如下命令查看:
+
+    xev | grep keycode
+
+#查看需要映射的按键的映射名称
+
+例如, 执行命令查看Menu键相关的按键名:
+
+    xmodmap -pke | grep menu -i
+
+显示结果为: 
+
+    keycode 135 = Menu NoSymbol Menu
+    keycode 147 = XF86MenuKB NoSymbol XF86MenuKB
+
+#修改按键映射
+
+比如想把键盘的右边的Alt改为Menu:
+
+    xmodmap -e "keycode 108=Menu"
+
+
+<!-- vim:set tw=0:-->

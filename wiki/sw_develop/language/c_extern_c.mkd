@@ -1,0 +1,86 @@
+<!---title:C/C++中extern "C"的使用-->
+<!---keywords:c语言,c++-->
+<!---date:2013.08.01; modification:2013.08.03-->
+
+#背景
+
+因为C, C++的编译器对函数名的修饰不同, 为了保证在C, C++中编写的函数能够被互相调用, 所以采用这个链接指示符.
+
+例如, 函数:
+
+<pre class="brush: c; toolbar: false">
+    int func(int, int)
+</pre>
+
+* C的编译器会将名字改编为`_func`
+* C++的编译器会改编为`_func_int_int` 或`_funcii`(各编译器不同). 
+
+所以如果不加任何说明, 直接在C和C++之间相互调用, 就会编译出错.
+
+
+
+#应用场合
+
+* 当在C++中调用C的接口(如`func`)时, 需要对函数声明加extern "C". 这样就使C++按照C的规则去理解这个被调接口(即_func而非_funcii).
+* 当C++中的接口, 需要提供给C程序调用时, 需要在函数定义时加extern "C".
+
+
+
+#使用方法
+
+通常C中编写的函数如果有在其它语言中使用的可能, 通常会有下面形式的声明: 
+
+<pre class="brush: c; toolbar: false">
+    #ifdef  __cplusplus
+    extern "C" {
+    #endif
+
+    /**** some declaration or so *****/
+
+    #ifdef  __cplusplus
+    }
+    #endif  /* end of __cplusplus */
+</pre>
+ 
+即在声明时已经加上extern "C" 而不需要调用时麻烦. 例如在VC++中调用C的库函数就不用作特别的声明. 
+
+
+
+#extern "C"的使用要点
+
+* 可以是单一语句:
+
+<pre class="brush: c; toolbar: false">
+    extern "C" double sqrt(double);
+</pre>
+
+* 可以是复合语句, 相当于复合语句中的声明都加了extern "C"
+
+<pre class="brush: c; toolbar: false">
+    extern "C"
+    {
+        double sqrt(double);
+        int min(int, int);
+    }
+</pre>
+
+* 可以包含头文件, 相当于头文件中的声明都加了extern "C"
+
+<pre class="brush: c; toolbar: false">
+    extern "C"
+    {
+        #include &lt;cmath.h>
+    }
+</pre>
+
+* 不可以将extern "C" 添加在函数内部
+
+* 如果函数有多个声明, 可以都加extern "C", 也可以只出现在第一次声明中, 后面的声明会接受第一个链接指示符的规则. 
+
+
+
+#参考资料
+
+http://blog.csdn.net/vinep/article/details/3899780
+
+<!-- vim:set tw=0:-->

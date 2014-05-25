@@ -1,0 +1,230 @@
+[筆記] C++學習筆記（Vector、Iterators）
+向量（Vector）：
+好像沒有人會在C++將這個東西翻譯，都直接叫做 Vector，這是一個同型物件的集合，所以Vector內的每個物件都有相同的型別。
+
+
+#include <vector>                 
+// 使用vector必須先使用vector表頭檔
+
+vector<int> vInt;                 // 定義vInt是會放int的一組vector
+vector<string> vString;           // 定義vString是會放string的一組vector
+vector<int> vInt1(10);            // vInt1內有10個以零為基礎的整數物件
+vector<string> vString1(10);      // vString1內有10個空字串為基礎的字串物件
+vector<int> vInt2(10,-1);         // vInt2內有10個-1的整數物件
+vector<string> vString2(10,"hi"); // vString2內有10個hi字串物件      
+
+Vector會動態成長！
+Vector的重要特性是能夠有效的添加元素而成長，建議定義一個空的Vector然後再加入元素較有效率。
+
+Vector的各種操作
+
+#include <vector>                 
+// 使用vector必須先使用vector表頭檔
+
+vector<int> vInt;    // 定義vInt是會放int的一組vector
+vInt.empty();        // 如果vInt是空的回傳True，否則為False
+vInt.size();         // 回傳vInt的元素數量
+vInt.push_back(x)    // 在vInt的最後加入一個值為x的元素 重要！！
+vInt[n];             // vInt裡第n個元素
+ 
+
+Vector添加元素：採用push_back
+
+vector<int> vInt;               // 定義vInt是會放int的一組vector
+for (int i=0 ; i <= 10 ; i++)   // 利用迴圈方式加入0到10的數字進入vector
+   vInt.push_back(i);           
+for (int i=0 ; i <= 10 ; i++)   // 利用迴圈方式讀出vector中0到10格中的數字
+   cout << vInt[i]; 
+          
+
+迭代器（Iterators）：
+是個可以用來檢驗元素的方法，因為不見得每個容器都支援下標操作（Subscript）。所有的容器都有定義Iterator型別，當然Vector也不例外。
+
+注意：必須確定元素的存在才可使用下標動作
+
+vector<int> vInt;    // 定義vInt是會放int的一組vector
+cout << vInt[0];     // 錯誤！因為vInt中沒有任何元素可以回傳
+vector<int> vInt2(10) 
+cout << vint2[10]    // 錯誤！因為vInt中是編號0~9共十個元素，沒有編號10這個
+
+每個容器都有個Iterator型別，宣告方法如下：
+
+vector<int>::iterator iVer;    // iVer是vector<int>的迭代器
+string::iterator  iStr;        // iStr是string的迭代器
+
+迭代器的begin()與end()：
+begin()指的是迭代器所指的容器中第一個元素，end()則回傳最後一個元素。
+
+vector<int>vInt;   
+vector<int>::iterator iVer = vInt.begin();    
+// iVer是為vInt之迭代器中第一個元素
+vector<int>::iterator iVer2 = vInt.end();
+// iVer是為vInt之迭代器中最後一個元素的下一個位置
+
+迭代器的取值與累加：
+取值會在迭代器變數前加上＊，累加則可使用++來指向下一個元素
+
+vector<int>vInt(10);   
+
+//採用iterator方式
+for (vector<int>::iterator iVer=vInt.begin();iVer!=vInt.end();++iVer)
+cout << *iVer << endl; 
+// 取得vInt中10個元素
+
+//一般採用的方法如下，雖然簡單但比較不一般化，而且要有支援下標
+for (int i = 0 ; i<10 ; ++i) 
+cout << vInt[i] << endl;
+
+//另一個採用size_type方式
+for (vector<int>::size_type iS=0 ; iS != vInt.size(); ++iS)
+cout << vInt[iS] << endl;
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Iterator迭代器
+分类： c++ 2013-05-10 10:50 72人阅读 评论(0) 收藏 举报
+c++
+
+迭代器iterator 提供了一种一般化的方法对顺序或关联容器类型中的每个元素进行连续访问，例如假设iter 为任意容器类型的一个iterator，则
+++iter;
+向前移动迭代器使其指向容器的下一个元素，而
+*iter;
+返回iterator 指向元素的值。
+每种容器类型都提供一个begin()和一个end()成员函数。
+begin()返回一个iterator 它指向容器的第一个元素。
+end()返回一个iterator 它指向容器的末元素的下一个位置。
+为了迭代任意容器类型的元素我们可以这样写：
+for ( iter = container.begin(); iter != container.end(); ++iter )
+    do_something_with_element( *iter );
+
+ 
+
+下面是一对iterator的定义，它们指向一个内含string 元素的vector：
+// vector<string> vec;
+vector<string>::iterator iter = vec.begin();
+vector<string>::iterator iter_end = vec.end();
+
+为了把每个string 元素打印到标准输出上我们可以这样写：
+for( ; iter != iter_end; ++iter )
+    cout << *iter << '\n';
+
+当然，这里*iter 的运算结果就是实际的string 对象。
+
+iterator 算术论算只适用于vector 或deque，而不适用于list， 因为list 的元素在内存中不是连续存储的。
+
+除了iterator 类型，每个容器还定义了一个const iterator 类型，后者对于遍历const 容器是必需的。const iterator 允许以只读方式访问容器的底层元素。例如：
+
+#include <vector >
+void even_odd( const vector<int> *pvec, vector<int> *pvec_even,vector<int> *pvec_odd )
+{
+    // 必须声明一个const_iterator, 才能够遍历pvec
+    vector<int>::const_iterator c_iter = pvec->begin();
+    vector<int>::const_iterator c_iter_end = pvec->end();
+    for ( ; c_iter != c_iter_end; ++c_iter )
+        if ( *c_iter % 2 )
+            pvec_odd->push_back( *c_iter );
+        else
+
+            pvec_even->push_back( *c_iter );
+}
+
+ 
+
+vector<string> svec;
+// ...
+// 用svec 的全部元素初始化svec2
+vector<string> svec2( svec.begin(), svec.end() );
+
+我们可以按如下方式初始化一个内含int 型元素的list：
+int ia[6] = { 0, 1, 2, 3, 4, 5 };
+list< int > ilist( ia, ia+6 );
+
+假设我们有下列string 对象的数组
+#include <string>
+string words[4] = {
+"stately", "plump", "buck", "mulligan"
+};
+我们可以通过传递数组words 的首元素指针和末元素后一位置的指针来初始化string vector
+vector< string > vwords( words, words+4 );
+第二个指针被用作终止条件，它指向的对象通常指向容器或者数组中最后一个元素后面的位置上不包含在要被拷贝或遍历的元素之中。
+
+ 
+
+push_back()方法给出了在顺序容器尾部插入单个元素的简短表示。
+
+为了在容器的头部插入元素我们将这样做
+vector< string > svec;
+list< string > slist;
+string spouse( "Beth" );
+slist.insert( slist.begin(), spouse );
+svec.insert( svec.begin(), spouse );
+这里insert()的第一个参数是一个位置（指向容器中某个位置的iterator）。 第二个参数
+是将要被插入的值，这个值被插入到由iterator 指向的位置的前面。
+
+更为随机的插入操作可以如下实现：
+string son( "Danny" );
+list<string>::iterator iter;
+iter = find( slist.begin(), slist.end(), son );
+slist.insert( iter, spouse );
+这里find()返回被查找元素在容器中的位置或者返回容器的end() iterator 表明这次
+查询失败我们将在下一节结束时回头介绍find() ）。
+
+push_back()是下列调用的简短表示：
+// 等价于: slist.push_back( value );
+slist.insert( slist.end(), value );
+
+ 
+
+如果希望在vector 的开始处插入10 个Anna 我们可以这样做：
+vector<string> svec;
+...
+string anna( "Anna" );
+svec.insert( svec.begin(), 10, anna );
+insert()方法的最后一种形式支持“向容器插入一段范围内的元素”。
+
+给出下列string数组
+string sarray[4] = { "quasi", "simba", "frollo", "scar" };
+我们可以向字符串vector 中插入数组中的全部或部分元素：
+svec.insert( svec.begin(), sarray, sarray+4 );
+svec.insert( svec.begin() + svec.size()/2, sarray+2, sarray+4);   //从svec的中间位置开始，插入sarray的第2到第三个元素。
+
+ 
+
+删除操作
+删除容器内元素的一般形式是一对erase()方法；一个删除单个元素，另一个删除由一对iterator 标记的一段范围内的元素。删除容器末元素的简短方法由pop_back()方法支持。
+
+为了删除容器中一个指定的元素，我们可以简单地调用erase()，用一个iterator表示它的位置。在下列代码段中，我们用find()泛型算法获得待删除元素的iterator，如果list
+中存在这样的元素，则把它的位置传递给erase()：
+string searchValue( "Quasimodo" );
+list< string >::iterator iter = find( slist.begin(), slist.end(), searchValue );
+if ( iter != slist.end() )
+    slist.erase( iter );
+
+要删除容器中的所有元素，或者由iterator 对标记的子集，我们可以这样做：
+// 删除容器中的所有元素
+slist.erase( slist.begin(), slist.end() );
+// 删除由iterator 标记的一段范围内的元素：
+list< string >::iterator first, last;
+first = find( slist.begin(), slist.end(), val1 );
+last = find( slist.begin(), slist.end(), val2 );
+// ... 检查first 和last 的有效性
+slist.erase( first, last );
+
+ 
+
+最后，如同在容器尾部插入一个元素的push_back()方法相仿，pop_back()方法删除容器的末元素——它不返回元素，只是简单地删除它，例如：
+vector< string >::iterator iter = buffer.begin();
+for ( ; iter != buffer.end(); iter++ )
+{
+    slist.push_back( *iter );
+    if ( ! do_something( slist ))
+        slist.pop_back();
+}
+
+

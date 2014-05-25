@@ -1,0 +1,41 @@
+<!---title:Linux网络安装, 配置与使用-->
+<!---keywords:Linux,网络,设置-->
+<!---date:2013.05.23; modification:2014.05.06-->
+
+#修改主机映射表 
+
+功能: 指定主机名查找方法, 通常指先查找文件/etc/hosts,找不到时再向DNS服务器请求. 
+对于大多数用户不用改动此文件内容. 
+ 
+Linux: /etc/host.conf文件内容order hosts, bind
+
+    multi on
+ 
+Soalris: /etc/nsswitch.conf 中的hosts项
+
+    hosts files, dns
+ 
+/etc/host.conf文件
+ 该文件指定如何解析主机名. Linux通过解析器库来获得主机名对应的IP地址. 下面是一个"/etc/host.conf"的示例: 
+
+    order  bind,hosts
+    multi  on
+    nospoof  on
+
+* "order  bind,hosts"指定主机名查询顺序, 这里规定先使用DNS来解析域名, 然后再查询"/etc/hosts"文件(也可以相反). 
+* "multi  on"指定是否"/etc/hosts"文件中指定的主机可以有多个地址, 拥有多个IP地址的主机一般称为多穴主机. 
+* "nospoof  on"指不允许对该服务器进行IP地址欺骗. IP欺骗是一种攻击系统安全的手段, 通过把IP地址伪装成别的计算机, 来取得其它计算机的信任. 
+ 
+#配置路由
+
+    sudo route add default gw 172.16.6.0    # 添加默认路由
+    sudo route add -net IP/24 eth1
+    sudo route add -net 172.16.6.0 netmask 255.255.255.0 gw 172.16.2.254 dev eth0 # 添加指定网络的路由
+    sudo route add -host 192.168.168.119 gw 192.168.168.1
+    sudo route add -host 192.168.168.110 dev eth0
+
+    sudo route del default                  # 删除默认网关
+    sudo route del gw 172.16.2.254          # 删除网关172.16.2.254
+    sudo route del -net 172.16.86.0/24      # 删除网络172.16.86.0
+
+ 

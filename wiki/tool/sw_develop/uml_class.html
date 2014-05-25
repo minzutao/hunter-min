@@ -1,0 +1,116 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>uml类图解析</title>
+<meta name="keywords" content="uml,类图">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>uml类图解析</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#类的表示"><span class="toc-section-number">1</span> 类的表示</a></li>
+<li><a href="#继承与接口"><span class="toc-section-number">2</span> 继承与接口</a><ul>
+<li><a href="#继承"><span class="toc-section-number">2.1</span> 继承</a></li>
+<li><a href="#接口与实现"><span class="toc-section-number">2.2</span> 接口(与实现)</a></li>
+</ul></li>
+<li><a href="#组合与聚合"><span class="toc-section-number">3</span> 组合与聚合</a><ul>
+<li><a href="#组合"><span class="toc-section-number">3.1</span> 组合</a></li>
+<li><a href="#聚合"><span class="toc-section-number">3.2</span> 聚合</a></li>
+</ul></li>
+<li><a href="#关联与依赖"><span class="toc-section-number">4</span> 关联与依赖</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:uml类图解析-->
+<!---keywords:uml,类图-->
+<!---date:2013.05.23-->
+
+
+<h1 id="类的表示"><span class="header-section-number">1</span> 类的表示</h1>
+<pre><code>| 类名 |
+|------|
+| 属性 |
+| 方法 |</code></pre>
+<h1 id="继承与接口"><span class="header-section-number">2</span> 继承与接口</h1>
+<h2 id="继承"><span class="header-section-number">2.1</span> 继承</h2>
+<div class="figure">
+<img src="uml_class_inherit.jpg" alt="继承" /><p class="caption">继承</p>
+</div>
+<h2 id="接口与实现"><span class="header-section-number">2.2</span> 接口(与实现)</h2>
+<div class="figure">
+<img src="uml_class_interface.jpg" alt="接口实现" /><p class="caption">接口实现</p>
+</div>
+<p>继承与接口放到一起, 是因为他们的图例与意义都有些相似. 接口的实现, 实际上相当于一种弱继承关系, 所以用虚线表示.</p>
+<h1 id="组合与聚合"><span class="header-section-number">3</span> 组合与聚合</h1>
+<h2 id="组合"><span class="header-section-number">3.1</span> 组合</h2>
+<div class="figure">
+<img src="uml_class_zuhe.jpg" alt="组合" /><p class="caption">组合</p>
+</div>
+<p>组合是一种强耦合关系, 类似于一种共生关系.</p>
+<h2 id="聚合"><span class="header-section-number">3.2</span> 聚合</h2>
+<div class="figure">
+<img src="uml_class_juhe.jpg" alt="聚合" /><p class="caption">聚合</p>
+</div>
+<p>聚合是一种弱耦合关系, 聚合中的部件脱离了整体也可单独存在.</p>
+<p>举两个相似的例子: * 比如活鸡与翅膀, 是组合关系, 因为如果把鸡的翅膀砍了, 鸡很难活, 翅膀也就没有什么意义了, 即便把鸡翅再拿回来和鸡放到一起它们也合不到一起了. * 相近的, 南方有种比较常见的菜叫做白斩鸡的, 这其中的鸡和鸡翅之间, 就是聚合关系了, 它相当于把鸡切块后再简单拼盘, 把鸡翅或者鸡腿拿走再拿回来, 还是那盘白斩鸡.</p>
+<h1 id="关联与依赖"><span class="header-section-number">4</span> 关联与依赖</h1>
+<div class="figure">
+<img src="uml_class_association.jpg" alt="关联" /><p class="caption">关联</p>
+</div>
+<p>企鹅的下蛋是与气候关联的.</p>
+<div class="figure">
+<img src="uml_class_depend.jpg" alt="依赖" /><p class="caption">依赖</p>
+</div>
+<p>动物需要依赖于水和氧气</p>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>git速查笔记</title>
+<meta name="keywords" content="git,命令,速查,使用">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>git速查笔记</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#git"><span class="toc-section-number">1</span> git</a><ul>
+<li><a href="#配置"><span class="toc-section-number">1.1</span> 配置</a></li>
+<li><a href="#创建仓库"><span class="toc-section-number">1.2</span> 创建仓库</a></li>
+<li><a href="#克隆仓库"><span class="toc-section-number">1.3</span> 克隆仓库</a></li>
+<li><a href="#忽略"><span class="toc-section-number">1.4</span> 忽略</a></li>
+<li><a href="#查看log"><span class="toc-section-number">1.5</span> 查看log</a></li>
+<li><a href="#查看版本细节"><span class="toc-section-number">1.6</span> 查看版本细节</a></li>
+<li><a href="#协同工作"><span class="toc-section-number">1.7</span> 协同工作</a></li>
+<li><a href="#撤销与恢复"><span class="toc-section-number">1.8</span> 撤销与恢复</a></li>
+<li><a href="#添加远程仓库"><span class="toc-section-number">1.9</span> 添加远程仓库</a></li>
+<li><a href="#分支"><span class="toc-section-number">1.10</span> 分支</a></li>
+<li><a href="#查看信息"><span class="toc-section-number">1.11</span> 查看信息</a></li>
+<li><a href="#tag"><span class="toc-section-number">1.12</span> tag</a></li>
+<li><a href="#储藏"><span class="toc-section-number">1.13</span> 储藏</a></li>
+</ul></li>
+<li><a href="#repo"><span class="toc-section-number">2</span> repo</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:git速查笔记-->
+<!---keywords:git,命令,速查,使用-->
+<!---date:2013.05.23-->
+
+
+<h1 id="git"><span class="header-section-number">1</span> git</h1>
+<h2 id="配置"><span class="header-section-number">1.1</span> 配置</h2>
+<ul>
+<li>git config --global user.name &quot;Your Name Comes Here&quot;</li>
+<li>git config --global user.email you@yourdomain.example.com</li>
+<li>git config --global core.quotepath false # 解决git status中文文件乱码问题.</li>
+<li>git config --global log.date iso8601 # 日志的时间格式</li>
+<li>带颜色显示
+<ul>
+<li>git config --global color.ui auto</li>
+<li>git config --global color.status auto</li>
+<li>git config --global color.diff auto</li>
+<li>git config --global color.branch auto</li>
+<li>git config --global color.interactive auto</li>
+</ul></li>
+</ul>
+<h2 id="创建仓库"><span class="header-section-number">1.2</span> 创建仓库</h2>
+<ul>
+<li>git init</li>
+<li>git init --bare # 创建空仓库. 区别是将仓库建在当前目录而非.git中.</li>
+<li>git add</li>
+<li>git commit</li>
+</ul>
+<h2 id="克隆仓库"><span class="header-section-number">1.3</span> 克隆仓库</h2>
+<ul>
+<li>git clone lyr@192.168.0.7:~/work/m2ge # ssh协议lyr登录.0.7的~/work/m2ge</li>
+<li>git clone ssh://192.168.0.2:12345/test</li>
+<li>git clone ssh://192.168.0.2/test -b b1 # 克隆某个分支</li>
+<li>git checkout origin/xxx --track # 将远程仓库的某个分支拿到本地.</li>
+</ul>
+<h2 id="忽略"><span class="header-section-number">1.4</span> 忽略</h2>
+<p><em>全仓库有效(其他人clone仓库也有效)</em></p>
+<pre><code>cd $WORK; echo &quot;*.d&quot; &gt; .gitignore; git add .gitignore; git commit # 方法1
+
+vi $WORK/.git/info/exclude # 加入被忽略文件名 # 方法2</code></pre>
+<p><em>子目录有效</em></p>
+<pre><code>.gitignore放在子目录, 则其下所有子集有效.</code></pre>
+<p><em>个人git全局有效</em></p>
+<pre><code>git config --global core.excludesfile /path/to/.gitignore</code></pre>
+<h2 id="查看log"><span class="header-section-number">1.5</span> 查看log</h2>
+<ul>
+<li>git log</li>
+<li>git log --stat --summary # 看一下每一次版本的大致变动情况</li>
+<li>git log --pretty=oneline # 每次提交得的log在一行里显示</li>
+<li>git log --pretty=format:%h%an%ai%s # 自定义格式
+<ul>
+<li>%H 提交对象（commit）的完整哈希字串</li>
+<li>%h 提交对象的简短哈希字串</li>
+<li>%an 作者（author）的名字</li>
+<li>%cn 提交者(committer)的名字</li>
+<li>%ci 提交者(committer)的日期</li>
+<li>%ai 作者的日期</li>
+<li>%s 提交说明</li>
+</ul></li>
+</ul>
+<h2 id="查看版本细节"><span class="header-section-number">1.6</span> 查看版本细节</h2>
+<ul>
+<li>git show dfb02e6e4f2f7b573337763e5c0013802e392818</li>
+<li>git show HEAD # 显示当前分支的最新版本的更新细节</li>
+<li>git show HEAD^ # 查看 HEAD 的父版本更新细节</li>
+<li>git show HEAD^^ # 查看 HEAD 的祖父版本更新细节</li>
+<li>git show HEAD~4 # 查看 HEAD 的祖父之祖父的版本更新细节</li>
+</ul>
+<h2 id="协同工作"><span class="header-section-number">1.7</span> 协同工作</h2>
+<ul>
+<li>git pull tzc@192.168.0.5:~/work/m2ge # 1. 从远程取出更新; 2. 合并到本地仓库</li>
+<li>git push origin master # 推到远程, 一般要先pull并解决冲突后, 再push.</li>
+<li>git push m2@192.168.0.2:~/project/m2ge.git master</li>
+</ul>
+<h2 id="撤销与恢复"><span class="header-section-number">1.8</span> 撤销与恢复</h2>
+<ul>
+<li>git reset # 将已经add过的改回&quot;Changed but not updated&quot;状态</li>
+<li>git reset file # 只撤销某个文件的add.</li>
+<li>git reset --soft #</li>
+<li>git reset --hard #</li>
+<li>git reset HEAD^ # 将本地仓库的最近一个提交版本干掉. 最好不要干掉已经push出去的提交.</li>
+</ul>
+<h2 id="添加远程仓库"><span class="header-section-number">1.9</span> 添加远程仓库</h2>
+<ul>
+<li>git remote add origin https://github.com/mikewootc/xxx.git</li>
+</ul>
+<h2 id="分支"><span class="header-section-number">1.10</span> 分支</h2>
+<ul>
+<li>git branch b1 # 创建分支</li>
+<li>git branch # 查看分支</li>
+<li>git branch -d b1 # 删除分支b1, 只能删除未合并的</li>
+<li>git branch -D b1 # 删除分支b1, 相当于强制删除</li>
+<li>git checkout b1 # 切换到b1分支</li>
+<li>git merge b1 # 将b1合并到当前分支, 会使当前分支的仓库与工作路径都合并.</li>
+</ul>
+<h2 id="查看信息"><span class="header-section-number">1.11</span> 查看信息</h2>
+<ul>
+<li>git log/show --pretty=raw # 查看具体的对象信息(tree, parent等)</li>
+<li>git diff # 查看当前工作路径与索引之间的区别.</li>
+<li>git diff --cached # 查看索引与仓库之间的区别.</li>
+</ul>
+<h2 id="tag"><span class="header-section-number">1.12</span> tag</h2>
+<ul>
+<li>git tag v0.1 dfb02</li>
+</ul>
+<h2 id="储藏"><span class="header-section-number">1.13</span> 储藏</h2>
+<ul>
+<li>git stash save &quot;Some message here&quot; # 存储修改.</li>
+<li>git stash list # 查看都有哪些修改.</li>
+<li><code>git stash apply [stash@{1}]</code> # 取出编号为1的存储. 弹出后存储还存在.</li>
+<li>git stash pop # 弹出最近的一次存储. 弹出后存储就没了.</li>
+<li>git stash drop stash@{0} # 删除某个修改.</li>
+</ul>
+<h1 id="repo"><span class="header-section-number">2</span> repo</h1>
+<ul>
+<li>wget http://android.git.kernel.org/repo # 下载repo</li>
+<li>repo init -u git://android.git.kernel.org/platform/manifest.git</li>
+<li><code>repo sync [project-list]</code> # 将远程代码同步到本地. 如果在merge 的过程中出现冲突, 这需要手动运行git rebase --continue</li>
+<li>repo status # 显示 project 的状态</li>
+<li><code>repo update[ project-list ]</code> # 上传修改的代码.</li>
+<li><code>repo diff [ project-list ]</code> # 显示提交的代码和当前工作目录代码之间的差异.</li>
+<li>repo download target revision # 下载特定的修改版本到本地, 例如: repo downloadpltform/frameworks/base 1241 下载修改版本为1241的代码</li>
+<li>repo start newbranchname # 创建新的branch分支</li>
+<li><code>repo prune [project list]</code> # 删除已经merge 的 project</li>
+<li><code>repo foreach [ project-lists]</code> -c command # 对每一个project运行command命令</li>
+</ul>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

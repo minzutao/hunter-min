@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Android的hello world程序的创建与运行</title>
+<meta name="keywords" content="Android,helloworld">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Android的hello world程序的创建与运行</h1>
+<p>date: 2013.06.03</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#前言"><span class="toc-section-number">1</span> 前言</a></li>
+<li><a href="#用eclipse创建工程"><span class="toc-section-number">2</span> 用Eclipse创建工程</a></li>
+<li><a href="#构建与运行"><span class="toc-section-number">3</span> 构建与运行</a><ul>
+<li><a href="#构建虚拟机"><span class="toc-section-number">3.1</span> 构建虚拟机</a></li>
+<li><a href="#调试程序"><span class="toc-section-number">3.2</span> 调试程序</a></li>
+</ul></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Android的hello world程序的创建与运行-->
+<!---keywords:Android,helloworld-->
+<!---date:2013.06.03-->
+
+<h1 id="前言"><span class="header-section-number">1</span> 前言</h1>
+<p>本文将介绍如何利用Eclipse来构建一个最简单的Hello world程序, 并且在虚拟机中运行它.</p>
+<p>阅读本文之前, 请确保您已经按照<a href="../basic/develop_env_app.html">Android应用开发环境搭建</a>, 安装好了应用程序开发环境.</p>
+<h1 id="用eclipse创建工程"><span class="header-section-number">2</span> 用Eclipse创建工程</h1>
+<ol style="list-style-type: decimal">
+<li>打开Eclipse.</li>
+<li>菜单中: <code>File --&gt; New --&gt; Project</code>, 弹出New Project对话框.</li>
+<li>选择Android文件夹中的&quot;Android Application Project&quot;. 点击&quot;Next&quot;.</li>
+<li>填写相应的表单:
+<ul>
+<li>Application Name: 应用程序名, 这个是给用户看的. 如&quot;Hello world&quot;.</li>
+<li>Project Name: 项目名, 是给Eclipse项目用的. 如&quot;helloworld&quot;</li>
+<li>Package Name: 包名, 在一个Android系统里, 包的名字必须是唯一的. 也就是说, 在一个手机里, 区分不同的APP的方法, 也就是靠这个包名. 推荐的命名方法是, 用域名倒过来写, 如本例为&quot;com.mikewootc.helloworld&quot;</li>
+</ul></li>
+<li>其他选项暂时不管, 点击&quot;Next&quot;.</li>
+<li>弹出Configure Project页面, 采用默认配置, 点击&quot;Next&quot;.</li>
+<li>弹出Configure Launcher Icon页面, 暂时不管(也可以换个图标), 点击&quot;Next&quot;.</li>
+<li>弹出Create Activity页面, 选择Activity, 本例选择Blank Activity. 点击&quot;Next&quot;.</li>
+<li>弹出Blank Activity页面, 保持默认, 点击&quot;Finish&quot;. 完成项目的创建.</li>
+</ol>
+<h1 id="构建与运行"><span class="header-section-number">3</span> 构建与运行</h1>
+<p>这里介绍在虚拟机中运行程序的方法.</p>
+<h2 id="构建虚拟机"><span class="header-section-number">3.1</span> 构建虚拟机</h2>
+<ol style="list-style-type: decimal">
+<li>在安装路径中的sdk/tools下, 执行:
+<pre>
+./android avd
+</pre></li>
+<li>弹出Android Virtual Device Manager的界面. 点击&quot;New&quot;按钮.</li>
+<li>填入名称, 平台版本, 存储器大小, 分辨率等, 然后点击&quot;Create AVD&quot;, 完成创建.</li>
+<li>选中刚刚建立的虚拟机, 然后点击&quot;Start&quot;, 启动虚拟机. 然后就可以调试了.</li>
+</ol>
+<h2 id="调试程序"><span class="header-section-number">3.2</span> 调试程序</h2>
+<p>在eclipse点击菜单<code>Run --&gt; Run</code>便可以运行.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

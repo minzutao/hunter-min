@@ -1,0 +1,33 @@
+<!---title:linux下ckermit配置与使用-->
+<!---keywords:linux,ubuntu,kermit-->
+<!---date:2014.03.08; modification:2014.03.08-->
+
+#安装ckermit
+
+    apt-get install ckermit
+
+#配置
+
+创建并编辑~/.kermrc, 内容如下:
+
+    set line /dev/ttyUSB0
+    set speed 115200
+    set carrier-watch off
+    set handshake none
+    set flow-control none
+    robust
+    set file type bin
+    set file name lit
+    set rec pack 1000
+    set send pack 1000
+    set window 5
+    c
+
+说明:
+
+* `set line /dev/ttyUSB0`, 是窗口设备对应的设备名, 根据本机的设备配置即可. 这是是usb转串口, 如果是真实串口可能是: /dev/ttyS0, 1等.
+* 最后的c是自动连接, 否则需要启动后手动连接.
+
+
+
+<!-- vim:set tw=0:-->

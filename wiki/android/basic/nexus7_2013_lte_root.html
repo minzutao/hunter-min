@@ -1,0 +1,114 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Nexus7二代解锁+刷recovery+root教程</title>
+<meta name="keywords" content="neuxs7 2013,lte,4g,ubuntu,linux">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Nexus7二代解锁+刷recovery+root教程</h1>
+<p>date: 2014.04.27; modification:2014.04.27</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#nexus-7二代解锁教程"><span class="toc-section-number">1</span> Nexus 7二代解锁教程</a></li>
+<li><a href="#nexus-7二代root教程刷twrp-recovery并root二代n7"><span class="toc-section-number">2</span> Nexus 7二代ROOT教程——刷TWRP Recovery并ROOT二代n7</a></li>
+<li><a href="#参考文献"><span class="toc-section-number">3</span> 参考文献</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Nexus7二代解锁+刷recovery+root教程-->
+<!---keywords:neuxs7 2013,lte,4g,ubuntu,linux-->
+<!---date:2014.04.27; modification:2014.04.27-->
+
+<p>本文分享的是中文版Nexus 7二代(2013 LTE)解锁教程, 以及ROOT教程, 本文将详细指导该机器的用户如何进行解锁和ROOT的具体操作方法. 说到Nexus 7二代ROOT, 它的原理其实并不难, 即解锁之后, 通过fastboot刷入TWRP Recovery, 再通过TWRP Recovery刷入SuperSU.zip, 然后通过SuperSU来ROOT 二代Nexus7 (安卓4.3), 大致的步骤就是这样子的了, 下面将为大家列出详细的操作步骤:</p>
+<p>在此之前, 确认已经安装好了fastboot驱动, 如果没有安装好的话, 也没关系, 看下面的教程步骤.</p>
+<p><strong><em>注意, 解锁是会清空数据的, 所以在解锁前, 请做好备份工作.</em></strong></p>
+<h1 id="nexus-7二代解锁教程"><span class="header-section-number">1</span> Nexus 7二代解锁教程</h1>
+<ol style="list-style-type: decimal">
+<li>安装Android SDK (http://developer.android.com/sdk/index.html), 其实你只需要 fastboot.exe 和 adb.exe (点击这里下载), 将其放到特定目录, 这里将以放到了C:/adb为例 (在C盘根目录下创建adb目录) ;</li>
+<li>安装 Google USB 驱动 (http://developer.android.com/sdk/win-usb.html) ;</li>
+<li>在n7二代上开启USB调试;</li>
+<li>用命令提示符进入C:/adb(记住这里放有你的fastboot.exe 和 adb.exe) ;</li>
+<li>然后输入命令: adb reboot bootloader ; (我的nexus7二代买来后没找到USB调试选项所以3,4,5这几步不适用, 我用的方式是: 关机后按住音量减和电源键开机进入fastboot)</li>
+<li>当n7二代进入bootloader后, 在电脑的同一命令提示符里输入 fastboot oem unlock ; 我的是ubuntu, 需要sudo, 否则会无相应的永远卡死.</li>
+<li>在n7二代上用音量“+”键来选择Yes, 并按电源键确认;</li>
+<li>当n7二代上状态显示 Unlocked 后, 再用音量键选择到&quot;Start&quot; , 然后用电源键确认.</li>
+</ol>
+<p>然后, 二代Nexus 7设备就成功解锁了, 接下来可以继续ROOT工作了.</p>
+<p>(PS: 后来我找到了方法开启usb调试: 在设置--关于平板电脑--版本号上, 点击7次, 我只点击了3次就告诉我已经开启开发者模式了, 现在再返回到设置里面, 就有开发者选项了)</p>
+<h1 id="nexus-7二代root教程刷twrp-recovery并root二代n7"><span class="header-section-number">2</span> Nexus 7二代ROOT教程——刷TWRP Recovery并ROOT二代n7</h1>
+<ol style="list-style-type: decimal">
+<li>下载SuperSU: 目前最新的版本是v1.94, 后续可以通过play store更新. 下载地址为: <a href="http://download.chainfire.eu/396/SuperSU/UPDATE-SuperSU-v1.94.zip">http://download.chainfire.eu/396/SuperSU/UPDATE-SuperSU-v1.94.zip</a>. 注: 如果这里给出的版本不能root成功, 去网上找找新版本.</li>
+<li>将SuperSU放入到二代n7的系统根目录下;</li>
+<li>下载TWRP的img文件, 然后放到C: /adb目录(很关键的一步, 因为这个目录下有 fastboot.exe 和 adb.exe, 而你所需要的命令都要靠它们来完成) ; TWRP下载地址:
+<ul>
+<li><a href="http://techerrata.com/browse/twrp2/deb">http://techerrata.com/browse/twrp2/deb</a> (这是LTE版本)</li>
+<li><a href="http://techerrata.com/browse/twrp2/flo">http://techerrata.com/browse/twrp2/flo</a> (这是WIFI版本)</li>
+</ul></li>
+<li>确保你的二代n7和电脑相连接并处于bootloader模式, 没有的话, 请重复上面解锁教程的步骤4和5;</li>
+<li>在命令提示符里输入fastboot flash recovery &quot;你TWRP的文件名&quot;.img (双引号里请用你实际的TWRP的.img的文件名) ; (如果是ubuntu同样需要sudo)</li>
+<li>刷入TWRP后, 你的界面仍然在Bootloader下面, 按多几次音量下键, 找到Recovery Mode, 按电源键确认;</li>
+<li>然后进行如下的操作:
+<ul>
+<li>Install</li>
+<li>进入Select Zip to install(我的版本没有这一步, 直接就可以到下一步选zip文件, 并且支持触控)</li>
+<li>找到你存放的SuperSU的zip包, 选中它. (我的版本在这里是弹出一个警告, 然后在swipe to unlock的滑条向右滑动即可)</li>
+<li>选择yes, 刷入SuperSU</li>
+<li>之后这里弹出一个清数据的选项(可清可不清, 但是最好是清一下, 反正上面的步骤已经把所有数据都破坏了).</li>
+</ul></li>
+<li>然后重启你的平板设备即可, 到这里, Nexus 7二代就成功解锁和ROOT了, 购置了二代设备的用户们可以自己试试.</li>
+</ol>
+<h1 id="参考文献"><span class="header-section-number">3</span> 参考文献</h1>
+<p>http://guide.hiapk.com/shuaji/LG/130821/1445122.html</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

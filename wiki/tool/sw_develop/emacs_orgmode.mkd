@@ -1,0 +1,18 @@
+<!---title:emacs org-mode使用说明-->
+<!---keywords:教程-->
+<!---date:2013.09.23; modification:2013.09.26-->
+
+
+#快捷键
+
+##表格
+
+C-c C-c     重新整理表格的对齐
+C-c ^       排序
+TAB
+S-TAB
+
+
+
+
+<!-- vim:set tw=0:-->

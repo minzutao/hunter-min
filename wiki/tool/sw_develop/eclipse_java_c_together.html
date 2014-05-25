@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Eclipse中开发JAVA和C/C++混合代码</title>
+<meta name="keywords" content="同时,java工程">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Eclipse中开发JAVA和C/C++混合代码</h1>
+<p>date: 2014.03.05; modification:2014.03.05</p>
+
+ <!--if(title)-->
+
+ <!--if(toc)-->
+
+<!---title:Eclipse中开发JAVA和C/C++混合代码-->
+<!---keywords:同时,java工程-->
+<!---date:2014.03.05; modification:2014.03.05-->
+
+<p>Eclipse中如果单纯的建一个JAVA工程, 那么无法跟踪C/C++的符号跳转; 反之亦然. 如果建立一个general, shit全都跟踪不了跳转了.</p>
+<p>所以在此提供一个方法, 可以解决此问题.</p>
+<ol style="list-style-type: decimal">
+<li><strong>创建JAVA工程</strong></li>
+</ol>
+<p>先建立一个JAVA工程:</p>
+<pre><code>File -&gt; New -&gt; Project -&gt; Java -&gt; Java Project</code></pre>
+<p>这里的工程建立同一般的Java工程建立过程.</p>
+<ol start="2" style="list-style-type: decimal">
+<li><strong>加入C/C++解析</strong></li>
+</ol>
+<p>在刚刚建立的JAVA工程上右击:</p>
+<pre><code>New -&gt; Other -&gt; C/C++ -&gt; Convert to a C/C++ Project(Adds C/C++ Nature)</code></pre>
+<p>注意是New - Other, 不是New - Project. 然后选择对应的选项, 点击Finish即可.</p>
+<p>PS: 吐槽一下, 这个添加方法真是有点反人类, 我找它找的都快吐血了.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Linux通过命令设置屏幕分辨率</title>
+<meta name="keywords" content="Linux,命令行,屏幕,分辨率,xwindows">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Linux通过命令设置屏幕分辨率</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#背景"><span class="toc-section-number">1</span> 背景</a></li>
+<li><a href="#查看分辨率"><span class="toc-section-number">2</span> 查看分辨率</a></li>
+<li><a href="#设置分辨率"><span class="toc-section-number">3</span> 设置分辨率</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Linux通过命令设置屏幕分辨率-->
+<!---keywords:Linux,命令行,屏幕,分辨率,xwindows-->
+<!---date:2013.05.23-->
+
+<h1 id="背景"><span class="header-section-number">1</span> 背景</h1>
+<p>没有桌面系统的时候, 比如使用awesome, 屏幕显示分辨率不对就需要用命令行来设置.</p>
+<h1 id="查看分辨率"><span class="header-section-number">2</span> 查看分辨率</h1>
+<p>调用命令:</p>
+<pre><code>xrandr</code></pre>
+<p>会出现类似如下结果:</p>
+<pre><code>xrandr: Failed to get size of gamma for output default
+Screen 0: minimum 320 x 200, current 1280 x 800, maximum 1280 x 800
+default connected 1280x800+0+0 0mm x 0mm
+   1024x768       85.0     75.0     70.0     60.0      0.0  
+   832x624        75.0  
+   800x600        85.0     75.0     72.0     60.0     56.0      0.0  
+   640x480        85.0     75.0     73.0     60.0      0.0  
+   720x400        85.0  
+   640x400        85.0      0.0  
+   640x350        85.0  
+   320x240         0.0  
+   400x300         0.0  
+   512x384         0.0  
+   854x480         0.0  
+   1280x720        0.0  
+   1280x800        0.0* 
+   720x480         0.0  
+   720x576         0.0  
+   320x200         0.0  
+   800x480         0.0  
+   1280x768        0.0  </code></pre>
+<p><code>default connected 1280x800+0+0 0mm x 0mm</code>表示当前默认是1280x800.</p>
+<h1 id="设置分辨率"><span class="header-section-number">3</span> 设置分辨率</h1>
+<p>输入命令:</p>
+<pre><code>xrandr --output default --mode &quot;1920x1080&quot;</code></pre>
+<p>即可变为1920x1080的分辨率。</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

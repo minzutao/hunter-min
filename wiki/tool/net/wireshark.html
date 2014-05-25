@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>使用Wireshark抓包教程</title>
+<meta name="keywords" content="wireshark,抓包,分析,过滤器">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>使用Wireshark抓包教程</h1>
+<p>date: 2013.05.23</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#过滤器"><span class="toc-section-number">1</span> 过滤器</a><ul>
+<li><a href="#捕捉过滤器"><span class="toc-section-number">1.1</span> 捕捉过滤器</a><ul>
+<li><a href="#语法"><span class="toc-section-number">1.1.1</span> 语法</a></li>
+<li><a href="#例子"><span class="toc-section-number">1.1.2</span> 例子</a></li>
+<li><a href="#注意事项"><span class="toc-section-number">1.1.3</span> 注意事项</a></li>
+</ul></li>
+<li><a href="#显示过滤器"><span class="toc-section-number">1.2</span> 显示过滤器</a><ul>
+<li><a href="#语法-1"><span class="toc-section-number">1.2.1</span> 语法</a></li>
+<li><a href="#例子-1"><span class="toc-section-number">1.2.2</span> 例子</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:使用Wireshark抓包教程-->
+<!---keywords:wireshark,抓包,分析,过滤器-->
+<!---date:2013.05.23-->
+
+<h1 id="过滤器"><span class="header-section-number">1</span> 过滤器</h1>
+<p>Wireshark过滤器分为<code>捕捉过滤器</code>与<code>显示过滤器</code>.</p>
+<h2 id="捕捉过滤器"><span class="header-section-number">1.1</span> 捕捉过滤器</h2>
+<h3 id="语法"><span class="header-section-number">1.1.1</span> 语法</h3>
+<p>捕捉过滤器的语法与其它使用Lipcap(Linux)或者Winpcap(Windows)库开发的软件一样, 比如著名的TCPdump. 捕捉过滤器必须在开始捕捉前设置完毕, 这一点跟显示过滤器是不同的.</p>
+<pre><code>| 语法 | Protocol | Direction | Host(s)  | Value | Logical Operations | Other expression      |
+|------|----------|-----------|----------|-------|--------------------|-----------------------|
+| 例子 | tcp      | dst       | 10.1.1.1 | 80    | and                | tcp dst 10.2.2.2 3128 |</code></pre>
+<p><em>Protocol(协议)</em></p>
+<p>可能的值: ether, fddi, ip, arp, rarp, decnet, lat, sca, moprc, mopdl, tcp, udp. 如果没有特别指明是什么协议, 则默认使用所有支持的协议.</p>
+<p><em>Direction(方向)</em></p>
+<p>可能的值: src, dst, src and dst, src or dst 如果没有特别指明来源或目的地, 则默认使用 &quot;src or dst&quot; 作为关键字. 例如, &quot;host 10.2.2.2&quot;与&quot;src or dst host 10.2.2.2&quot;是一样的.</p>
+<p><em>Host(s)</em></p>
+<p>可能的值: net, port, host, portrange. 如果没有指定此值, 则默认使用&quot;host&quot;关键字. 例如, &quot;src 10.1.1.1&quot;与&quot;src host 10.1.1.1&quot;相同.</p>
+<p><em>Logical Operations(逻辑运算)</em></p>
+<p>可能的值: not, and, or. 否(&quot;not&quot;)具有最高的优先级. 或(&quot;or&quot;)和与(&quot;and&quot;)具有相同的优先级, 运算时从左至右进行. 例如: * &quot;not tcp port 3128 and tcp port 23&quot;与&quot;(not tcp port 3128) and tcp port 23&quot;相同. * &quot;not tcp port 3128 and tcp port 23&quot;与&quot;not (tcp port 3128 and tcp port 23)&quot;不同.</p>
+<h3 id="例子"><span class="header-section-number">1.1.2</span> 例子</h3>
+<p>目的TCP端口为3128的封包:</p>
+<pre><code>tcp dst port 3128</code></pre>
+<p>来源IP地址为10.1.1.1的封包:</p>
+<pre><code>ip src host 10.1.1.1</code></pre>
+<p>目的或来源IP地址为10.1.2.3的封包:</p>
+<pre><code>host 10.1.2.3</code></pre>
+<p>来源为UDP或TCP, 并且端口号在2000至2500范围内的封包:</p>
+<pre><code>src portrange 2000-2500</code></pre>
+<p>除了icmp以外的所有封包. (icmp通常被ping工具使用):</p>
+<pre><code>not imcp</code></pre>
+<p>来源IP地址为10.7.2.12, 但目的地不是10.200.0.0/16的封包:</p>
+<pre><code>src host 10.7.2.12 and not dst net 10.200.0.0/16</code></pre>
+<p>来源IP为10.4.1.12或者来源网络为10.6.0.0/16, 目的地TCP端口号在200至10000之间, 并且目的位于网络10.0.0.0/8内的所有封包:</p>
+<pre><code>(src host 10.4.1.12 or src net 10.6.0.0/16) and tcp dst portrange 200-10000 and dst net 10.0.0.0/8</code></pre>
+<h3 id="注意事项"><span class="header-section-number">1.1.3</span> 注意事项</h3>
+<ul>
+<li><p>当使用关键字作为值时, 需使用反斜杠“”. &quot;ether proto &quot; (与关键字&quot;ip&quot;相同). 这样写将会以IP协议作为目标.</p></li>
+<li><p>&quot;ip proto &quot; (与关键字&quot;icmp&quot;相同). 这样写将会以ping工具常用的icmp作为目标.</p></li>
+<li><p>可以在&quot;ip&quot;或&quot;ether&quot;后面使用&quot;multicast&quot;及&quot;broadcast&quot;关键字. 当您想排除广播请求时, &quot;no broadcast&quot;就会非常有用.</p></li>
+</ul>
+<h2 id="显示过滤器"><span class="header-section-number">1.2</span> 显示过滤器</h2>
+<h3 id="语法-1"><span class="header-section-number">1.2.1</span> 语法</h3>
+<p>通常经过捕捉过滤器过滤后的数据还是很复杂. 此时您可以使用显示过滤器进行更加细致的查找. 它的功能比捕捉过滤器更为强大.</p>
+<pre><code>| 语法 | Protocol. | String 1. | String 2 | Comparison operator | Value    | Logical Operations | Other expression |
+|------|-----------|-----------|----------|---------------------|----------|--------------------|------------------|
+| 例子 | ftp       | passive   | ip       | ==                  | 10.2.3.4 | xor                | icmp.type        |</code></pre>
+<p><em>Protocol(协议)</em></p>
+<p>可以使用大量位于OSI模型第2至7层的协议. 点击&quot;Expression...&quot;按钮后, 您可以看到它们. 比如: IP, TCP, DNS, SSH等. 也可以在菜单Help-&gt;Supported Protocols找到所支持的协议.</p>
+<p><em>String1, String2</em> (可选项)</p>
+<p>协议的子类.</p>
+<p><em>Comparison operators(比较运算符)</em></p>
+<p>可以使用6种比较运算符:</p>
+<pre><code>| 英文写法 | C语言写法 | 含义 |
+|----------|-----------|------|
+| eq ==    | 等于      |      |
+| ne !=    | 不等于    |      |
+| gt &gt;     | 大于      |      |
+| lt &lt;     | 小于      |      |
+| ge &gt;=    | 大于等于  |      |
+| le &lt;=    | 小于等于  |      |</code></pre>
+<p><em>Logical expressions(逻辑运算符)</em></p>
+<pre><code>| 英文写法 | C语言写法 | 含义     |
+|----------|-----------|----------|
+| and      | &amp;&amp;        | 逻辑与   |
+| or       |           | 逻辑或   |
+| xor      | ^^        | 逻辑异或 |
+| not      | !         | 逻辑非   |</code></pre>
+<p>逻辑异或是一种排除性的或. 当其被用在过滤器的两个条件之间时, 只有当且仅当其中的一个条件满足时, 这样的结果才会被显示在屏幕上.</p>
+<h3 id="例子-1"><span class="header-section-number">1.2.2</span> 例子</h3>
+<p>显示SNMP或DNS或ICMP封包:</p>
+<pre><code>snmp || dns || icmp </code></pre>
+<p>显示来源或目的IP地址为10.1.1.1的封包:</p>
+<pre><code>ip.addr == 10.1.1.1</code></pre>
+<p>显示来源不为10.1.2.3或者目的不为10.4.5.6的封包:</p>
+<pre><code>ip.src != 10.1.2.3 or ip.dst != 10.4.5.6
+
+换句话说, 显示的封包将会为: 
+来源IP除了10.1.2.3以外任意; 目的IP任意 以及 来源IP任意, 目的IP: 除了10.4.5.6以外任意</code></pre>
+<p>显示来源不为10.1.2.3并且目的IP不为10.4.5.6的封包:</p>
+<pre><code>ip.src != 10.1.2.3 and ip.dst != 10.4.5.6:
+
+换句话说, 显示的封包将会为: 
+来源IP: 除了10.1.2.3以外任意; 同时须满足, 目的IP: 除了10.4.5.6以外任意</code></pre>
+<p>显示来源或目的TCP端口号为25的封包:</p>
+<pre><code>tcp.port == 25</code></pre>
+<p>显示目的TCP端口号为25的封包:</p>
+<pre><code>tcp.dstport == 25</code></pre>
+<p>显示包含TCP标志的封包:</p>
+<pre><code>tcp.flags</code></pre>
+<p>显示包含TCP SYN标志的封包:</p>
+<pre><code>tcp.flags.syn == 0x02</code></pre>
+<p>如果过滤器的语法是正确的, 表达式的背景呈绿色. 如果呈红色, 说明表达式有误.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

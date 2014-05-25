@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>linux下ckermit配置与使用</title>
+<meta name="keywords" content="linux,ubuntu,kermit">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>linux下ckermit配置与使用</h1>
+<p>date: 2014.03.08; modification:2014.03.08</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#安装ckermit"><span class="toc-section-number">1</span> 安装ckermit</a></li>
+<li><a href="#配置"><span class="toc-section-number">2</span> 配置</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:linux下ckermit配置与使用-->
+<!---keywords:linux,ubuntu,kermit-->
+<!---date:2014.03.08; modification:2014.03.08-->
+
+<h1 id="安装ckermit"><span class="header-section-number">1</span> 安装ckermit</h1>
+<pre><code>apt-get install ckermit</code></pre>
+<h1 id="配置"><span class="header-section-number">2</span> 配置</h1>
+<p>创建并编辑~/.kermrc, 内容如下:</p>
+<pre><code>set line /dev/ttyUSB0
+set speed 115200
+set carrier-watch off
+set handshake none
+set flow-control none
+robust
+set file type bin
+set file name lit
+set rec pack 1000
+set send pack 1000
+set window 5
+c</code></pre>
+<p>说明:</p>
+<ul>
+<li><code>set line /dev/ttyUSB0</code>, 是窗口设备对应的设备名, 根据本机的设备配置即可. 这是是usb转串口, 如果是真实串口可能是: /dev/ttyS0, 1等.</li>
+<li>最后的c是自动连接, 否则需要启动后手动连接.</li>
+</ul>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

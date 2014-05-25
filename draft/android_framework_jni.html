@@ -1,0 +1,134 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Android framework之JNI</title>
+<meta name="keywords" content="Android,Jni">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Android framework之JNI</h1>
+<p>date: 2014.01.16; modification:2014.01.16</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#android中jni的层次关系"><span class="toc-section-number">1</span> Android中JNI的层次关系</a></li>
+<li><a href="#jni使用概述"><span class="toc-section-number">2</span> JNI使用概述</a></li>
+<li><a href="#加载jni"><span class="toc-section-number">3</span> 加载JNI</a></li>
+<li><a href="#声明jni中的native接口"><span class="toc-section-number">4</span> 声明JNI中的native接口</a></li>
+<li><a href="#java与jni接口名称的对应"><span class="toc-section-number">5</span> JAVA与JNI接口名称的对应</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Android framework之JNI-->
+<!---keywords:Android,Jni-->
+<!---date:2014.01.16; modification:2014.01.16-->
+
+
+<p>以MediaScanner为例</p>
+<h1 id="android中jni的层次关系"><span class="header-section-number">1</span> Android中JNI的层次关系</h1>
+<pre><code>Java层(MediaScanner.java)
+   ^
+   |
+   v
+JNI层(android_media_MediaScanner.cpp)&lt;libmedia_jni.so&gt;
+   ^
+   |
+   v
+Native层(MediaScanner.cpp)&lt;libmedia.so&gt;</code></pre>
+<h1 id="jni使用概述"><span class="header-section-number">2</span> JNI使用概述</h1>
+<p>对于JAVA程序来说, 如果不加特殊说明, 则认为都是JAVA代码. 所以如果想要在JAVA中调用C/C++的子程序, 需要说明是哪个库中的native程序. 另外, 还需要声明一下, 哪些被调用的代码是native的.</p>
+<p>所以要想使用JNI, 2件事必须要做:</p>
+<ul>
+<li>加载JNI库.</li>
+<li>声明JNI层的native函数.</li>
+</ul>
+<h1 id="加载jni"><span class="header-section-number">3</span> 加载JNI</h1>
+<p>MediaScanner.java中, 加载JNI是在类的static部分进行, 这样保证在任何native方法被调用前进行加载. 在MediaPlayer.java等模块中也是同样的道理:</p>
+<pre class="brush: java; toolbar: false">
+
+    public class MediaScanner
+    {
+        static {
+            System.loadLibrary("media_jni");
+            native_init();
+        }
+        ...
+    }
+
+</pre>
+
+
+
+<h1 id="声明jni中的native接口"><span class="header-section-number">4</span> 声明JNI中的native接口</h1>
+<p>通过native关键字, 可以在java程序中声明native接口. 例如:</p>
+<pre class="brush: java; toolbar: false">
+    private static native final void native_init();
+
+    private native void processDirectory(String path, MediaScannerClient client);
+    private native void processFile(String path, String mimeType, MediaScannerClient client);
+</pre>
+
+
+
+<h1 id="java与jni接口名称的对应"><span class="header-section-number">5</span> JAVA与JNI接口名称的对应</h1>
+<p>例如, 在MediaScanner.java中, 声明和使用的native接口叫</p>
+<pre class="brush: java; toolbar: false">
+    private static native final void native_init();
+</pre>
+
+
+<p>而在android_media_MediaScanner.cpp中, 其对应的接口为</p>
+<pre class="brush: c; toolbar: false">
+    android_media_MediaScanner_native_init(JNIEnv *env)
+</pre>
+
+<p>那么这两者名字是怎么对应起来的呢?</p>
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

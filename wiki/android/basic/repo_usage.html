@@ -1,0 +1,264 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>google repo使用说明</title>
+<meta name="keywords" content="repo,使用,教程,笔记">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>google repo使用说明</h1>
+<p>date: 2013.05.29; modification:2014.04.10</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#概述"><span class="toc-section-number">1</span> 概述</a></li>
+<li><a href="#名词"><span class="toc-section-number">2</span> 名词</a></li>
+<li><a href="#安装"><span class="toc-section-number">3</span> 安装</a></li>
+<li><a href="#使用流程"><span class="toc-section-number">4</span> 使用流程</a></li>
+<li><a href="#命令使用"><span class="toc-section-number">5</span> 命令使用</a><ul>
+<li><a href="#init"><span class="toc-section-number">5.1</span> init</a></li>
+<li><a href="#sync"><span class="toc-section-number">5.2</span> sync</a></li>
+<li><a href="#查看android各版本分支"><span class="toc-section-number">5.3</span> 查看android各版本分支</a></li>
+<li><a href="#status"><span class="toc-section-number">5.4</span> status</a></li>
+<li><a href="#start"><span class="toc-section-number">5.5</span> start</a></li>
+</ul></li>
+<li><a href="#参考文献"><span class="toc-section-number">6</span> 参考文献</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:google repo使用说明-->
+<!---keywords:repo,使用,教程,笔记-->
+<!---date:2013.05.29; modification:2014.04.10-->
+
+<h1 id="概述"><span class="header-section-number">1</span> 概述</h1>
+<p>Git 是 Linux Torvalds 为了帮助管理 Linux 内核开发而开发的一个开放源码的分布式版本控制软件.</p>
+<p>Android也是由git管理的代码仓库, 但是Android是由kernel, Dalvik, Bionic, prebuilt, build等多个Git项目组成, 单独使用git来一个个的手动管理比较麻烦, 所以Android项目编写了一个名为Repo的Python的脚本来统一管理这些项目的仓库, 使得Git的使用更加简单.</p>
+<h1 id="名词"><span class="header-section-number">2</span> 名词</h1>
+<ul>
+<li>repo</li>
+<li>.repo</li>
+<li>manifest</li>
+<li>branch</li>
+<li>topic</li>
+<li>project</li>
+</ul>
+<h1 id="安装"><span class="header-section-number">3</span> 安装</h1>
+<pre><code>$ mkdir ~/bin
+$ PATH=~/bin:$PATH
+$ curl https://dl-ssl.google.com/dl/googlesource/git-repo/repo &gt; ~/bin/repo
+$ chmod a+x ~/bin/repo</code></pre>
+<p>网上有说下载repo的地址为:</p>
+<pre><code>curl http://android.git.kernel.org/repo &gt;~/bin/repo</code></pre>
+<p>但是我试着不好用, 目前(2013.05.29)用我上面写的可以用. 如果还是不行的话, 请参考: <a href="http://source.android.com/source/downloading.html#using-authentication">官网链接</a></p>
+<h1 id="使用流程"><span class="header-section-number">4</span> 使用流程</h1>
+<ol style="list-style-type: decimal">
+<li>上面所说的下载repo, 只是下载了一个简单的叫repo的shell脚本. 这其实只是个皮. 真正的repo也就是python的脚本, 要用repo init来下载.</li>
+<li>用repo init来获取真正的repo(python写成的)的git仓库, 以及Android源码的列表信息(manifest)的git仓库. 这些会放在当前路径下一个.repo文件夹里.</li>
+<li>用repo sync来获取真正的Android代码.</li>
+</ol>
+<h1 id="命令使用"><span class="header-section-number">5</span> 命令使用</h1>
+<p>总体的命令格式为:</p>
+<pre><code>repo COMMAND OPTIONS</code></pre>
+<p>获取帮助:</p>
+<pre><code>repo help COMMAND</code></pre>
+<h2 id="init"><span class="header-section-number">5.1</span> init</h2>
+<p>格式:</p>
+<pre><code>repo init -u URL [OPTIONS]</code></pre>
+<p>选项:</p>
+<ul>
+<li>-u: 指定获取manifest的URL. 参考: <a href="https://android.googlesource.com/platform/manifest">android.googlesource.com</a></li>
+<li>-m: 在本仓库内选择manifest. 如果没有指定, 则默认选择default.xml.</li>
+<li>-b: 指定一个分支(revision).</li>
+</ul>
+<p>注: 对于下文提到的其他的命令, 需要在刚刚repo init所在的路径(即.repo的父级), 或者其子目录下执行.</p>
+<p><strong>使用</strong>:</p>
+<p>如果使用默认:</p>
+<pre><code>repo init -u https://android.googlesource.com/platform/manifest</code></pre>
+<p><strong>如果指定某个分支</strong>:</p>
+<pre><code>repo init -u https://android.googlesource.com/platform/manifest -b android-4.0.1_r1</code></pre>
+<p><strong>授权</strong>:</p>
+<pre><code>repo init -u https://android.googlesource.com/a/platform/manifest</code></pre>
+<p><strong>本地镜像</strong>:</p>
+<pre><code>mkdir &lt;somepath&gt;/android_mirror
+cd &lt;somepath&gt;/android_mirror
+repo init -u https://android.googlesource.com/mirror/manifest --mirror
+repo sync
+
+将本地镜像作为仓库服务器使用:
+mkdir &lt;somepath2&gt;/myandroid
+cd &lt;somepath2&gt;/myandroid
+repo init -u /usr/local/aosp/mirror/platform/manifest.git
+repo sync</code></pre>
+<h2 id="sync"><span class="header-section-number">5.2</span> sync</h2>
+<p>格式:</p>
+<pre><code>repo sync [PROJECT_LIST]</code></pre>
+<p>作用:</p>
+<ul>
+<li>如果本路径下从来没执行过repo sync(失败了不算执行过, 必须得是成功执行过), 则相当于git clone, 即把所有的分支都下载到本地.</li>
+<li>如果之前已经成功的sync过, 则相当于更新:
+<pre>
+    git remote update
+    git rebase origin/BRANCH
+</pre>
+BRANCH为当前checkout出来的分支, 如果当前分支不是远程仓库的跟踪分支(tracking branch), 则本工程(project)不会发生任何同步.</li>
+</ul>
+<p>说明: * 如果rebase造成了merge冲突, 则需要手动执行git命令(如git rebase --continue)来解决冲突.</p>
+<p>选项:</p>
+<p>还不太理解, 暂时原文拷贝:</p>
+<ul>
+<li><p>-d: switch specified projects back to the manifest revision. Helpful if the project is currently on a topic branch, but the manifest revision is temporarily needed.</p></li>
+<li><p>-s: sync to a known good build as specified by the manifest-server element in the current manifest.</p></li>
+<li><p>-f: proceed with syncing other projects even if a project fails to sync.</p></li>
+</ul>
+<h2 id="查看android各版本分支"><span class="header-section-number">5.3</span> 查看android各版本分支</h2>
+<pre><code>git --git-dir .repo/manifests/.git/ branch -a</code></pre>
+<h2 id="status"><span class="header-section-number">5.4</span> status</h2>
+<p>格式:</p>
+<pre><code>repo status [PROJECT_LIST]</code></pre>
+<p>作用:</p>
+<pre><code>类似于git status. 只是输出格式如下:</code></pre>
+<p>说明:</p>
+<p>输出为两列字母:</p>
+<p>第一列大写字母, 表示index(staged)与上次commit的区别:</p>
+<table>
+<col width="10%" />
+<col width="21%" />
+<col width="68%" />
+<thead>
+<tr class="header">
+<th align="left">letter</th>
+<th align="left">meaning</th>
+<th align="left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">-</td>
+<td align="left">no change</td>
+<td align="left">same in HEAD and index</td>
+</tr>
+<tr class="even">
+<td align="left">A</td>
+<td align="left">added</td>
+<td align="left">not in HEAD, in index</td>
+</tr>
+<tr class="odd">
+<td align="left">M</td>
+<td align="left">modified</td>
+<td align="left">in HEAD, modified in index</td>
+</tr>
+<tr class="even">
+<td align="left">D</td>
+<td align="left">deleted</td>
+<td align="left">in HEAD, not in index</td>
+</tr>
+<tr class="odd">
+<td align="left">R</td>
+<td align="left">renamed</td>
+<td align="left">not in HEAD, path changed in index</td>
+</tr>
+<tr class="even">
+<td align="left">C</td>
+<td align="left">copied</td>
+<td align="left">not in HEAD, copied from another in index</td>
+</tr>
+<tr class="odd">
+<td align="left">T</td>
+<td align="left">mode changed</td>
+<td align="left">same content in HEAD and index, mode changed</td>
+</tr>
+<tr class="even">
+<td align="left">U</td>
+<td align="left">unmerged</td>
+<td align="left">conflict between HEAD and index; resolution required</td>
+</tr>
+</tbody>
+</table>
+<p>第二列小写字母, 表示当前工作路径与index(staged)的区别:</p>
+<table>
+<col width="11%" />
+<col width="22%" />
+<col width="44%" />
+<thead>
+<tr class="header">
+<th align="left">letter</th>
+<th align="left">meaning</th>
+<th align="left">description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">-</td>
+<td align="left">new/unknown</td>
+<td align="left">not in index, in work tree</td>
+</tr>
+<tr class="even">
+<td align="left">m</td>
+<td align="left">modified</td>
+<td align="left">in index, in work tree, modified</td>
+</tr>
+<tr class="odd">
+<td align="left">d</td>
+<td align="left">deleted</td>
+<td align="left">in index, not in work tree</td>
+</tr>
+</tbody>
+</table>
+<h2 id="start"><span class="header-section-number">5.5</span> start</h2>
+<p>格式:</p>
+<pre><code>repo start BRANCH_NAME [PROJECT_LIST]</code></pre>
+<p>作用:</p>
+<p>创建新分支. 可以用&quot;.&quot;表示当前路径下的工程(project).</p>
+<h1 id="参考文献"><span class="header-section-number">6</span> 参考文献</h1>
+<p><a href="http://source.android.com/source/downloading.html">source.android.com:Downloading the Source</a> <a href="http://source.android.com/source/using-repo.html">source.android.com:Repo command reference</a></p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

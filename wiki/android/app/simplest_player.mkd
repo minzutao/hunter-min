@@ -1,0 +1,269 @@
+<!---title:Android最简播放器(转)-->
+<!---keywords:android,mediaplayer-->
+<!---date:2013.09.28; modification:2014.01.27-->
+
+ 
+#代码
+
+使用MediaPlayer播放音频或者视频的最简单例子:
+
+<pre class="brush: java; toolbar: false">
+    
+package com.ccdt.testmedia;
+
+import java.io.IOException;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceHolder.Callback;
+import android.view.SurfaceView;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+
+@SuppressLint("SdCardPath") public class MainActivity extends Activity implements Callback {
+    private Button bplay,bpause,bstop;
+    private SurfaceView surfaceView;
+    private SurfaceHolder surfaceHolder;
+    private MediaPlayer mp = new MediaPlayer();
+    String TAG = "MainActivity";
+
+    @SuppressWarnings("deprecation")
+	@Override
+
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        surfaceView = (SurfaceView) findViewById(R.id.surfaceview1);
+        surfaceHolder = surfaceView.getHolder();
+        surfaceHolder.setFixedSize(100, 100);
+        surfaceHolder.addCallback(this);
+        surfaceHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        
+        bplay = (Button)findViewById(R.id.play);
+        bpause = (Button)findViewById(R.id.pause);
+        bstop = (Button)findViewById(R.id.stop);
+        bplay.setOnClickListener(new OnClickListener(){
+           @Override
+           public void onClick(View v) {
+                  try {
+                     // mp.setDataSource("/sdcard/music/178116.mp3");
+                	 mp.setDisplay(surfaceHolder);//设置屏幕
+                	 mp.setDataSource("/sdcard/alan.mp4");
+                     Log.i(TAG, "\033[31mopen file.\033[0m\r\n");
+                     mp.prepare();
+                     mp.start();
+                  } catch (IllegalArgumentException e) {
+                     e.printStackTrace();
+                  } catch (IllegalStateException e) {
+                     e.printStackTrace();
+                  } catch (IOException e) {
+                     e.printStackTrace();
+                  }
+
+                  mp.setOnCompletionListener(new OnCompletionListener(){
+                     @Override
+                     public void onCompletion(MediaPlayer mp) {
+                         mp.release();
+                     }
+                  });
+           }
+        });
+       
+        bpause.setOnClickListener(new OnClickListener(){
+           @Override
+           public void onClick(View v) {
+                  if(mp != null){
+                     mp.pause();
+                  }
+           }
+        });
+    
+        bstop.setOnClickListener(new OnClickListener(){
+        @Override
+        public void onClick(View v) {
+             if(mp != null){
+                mp.stop();
+             }
+        }
+        });
+    }
+ 
+    @Override
+    protected void onDestroy() {
+       if(mp != null)
+           mp.release();
+       super.onDestroy();
+    }
+
+	@Override
+	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+}
+
+
+</pre>
+ 
+
+布局文件main.xml: 
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:orientation="vertical" android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+            <TextView android:layout_width="fill_parent"
+                android:layout_height="wrap_content" android:text="@string/hello_world" />
+
+            <Button android:text="play" android:id="@+id/play"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></Button>
+
+            <Button android:text="pause" android:id="@+id/pause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></Button>
+
+            <Button android:text="stop" android:id="@+id/stop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"></Button>
+            
+            <SurfaceView android:id="@+id/surfaceview1"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"></SurfaceView>
+
+    </LinearLayout>
+
+
+
+ 
+
+#程序说明
+
+这个例子只是描述了MediaPlayer的基本使用步骤和方式, MediaPlayer还有多种使用方式和方法, 并不只局限于例子所介绍的一种. 具体来看: 
+
+**1)如何获得MediaPlayer实例:**
+
+   可以使用直接new的方式: 
+
+   MediaPlayer mp = new MediaPlayer();
+
+   也可以使用create的方式, 如: 
+
+MediaPlayer mp = MediaPlayer.create(this, R.raw.test);//这时就不用调用setDataSource了
+
+ 
+
+**2) 如何设置要播放的文件:**
+
+   MediaPlayer要播放的文件主要包括3个来源: 
+
+a. 用户在应用中事先自带的resource资源
+
+   例如: MediaPlayer.create(this, R.raw.test);
+
+b. 存储在SD卡或其他文件路径下的媒体文件
+
+例如: mp.setDataSource("/sdcard/test.mp3");
+
+c. 网络上的媒体文件
+
+   例如: mp.setDataSource("http://www.citynorth.cn/music/confucius.mp3");
+
+ 
+
+MediaPlayer的setDataSource一共四个方法: 
+
+       setDataSource (String path)
+
+       setDataSource (FileDescriptor fd)
+
+       setDataSource (Context context, Uri uri)
+
+   setDataSource (FileDescriptor fd, long offset, long length)
+
+ 
+
+**3)对播放器的主要控制方法:**
+
+Android通过控制播放器的状态的方式来控制媒体文件的播放, 其中: 
+
+prepare()和prepareAsync()  提供了同步和异步两种方式设置播放器进入prepare状态, 需要注意的是, 如果MediaPlayer实例是由create方法创建的, 那么第一次启动播放前不需要再调用prepare()了, 因为create方法里已经调用过了. 
+
+start()是真正启动文件播放的方法, 
+
+pause()和stop()比较简单, 起到暂停和停止播放的作用, 
+
+seekTo()是定位方法, 可以让播放器从指定的位置开始播放, 需要注意的是该方法是个异步方法, 也就是说该方法返回时并不意味着定位完成, 尤其是播放的网络文件, 真正定位完成时会触发OnSeekComplete.onSeekComplete(), 如果需要是可以调用setOnSeekCompleteListener(OnSeekCompleteListener)设置监听器来处理的. 
+
+release()可以释放播放器占用的资源, 一旦确定不再使用播放器时应当尽早调用它释放资源. 
+
+reset()可以使播放器从Error状态中恢复过来, 重新会到Idle状态. 
+
+ 
+
+ 
+
+**4)设置播放器的监听器:**
+
+   MediaPlayer提供了一些设置不同监听器的方法来更好地对播放器的工作状态进行监听, 以期及时处理各种情况, 
+
+如:  setOnCompletionListener(MediaPlayer.OnCompletionListener listener), 
+
+setOnErrorListener(MediaPlayer.OnErrorListener listener)等,设置播放器时需要考虑到播放器可能出现的情况设置好监听和处理逻辑, 以保持播放器的健壮性. 
+
+
+
+
+转自: [http://blog.csdn.net/ddna/article/details/5176233](http://blog.csdn.net/ddna/article/details/5176233)
+
+
+
+#注意事项
+
+本节内容转自: [http://iteches.com/archives/8020](http://iteches.com/archives/8020)
+
+##MediaPlayer播放影片相关注意事项与心得
+
+MediaPlayer在使用时, 某些Method在调用时有其先后顺序, 请参考官网明细说明. 
+
+"new MediaPlayer()" 与 MediaPlayer.reset() 的功能相似, 如果想覆用已经生成MediaPlayer的instance, 不想一直new出新的instance, 可以调用MediaPlayer.reset(), 将已生成的instance回到初始化的状况, 进而重复使用.
+
+在Activity的不可视状况时(onStop(...) method被调用时), 记的调用MediaPlayer.release()释放系统的硬件资源
+
+MediaPlayer.setDisplay(...)必须在整个UI画面render完成后才调用, 否则在播放时会有声音无影像. 如果是在SurfaceHolder的callback interface里调用, 记的要放在surfaceCreated(...) method里面
+
+要快速的在影片中移动(seek)到特定时间点, 可利用MediaPlayer.pause()配合MediaPlayer.seek(...)来达成. 没事别一直调用MediaPlayer.stop(), 因为stop后要进行seek的动作, 必需先调用MediaPlayer.prepare()后才可再调用MediaPlayer.seek(...), 这个MediaPlayer.prepare()的调用比较花时间
+
+官网上的MediaPlayer State Diagram在不同手机上的状况不见的会相同, 有时会遇到State乱跳的状况. 如果想在异常时追查State的状况, 可以在MediaPlayer里注册OnErrorListener来追问题. 不过...有的手机会吐奇怪的StateCode, 不见的真的能查到问题所在!
+
+
+##MediaPlayer动态调整影片画面大小相关注意事项与心得
+
+SurfaceView的layout调整可利用SurfaceView.setLayoutParams(...)的方式进行调整. 这种方式是执行速度与效能最好的, 不会因为重设了Layout参数就必需让整个SurfaceView重新产生, 可以省下很多运行时间.
+
+如果想暂时隐藏SurfaceView, 可以在调用SurfaceView.setLayoutParams(...)时, 指定Layout的长宽为0, 达到隐藏的目的. 不要调用SurfaceView.setVisibility(View.INVISIBLE), 这会导致SurfaceView从UI的ViewTree里被移除; 当你要再次显示SurfaceView时, 除了要重新产生新的SurfaceView之外, 还要再跟MediaPlayer做一次完整的binding动作, 执行的整度与效能都很糟. 当Activity处于UI可见的状态下, SurfaceView要想尽办法让它reuse, 不要让它进行重新生成instance的动作, 这样MediaPlayer的播放画面在进行缩放大小时才会快速. 
+
+
+
+
+
+
+<!-- vim:set tw=0:-->

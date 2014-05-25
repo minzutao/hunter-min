@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>linux firefox 安装flash player</title>
+<meta name="keywords" content="linux, firefox, flashplayer, flash播放器">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>linux firefox 安装flash player</h1>
+<p>date: 2014.01.09; modification:2014.01.09</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#下载"><span class="toc-section-number">1</span> 下载</a></li>
+<li><a href="#安装"><span class="toc-section-number">2</span> 安装</a><ul>
+<li><a href="#解压"><span class="toc-section-number">2.1</span> 解压</a></li>
+<li><a href="#拷贝"><span class="toc-section-number">2.2</span> 拷贝</a></li>
+</ul></li>
+<li><a href="#问题解决"><span class="toc-section-number">3</span> 问题解决</a></li>
+<li><a href="#参考资料"><span class="toc-section-number">4</span> 参考资料</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:linux firefox 安装flash player-->
+<!---keywords:linux, firefox, flashplayer, flash播放器-->
+<!---date:2014.01.09; modification:2014.01.09-->
+
+<h1 id="下载"><span class="header-section-number">1</span> 下载</h1>
+<p>对于包含flash的网页, 会提示需要安装flashplayer, 从那里点进去, 即可转向ADOBE的网站, 下载install_flash_player_10_linux.tar.gz</p>
+<h1 id="安装"><span class="header-section-number">2</span> 安装</h1>
+<h2 id="解压"><span class="header-section-number">2.1</span> 解压</h2>
+<p>解压, 命令为:</p>
+<pre><code>tar -zxvf install_flash_player_11_linux.x86_64.tar.gz # 文件名根据下载版本可能会不同</code></pre>
+<p>得到:</p>
+<ul>
+<li>libflashplayer.so</li>
+<li>readme.txt</li>
+<li>usr</li>
+</ul>
+<h2 id="拷贝"><span class="header-section-number">2.2</span> 拷贝</h2>
+<p>复制libflashplayer.so到火狐浏览器插件文件夹下, 命令为:</p>
+<pre><code>sudo cp libflashplayer.so /usr/lib/mozilla/plugins/ </code></pre>
+<p>此目录可能根据火狐不同的版本有所不同, 大家可以先去lib下面 搜索一下mozilla</p>
+<p>复制usr:</p>
+<pre><code>sudo cp -r usr /usr</code></pre>
+<p>重启firefox. 它就会提示有更新了(也可能会没有). 现在就可以播放flash了.</p>
+<h1 id="问题解决"><span class="header-section-number">3</span> 问题解决</h1>
+<p>(来自参考页面, 本人未尝试) 用firefox 播放flash时出现乱码解决:</p>
+<pre><code>sudo vim /etc/fonts/conf.d/49-sansserif.conf</code></pre>
+<p>将</p>
+<pre><code>&lt;edit name=&quot;family&quot; mode=&quot;append_last&quot;&gt;
+    &lt;string&gt;sans-serif&lt;/string&gt;
+&lt;/edit&gt;</code></pre>
+<p>中的红色部分改为</p>
+<pre><code>&lt;string&gt;sans&lt;/string&gt;</code></pre>
+<h1 id="参考资料"><span class="header-section-number">4</span> 参考资料</h1>
+<p>http://www.cppblog.com/koson/archive/2010/03/03/108770.aspx</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

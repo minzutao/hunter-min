@@ -1,0 +1,51 @@
+<!---title:Android的hello world程序的创建与运行-->
+<!---keywords:Android,helloworld-->
+<!---date:2013.06.03-->
+
+#前言
+
+本文将介绍如何利用Eclipse来构建一个最简单的Hello world程序, 并且在虚拟机中运行它.
+
+阅读本文之前, 请确保您已经按照[Android应用开发环境搭建](../basic/develop_env_app.html), 安装好了应用程序开发环境.
+
+#用Eclipse创建工程
+
+1. 打开Eclipse.
+2. 菜单中: `File --> New --> Project`, 弹出New Project对话框.
+3. 选择Android文件夹中的"Android Application Project". 点击"Next".
+4. 填写相应的表单:
+    * Application Name: 应用程序名, 这个是给用户看的. 如"Hello world".
+    * Project Name: 项目名, 是给Eclipse项目用的. 如"helloworld"
+    * Package Name: 包名, 在一个Android系统里, 包的名字必须是唯一的. 也就是说, 在一个手机里, 区分不同的APP的方法, 也就是靠这个包名. 推荐的命名方法是, 用域名倒过来写, 如本例为"com.mikewootc.helloworld"
+5. 其他选项暂时不管, 点击"Next".
+6. 弹出Configure Project页面, 采用默认配置, 点击"Next".
+7. 弹出Configure Launcher Icon页面, 暂时不管(也可以换个图标), 点击"Next".
+8. 弹出Create Activity页面, 选择Activity, 本例选择Blank Activity. 点击"Next".
+9. 弹出Blank Activity页面, 保持默认, 点击"Finish". 完成项目的创建.
+
+#构建与运行
+
+这里介绍在虚拟机中运行程序的方法.
+
+##构建虚拟机
+
+1. 在安装路径中的sdk/tools下, 执行:
+<pre>
+./android avd
+</pre>
+2. 弹出Android Virtual Device Manager的界面. 点击"New"按钮.
+3. 填入名称, 平台版本, 存储器大小, 分辨率等, 然后点击"Create AVD", 完成创建.
+4. 选中刚刚建立的虚拟机, 然后点击"Start", 启动虚拟机. 然后就可以调试了.
+
+##调试程序
+
+在eclipse点击菜单`Run --> Run`便可以运行.
+
+
+
+
+
+
+
+
+<!-- vim:set tw=0:-->

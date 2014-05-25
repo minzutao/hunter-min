@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>Ubuntu打开pdf中文乱码解决方法汇总</title>
+<meta name="keywords" content="Linux,中文乱码">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>Ubuntu打开pdf中文乱码解决方法汇总</h1>
+<p>date: 2013.07.11; modification:2013.07.11</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#安装poppler-data"><span class="toc-section-number">1</span> 安装poppler-data</a></li>
+<li><a href="#安装附加字体"><span class="toc-section-number">2</span> 安装附加字体</a></li>
+<li><a href="#安装adobe支持"><span class="toc-section-number">3</span> 安装Adobe支持</a></li>
+<li><a href="#安装xpdf相关"><span class="toc-section-number">4</span> 安装xpdf相关</a></li>
+<li><a href="#修改系统配置文件"><span class="toc-section-number">5</span> 修改系统配置文件</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:Ubuntu打开pdf中文乱码解决方法汇总-->
+<!---keywords:Linux,中文乱码-->
+<!---date:2013.07.11; modification:2013.07.11-->
+
+
+<h1 id="安装poppler-data"><span class="header-section-number">1</span> 安装poppler-data</h1>
+<p>如果是ubuntu的话, 直接:</p>
+<pre><code>sudo apt-get install poppler-data , 安装之后就好了. </code></pre>
+<p>其他要自己找源下载, 下载. tar.gz安装也一样.</p>
+<h1 id="安装附加字体"><span class="header-section-number">2</span> 安装附加字体</h1>
+<p><strong>1. 拷贝字体文件</strong></p>
+<p>windows的字体一般存放在c:, 拷贝所需字体到文件夹wfonts:</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">文件名</th>
+<th align="left">字体</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">simfang.ttf</td>
+<td align="left">仿宋体</td>
+</tr>
+<tr class="even">
+<td align="left">simhei.ttf</td>
+<td align="left">黑体</td>
+</tr>
+<tr class="odd">
+<td align="left">simkai.ttf</td>
+<td align="left">楷体</td>
+</tr>
+<tr class="even">
+<td align="left">simsun.ttf</td>
+<td align="left">宋体和新宋体, 原文件名simsun.ttc</td>
+</tr>
+<tr class="odd">
+<td align="left">tahoma.ttf</td>
+<td align="left">tahoma字体</td>
+</tr>
+<tr class="even">
+<td align="left">tahomabd.ttf</td>
+<td align="left">tahoma字体的粗体形式</td>
+</tr>
+<tr class="odd">
+<td align="left">verdana.ttf</td>
+<td align="left">verdana字体</td>
+</tr>
+<tr class="even">
+<td align="left">verdanab.ttf</td>
+<td align="left">verdana字体的粗体形式</td>
+</tr>
+<tr class="odd">
+<td align="left">verdanai.ttf</td>
+<td align="left">verdana字体的斜体形式</td>
+</tr>
+<tr class="even">
+<td align="left">verdanaz.ttf</td>
+<td align="left">verdana字体的粗体＋斜体形式</td>
+</tr>
+</tbody>
+</table>
+<p>将文件夹wfonts拷贝到/usr/share/fonts目录下**</p>
+<p><strong>2. 生成字体的索引信息</strong></p>
+<p>打开终端, 进入/usr/share/fonts/wfonts目录下, 执行如下命令来生成字体的索引信息, 并更新字体缓存:</p>
+<pre><code>sudo mkfontscale
+sudo mkfontdir
+fc-cache -f -v</code></pre>
+<p>至此, 字体已经安装成功, 但是在用openoffice编辑文档时, 可能会找不到所安装的字体, 而且在浏览windows下的文档时会产生乱码, 所以需要如下工作:</p>
+<h1 id="安装adobe支持"><span class="header-section-number">3</span> 安装Adobe支持</h1>
+<pre><code>sudo apt-get install cmap-adobe-cns1
+sudo apt-get install cmap-adobe-gb1</code></pre>
+<h1 id="安装xpdf相关"><span class="header-section-number">4</span> 安装xpdf相关</h1>
+<pre><code>sudo apt-get install xpdf xpdf-chinese-simplified xpdf-chinese-traditional xpdf-common</code></pre>
+<h1 id="修改系统配置文件"><span class="header-section-number">5</span> 修改系统配置文件</h1>
+<p>经过以上的步骤, xpdf已经好了, 但是evince还是乱码. 通过如下方法解决:</p>
+<p>修改系统配置文件(/etc/fonts/conf.avail/49-sansserif.conf)</p>
+<pre><code>&lt;edit name=&quot;family&quot; mode=&quot;append_last&quot;&gt;  
+    &lt;string&gt;sans-serif&lt;/string&gt;  
+&lt;/edit&gt;  
+
+修改为:   
+
+&lt;edit name=&quot;family&quot; mode=&quot;append_last&quot;&gt;  
+    &lt;string&gt;SimSun&lt;/string&gt;                                           
+&lt;/edit&gt;  </code></pre>
+<p><em>这里需要注意的是, 确认你的机器上的宋体是SimSun,这可以通过命令<code>fc-list :lang=zh</code>来查看:</em></p>
+<pre><code>宋体,SimSun:style=Regular   # 注意这里的名称</code></pre>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

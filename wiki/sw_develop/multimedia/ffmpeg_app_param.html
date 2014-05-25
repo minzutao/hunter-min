@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<link rel="stylesheet" href="/style.css" type="text/css" />
+
+
+<title>ffmpeg参数中文详解</title>
+<meta name="keywords" content="ffmepg,param,转码,转换,格式">
+
+</head>
+
+
+<body>
+<div id="wrapper">
+
+<div id="header">
+    <p class="header_titleline">Mike的分享空间</p>
+    <p class="header_subline"><a href="/index.html">首页</a></p>
+</div>
+
+<h1>ffmpeg参数中文详解</h1>
+<p>date: 2014.04.25; modification:2014.05.04</p>
+
+ <!--if(title)-->
+
+<p>目录:</p>
+<div id="TOC">
+<ul>
+<li><a href="#前言"><span class="toc-section-number">1</span> 前言</a></li>
+<li><a href="#通用选项"><span class="toc-section-number">2</span> 通用选项</a></li>
+<li><a href="#视频选项"><span class="toc-section-number">3</span> 视频选项</a></li>
+<li><a href="#高级视频选项"><span class="toc-section-number">4</span> 高级视频选项</a></li>
+<li><a href="#音频选项"><span class="toc-section-number">5</span> 音频选项</a></li>
+<li><a href="#音频视频捕获选项"><span class="toc-section-number">6</span> 音频/视频捕获选项</a></li>
+<li><a href="#高级选项"><span class="toc-section-number">7</span> 高级选项</a></li>
+<li><a href="#参考文献"><span class="toc-section-number">8</span> 参考文献</a></li>
+</ul>
+</div>
+ <!--if(toc)-->
+
+<!---title:ffmpeg参数中文详解-->
+<!---keywords:ffmepg,param,转码,转换,格式-->
+<!---date:2014.04.25; modification:2014.05.04-->
+
+<h1 id="前言"><span class="header-section-number">1</span> 前言</h1>
+<p>本文说描述的选项, 不是每个版本的ffmpeg都具有. 有些选项在不同的版本中有可能会有不同的名称或者表述方式.</p>
+<h1 id="通用选项"><span class="header-section-number">2</span> 通用选项</h1>
+<p><strong>-L</strong> license</p>
+<p><strong>-h</strong> 帮助</p>
+<p><strong>-formats</strong> 显示可用的文件封装格式, 编解码, 协议等. 其中D为Decode或Demux, E为Encode或者Mux.</p>
+<p><strong>-codecs</strong> 相对于-formats只显示编解码格式.</p>
+<p><strong>-f</strong> fmt 强迫采用格式fmt(文件格式, 如wav, avi等). 如果不指定该选项, 则使用文件扩展名来自动探测格式.</p>
+<p><strong>-i</strong> filename 输入文件</p>
+<p><strong>-y</strong> 覆盖输出文件</p>
+<p><strong>-t</strong> duration 设置录制/转码的时长. hh:mm:ss[.xxx]格式的记录时间也支持</p>
+<p><strong>-ss</strong> position 搜索到指定的起始时间 [-]hh:mm:ss[.xxx]的格式也支持</p>
+<p><strong>-title</strong> string 设置标题(本人编译的linux版本未带此选项)</p>
+<p><strong>-author</strong> string 设置本人(本人编译的linux版本未带此选项)</p>
+<p><strong>-copyright</strong> string 设置版权(本人编译的linux版本未带此选项)</p>
+<p><strong>-comment</strong> string 设置评论(本人编译的linux版本未带此选项)</p>
+<p><strong>-target</strong> type 设置目标文件类型(type可以为: vcd, svcd, dvd, &quot;dv&quot;, &quot;dv50&quot;)所有的格式选项(比特率, 编解码以及缓冲区大小)自动设置, 只需要输入如下的就可以了: ffmpeg -i myfile.avi -target vcd /tmp/vcd.mpg. 另外, type也可以加前缀: &quot;pal-&quot;, &quot;ntsc-&quot; or &quot;film-&quot;.</p>
+<p><strong>-hq</strong> 激活高质量设置(本人编译的linux版本未带此选项)</p>
+<p><strong>-itsoffset</strong> offset 设置以秒为基准的时间偏移, 该选项影响所有后面的输入文件. 该偏移被加到输入文件的时戳, 定义一个正偏移意味着相应的流被延迟了 offset秒. [-]hh:mm:ss[.xxx]的格式也支持</p>
+<h1 id="视频选项"><span class="header-section-number">3</span> 视频选项</h1>
+<p><strong>-b:v</strong> bitrate 设置比特率, 缺省200kb/s(该数值依据转发的文章, 本人为验证).</p>
+<p><strong>-r</strong> fps 设置帧率. 缺省25(该数值依据转发的文章, 本人为验证)</p>
+<p><strong>-s</strong> size 设置帧大小 格式为WXH 缺省160X128. 默认为与源相同大小. 下面的简写也可以直接使用: Sqcif 128X96 qcif 176X144 cif 252X288 4cif 704X576</p>
+<p><strong>-aspect</strong> aspect 设置横纵比 4:3 16:9 或 1.3333 1.7777</p>
+<p><strong>-croptop</strong> size 设置顶部切除带大小 像素单位</p>
+<p><strong>-cropbottom</strong> size –cropleft size –cropright size</p>
+<p><strong>-padtop</strong> size 设置顶部补齐的大小 像素单位</p>
+<p><strong>-padbottom</strong> size</p>
+<p><strong>-padleft</strong> size</p>
+<p><strong>-padright</strong> size</p>
+<p><strong>-padcolor</strong> color 设置补齐条颜色(hex,6个16进制的数, 红:绿:兰排列, 比如 000000代表黑色)</p>
+<p><strong>-vn</strong> 不做视频记录</p>
+<p><strong>-bt</strong> tolerance 设置视频码率容忍度kbit/s</p>
+<p><strong>-maxrate</strong> bitrate设置最大视频码率容忍度</p>
+<p><strong>-minrate</strong> bitreate 设置最小视频码率容忍度</p>
+<p><strong>-bufsize</strong> size 设置码率控制缓冲区大小</p>
+<p><strong>-vcodec</strong> codec 强制使用codec编解码方式. 如果用copy表示原始编解码数据必须被拷贝.</p>
+<p><strong>-sameq</strong> 使用同样视频质量作为源(VBR).</p>
+<p><strong>-pass</strong> n 选择处理遍数(1或者2). 两遍编码非常有用. 第一遍生成统计信息, 第二遍生成精确的请求的码率</p>
+<p><strong>-passlogfile</strong> file 选择两遍的纪录文件名为file</p>
+<h1 id="高级视频选项"><span class="header-section-number">4</span> 高级视频选项</h1>
+<p><strong>-g</strong> gop_size 设置图像组大小</p>
+<p><strong>-intra</strong> 仅适用帧内编码</p>
+<p><strong>-qscale</strong> q 使用固定的视频量化标度(VBR)</p>
+<p><strong>-qmin</strong> q 最小视频量化标度(VBR)</p>
+<p><strong>-qmax</strong> q 最大视频量化标度(VBR)</p>
+<p><strong>-qdiff</strong> q 量化标度间最大偏差 (VBR)</p>
+<p><strong>-qblur</strong> blur 视频量化标度柔化(VBR)</p>
+<p><strong>-qcomp</strong> compression 视频量化标度压缩(VBR)</p>
+<p><strong>-rc_init_cplx</strong> complexity 一遍编码的初始复杂度</p>
+<p><strong>-b_qfactor</strong> factor 在p和b帧间的qp因子</p>
+<p><strong>-i_qfactor</strong> factor 在p和i帧间的qp因子</p>
+<p><strong>-b_qoffset</strong> offset 在p和b帧间的qp偏差</p>
+<p><strong>-i_qoffset</strong> offset 在p和i帧间的qp偏差</p>
+<p><strong>-rc_eq</strong> equation 设置码率控制方程 默认tex^qComp</p>
+<p><strong>-rc_override</strong> override 特定间隔下的速率控制重载</p>
+<p><strong>-me</strong> method 设置运动估计的方法 可用方法有 zero phods log x1 epzs(缺省) full</p>
+<p><strong>-dct_algo</strong> <code>algo 设置dct的算法 可用的有 0 FF_DCT_AUTO 缺省的DCT 1 FF_DCT_FASTINT 2 FF_DCT_INT 3 FF_DCT_MMX 4 FF_DCT_MLIB 5 FF_DCT_ALTIVEC</code></p>
+<p><strong>-idct_algo</strong> <code>algo 设置idct算法. 可用的有 0 FF_IDCT_AUTO 缺省的IDCT 1 FF_IDCT_INT 2 FF_IDCT_SIMPLE 3 FF_IDCT_SIMPLEMMX 4 FF_IDCT_LIBMPEG2MMX 5 FF_IDCT_PS2 6 FF_IDCT_MLIB 7 FF_IDCT_ARM 8 FF_IDCT_ALTIVEC 9 FF_IDCT_SH4 10 FF_IDCT_SIMPLEARM</code></p>
+<p><strong>-er</strong> n <code>设置错误残留为n 1 FF_ER_CAREFULL 缺省 2 FF_ER_COMPLIANT 3 FF_ER_AGGRESSIVE 4 FF_ER_VERY_AGGRESSIVE</code></p>
+<p><strong>-ec</strong> <code>bit_mask 设置错误掩蔽为bit_mask,该值为如下值的位掩码 1 FF_EC_GUESS_MVS (default=enabled) 2 FF_EC_DEBLOCK (default=enabled)</code></p>
+<p><strong>-bf</strong> frames 使用frames B 帧, 支持mpeg1,mpeg2,mpeg4</p>
+<p><strong>-mbd</strong> <code>mode 宏块决策 0 FF_MB_DECISION_SIMPLE 使用mb_cmp 1 FF_MB_DECISION_BITS 2 FF_MB_DECISION_RD</code></p>
+<p><strong>-4mv</strong> 使用4个运动矢量 仅用于mpeg4</p>
+<p><strong>-part</strong> 使用数据划分 仅用于mpeg4</p>
+<p><strong>-bug</strong> param 绕过没有被自动监测到编码器的问题</p>
+<p><strong>-strict</strong> strictness 跟标准的严格性</p>
+<p><strong>-aic</strong> 使能高级帧内编码 h263+</p>
+<p><strong>-umv</strong> 使能无限运动矢量 h263+</p>
+<p><strong>-deinterlace</strong> 不采用交织方法</p>
+<p><strong>-interlace</strong> 强迫交织法编码仅对mpeg2和mpeg4有效. 当你的输入是交织的并且你想要保持交织以最小图像损失的时候采用该选项. 可选的方法是不交织, 但是损失更大</p>
+<p><strong>-psnr</strong> 计算压缩帧的psnr</p>
+<p><strong>-vstats</strong> 输出视频编码统计到vstats_hhmmss.log</p>
+<p><strong>-vhook</strong> module 插入视频处理模块 module 包括了模块名和参数, 用空格分开</p>
+<h1 id="音频选项"><span class="header-section-number">5</span> 音频选项</h1>
+<p><strong>-ab</strong> bitrate 设置音频码率. 有些版本是(-b:a bitrate)</p>
+<p><strong>-ar</strong> freq 设置音频采样率</p>
+<p><strong>-ac</strong> channels 设置通道 缺省为与输入相同.</p>
+<p><strong>-an</strong> 不使能音频纪录</p>
+<p><strong>-acodec</strong> codec 使用codec编解码</p>
+<h1 id="音频视频捕获选项"><span class="header-section-number">6</span> 音频/视频捕获选项</h1>
+<p><strong>-vd</strong> device 设置视频捕获设备. 比如/dev/video0</p>
+<p><strong>-vc</strong> channel 设置视频捕获通道 DV1394专用</p>
+<p><strong>-tvstd</strong> standard 设置电视标准 NTSC PAL(SECAM)</p>
+<p><strong>-dv1394</strong> 设置DV1394捕获</p>
+<p><strong>-av</strong> device 设置音频设备 比如/dev/dsp</p>
+<h1 id="高级选项"><span class="header-section-number">7</span> 高级选项</h1>
+<p><strong>-map</strong> file:stream 设置输入流映射</p>
+<p><strong>-debug</strong> 打印特定调试信息</p>
+<p><strong>-benchmark</strong> 为基准测试加入时间</p>
+<p><strong>-hex</strong> 倾倒每一个输入包</p>
+<p><strong>-bitexact</strong> 仅使用位精确算法 用于编解码测试</p>
+<p><strong>-ps</strong> size 设置包大小, 以bits为单位</p>
+<p><strong>-re</strong> 以本地帧频读数据, 主要用于模拟捕获设备</p>
+<p><strong>-loop</strong> 循环输入流(只工作于图像流, 用于ffserver测试)</p>
+<h1 id="参考文献"><span class="header-section-number">8</span> 参考文献</h1>
+<p>转自: http://blog.csdn.net/leixiaohua1020/article/details/12751349 并加入本人的解释.</p>
+<!-- vim:set tw=0:-->
+
+
+<div id="footer">
+    <p class="footer_titleline">Human knowledge belongs to the world</p>
+    <p class="footer_subline">Contact: wytabc@126.com</p>
+    <p class="footer_subline">声明: 本站如有侵权行为请及时通知至以上邮箱</p>
+</div>
+<!--Baidu tongji-->
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3Fcb5b32b959ab6deadbf7373854572a73' type='text/javascript'%3E%3C/script%3E"));
+</script> <!--Baidu tongji-->
+</div> <!--wrapper-->
+
+<!--SyntaxHighlighter-->
+<script type="text/javascript" src="/scripts/shCore.js"></script>
+<script type="text/javascript" src="/scripts/shBrushBash.js"></script>
+<script type="text/javascript" src="/scripts/shBrushPython.js"></script>
+<script type="text/javascript" src="/scripts/shBrushCpp.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJScript.js"></script>
+<script type="text/javascript" src="/scripts/shBrushJava.js"></script>
+<script type="text/javascript" src="/scripts/shBrushXml.js"></script>
+<link type="text/css" rel="stylesheet" href="/styles/shCoreFadeToGrey.css"/>
+<script type="text/javascript">SyntaxHighlighter.all();</script>
+
+</body>
+</html>

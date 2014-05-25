@@ -1,0 +1,154 @@
+<!---title:Linux平铺式窗口管理器awesome安装配置与使用-->
+<!---keywords:Linux瓦片式,平铺式,窗口管理器,awesome-->
+<!---date:2013.05.23-->
+
+#简介
+
+Tiling window manager, 直译就是"瓦片式窗口管理器", 意译为"平铺式窗口管理器". 说白了, 它上面的所有的窗口都不是像windows下那样相互重叠的(当然也可以配置成允许重叠), 而是像瓦片那样一片接一片的平铺在平面上, 所以才叫"瓦片式窗口管理器". 个人理解这里还有个言外之意, 就是瓦片是要把屋顶盖的滴水不漏的, 而"瓦片式窗口管理器"中的窗口, 不管有多少个, 不管怎么排列, 也是把平面充满的, 这样提高了屏幕的利用率.
+
+##优势
+
+* 窗口自动平铺.
+* 屏幕利用效率最大化.
+* 配合快捷键效率高.
+
+举个我个人的例子说明, 比如我现在正在写这篇wiki文章, 我需要同时打开3个窗口:
+* 一个vim窗口来用markdown写文章.
+* 一个终端窗口用来make把markdown格式make成html网页.
+* 一个firefox用来看效果, 或查资料.
+我喜欢每个窗口都并排而非重叠放置, 这样我make完了, firefox上直接就看到效果了. 如果是在非平铺式的界面下, 我需要对每个窗口先调整大小, 然后在将每个窗口再移动到相应的位置. 有时候这几步操作, 比我记笔记本身花的时间还要长, 而用"平铺式窗口管理器", 就直接可以自动排布窗口. 现在计算机屏幕都越来越大, 反正在我的1920\*1018的平面上, 用着就很爽.
+
+##劣势
+
+* 配合快捷键才好用, 对于鼠标流操作的人没多大用.
+* 配置曲线较陡峭. 其实这也不算劣势, 因为非平铺式的基本上没啥可配的.
+
+
+#安装
+
+ubuntu下, 直接:
+
+    sudo apt-get install awesome
+
+
+#配置
+
+个人配置文件在~/.config/awesome, 如果没有, 从默认配置考过来即可.
+
+未完待续...
+
+**注意: 再配置完了重启前, 一定要在终端中键入awesome -k来检查一下配置文件的语法正确性, 否则有可能会造成awesome起不来.**
+
+修改完配置之后, 按Mod4 + Control + r直接重启awesome即可看到效果.
+
+
+
+##配置自启动程序
+
+在rc.lua的任意位置添加如下代码：
+
+    -- Autorun programs
+    autorun = "true"
+    autorunApps =
+    {
+        "firefox",
+        "thunderbird",
+        "amarok",
+        "linux-fetion",
+        "amule",
+    }
+    if autorun then
+        for app = 1, #autorunApps do
+            awful.util.spawn(autorunApps[app])
+        end
+    end
+
+##分辨率设置
+
+有时候分辨率显示不对, 可以在上面的子启动中加入命令:
+
+    xrandr --output default --mode "1920x1080"
+
+详情参见: [Linux通过命令设置屏幕分辨率](set_x_reso.html)
+
+
+##插件(widget)Vicious使用
+
+###Vicious安装
+
+Ubuntu下:
+
+    sudo apt-get install awesome-extra
+
+###Vicious使用
+
+在rc.lua的开始处, 添加配置行:
+
+    vicious = require("vicious")
+
+
+#使用
+
+##默认快捷键
+
+----------------------------------------------------------------
+keys                        maps
+-----------------------     ------------------------------------
+Mod4 + Return               打开一个终端
+
+Mod4 + F1                   运行命令
+
+Mod4 + Shift + c            关掉当前窗口
+
+Mod4 + Control + r          重启awesome
+
+Mod4 + Shift + q            退出awesome
+
+Mod4 + j                    切换到下一个窗口
+
+Mod4 + k                    切换到前一个窗口
+
+Mod4 + Left                 查看前一个tag
+
+Mod4 + Right                查看后一个tag
+
+Mod4 + 1-9                  切换到tag 1-9
+
+Mod4 + Control + j          切换到下一个屏幕
+
+Mod4 + Control + k          切换到前一个屏幕
+
+Mod4 + Shift + j            当前窗口和前一个窗口互换位置
+
+Mod4 + Shift + k            当前窗口和后一个窗口互换位置
+
+Mod4 + h                    把主区域(master width)的宽度增大5%
+
+Mod4 + l                    把主区域(master width)的宽度减少5%
+
+Mod4 + Shift + h            增加主区域窗口的数量
+
+Mod4 + Shift + l            减少主区域窗口的数量
+
+Mod4 + Control + h          增加非主区域窗口的数量
+
+Mod4 + Control + l          减少非主区域窗口的数量
+
+Mod4 + space                把当前tag更换为下一种布局
+
+Mod4 + Shift + space        把当前tag更换为前一种布局
+
+Mod4 + Control + space      切换当前窗口是否为浮动的
+
+Mod4 + Shift + i            显示当前窗口的class和instance. 不过我个人试着没反应.
+
+Mod4 + Shift + r            重绘当前窗口
+
+----------------------------------------------------------------
+
+
+#参考文献:
+
+[没头苍蝇的工具箱:Awesome使用&简单配置](http://confusedfly.yo2.cn/articles/awesome%E4%BD%BF%E7%94%A8%E7%AE%80%E5%8D%95%E9%85%8D%E7%BD%AE.html)
+
+<!--vim: set tw=0:-->
